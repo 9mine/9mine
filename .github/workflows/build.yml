@@ -1,4 +1,4 @@
-name: Inferno Container
+name: Minetest Container Image
 on:
   push
 jobs:
