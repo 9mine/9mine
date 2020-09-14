@@ -14,7 +14,7 @@ RUN make
 
 FROM ubuntu:latest
 #RUN apt-get update && apt-get install -y software-properties-common
-RUN echo "deb http://cz.archive.ubuntu.com/ubuntu groovy main universe" >> /etc/apt/sources.list
+RUN echo "deb http://archive.ubuntu.com/ubuntu groovy main universe" >> /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y minetest-server
 RUN apt-get update --fix-missing && DEBIAN_FRONTEND="noninteractive" apt-get install -y luarocks --no-install-recommends
@@ -26,11 +26,11 @@ COPY ./libs/ /usr/share/lua/5.1/
 RUN luarocks install luasocket
 RUN apt-get --purge remove -y gcc
 RUN apt autoremove -y
-WORKDIR /usr/share/games/minetest/games/minetest_game/mods/
 RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list
 RUN apt-get update	
 RUN apt-get install git -y --fix-missing
 ADD minetest.conf /root/.minetest/minetest.conf
-RUN git clone https://github.com/9mine/9mine.git /usr/share/games/minetest/games/minetest_game/mods/cdmod
+RUN git clone https://github.com/9mine/9mine.git 
+RUN cp -r 9mine/cdmod /usr/share/games/minetest/games/minetest_game/mods/cdmod
 ENTRYPOINT ["/usr/lib/minetest/minetestserver"]
 
