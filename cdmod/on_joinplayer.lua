@@ -1,6 +1,11 @@
 minetest.register_on_joinplayer(function(player)
-    print("Joined from localhost")
-    minetest.after(2, spawn_npc)
+    local count = 0
+    local spawned = {} 
+    for k, v in pairs(npcf.npcs) do 
+        spawned[v.title.text] = count
+        count = count + 1
+    end
+    minetest.after(2, spawn_npc, spawned, count)
     player:set_pos({x = 0, y = 2, z = 0})
 
     -- local root = minetest.add_entity({x = 0, y = 7, z = 0}, "cdmod:directory")

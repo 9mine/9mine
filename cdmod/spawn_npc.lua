@@ -1,8 +1,5 @@
 function table.clone(org) return {table.unpack(org)} end
 spawn_npc = function(spawned, count)
-    if spawned == nil then spawned = {} end
-    if count == nil then count = 0 end
-
     local tcp = socket:tcp()
     local connection, err = tcp:connect("inferno", 31000)
     if (err ~= nil) then print("Connection error: " .. dump(err)) end
