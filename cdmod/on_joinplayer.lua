@@ -1,14 +1,8 @@
 minetest.register_on_joinplayer(function(player)
-    local count = 0
-    local spawned = {} 
-    for k, v in pairs(npcf.npcs) do 
-        spawned[v.title.text] = count
-        count = count + 1
-    end
-    -- minetest.after(2, spawn_npc, spawned, count)
     player:set_pos({x = 0, y = 2, z = 0})
 
      local root = minetest.add_entity({x = 5, y = 7, z = 5}, "cdmod:directory")
+     print(dump(root))
      root:set_nametag_attributes({text = "jsonfs"})
      root:set_armor_groups({immortal = 0})
      root:get_luaentity().path = "/mnt/jsonfs"

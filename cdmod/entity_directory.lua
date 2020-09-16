@@ -39,11 +39,7 @@ minetest.register_entity("cdmod:directory", {
                 })
 
             local cs = corner_node:get_string("new_center")
-            print("dumping cs")
-            print(dump(cs))
             local c = minetest.deserialize(cs)
-            print("dumping c")
-            print(dump(c))
             local cp = {x = c.x, y = c.y, z = c.z}
             local size = corner_pos.s
             local orientation = corner_pos.o
@@ -73,12 +69,9 @@ minetest.register_entity("cdmod:directory", {
                 end
                 conn:clunk(f)
             end
-            print("before closing tcp")
             tcp:close()
             local size = 1
             if content ~= nil then size = table.getn(content) end
-            print("content of directory")
-            print(dump(content))
             local level = node_pos.y
             local platform_size = math.ceil(math.sqrt((size / 15) * 100))
             if platform_size < 3 then platform_size = 3 end
