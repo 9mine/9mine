@@ -62,8 +62,7 @@ minetest.register_entity("cdmod:directory", {
             local content = read_directory(conn, self.path)
 
             local f = conn:newfid()
-            if pcall(np.walk, conn, conn.rootfid, f, self.path .. "/.viz") ==
-                false then
+            if pcall(np.walk, conn, conn.rootfid, f, self.path .. "/.viz") == false then
                 print("no vertical file")
             else
                 conn:open(f, 2)
@@ -74,11 +73,12 @@ minetest.register_entity("cdmod:directory", {
                 end
                 conn:clunk(f)
             end
-
+            print("before closing tcp")
             tcp:close()
             local size = 1
             if content ~= nil then size = table.getn(content) end
-
+            print("content of directory")
+            print(dump(content))
             local level = node_pos.y
             local platform_size = math.ceil(math.sqrt((size / 15) * 100))
             if platform_size < 3 then platform_size = 3 end

@@ -1,11 +1,14 @@
 read_directory = function(conn, dir_path)
     local root_dir = nil
+    local result = nil
+    print("dir_path" .. dir_path)
     if dir_path == "." then
         root_dir = readdir(conn, "./")
     else
         result, root_dir = pcall(readdir, conn, dir_path)
-        if not result then return nil end
     end
+    print("dump root dir")
+    print(dump(root_dir))
     if root_dir == nil then return end
     local folder_content = {}
     local size = 0
