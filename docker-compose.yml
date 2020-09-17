@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:server
+    image: dievri/minetest:master
     networks:
       - minetest-inferno
     ports:
