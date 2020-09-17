@@ -1,4 +1,5 @@
 minetest.register_on_joinplayer(function(player)
+    print("visualizing traceroute")
     player:set_pos({x = 0, y = 2, z = 0})
 
     local inventory = player.get_inventory(player)
