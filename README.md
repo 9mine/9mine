@@ -1,6 +1,8 @@
-# Run json file visual explorer 
+# Run Minetest with Inferno 
 
-1. Puth your json file in the same directory where you `docker-compose.yml` as `file.json`
-2. Run `docker-compose up`
+1. Run `docker-compose up`
 
-json file server is listening on port `:7000`. InfernoOS on port `:31000`. Minetest server on port `:30000/udp`.
+InfernoOS exporting own file system at root level `/` on port `:31000`. 
+Minetest server working on port `:30000/udp`.
+To explore InfernoOS file system use `connect` tool from inventory and the enter following string:
+`tcp!inferno!31000`

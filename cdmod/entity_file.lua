@@ -20,10 +20,43 @@ minetest.register_entity("cdmod:file", {
                         dir)
         -- if tools is appropriate
         if tool_capabilities.damage_groups.read == 1 then
+            local pos = puncher:get_pos()
+            -- find glass in radius of 6
+            local node_pos = minetest.find_node_near(pos, 6, {"cdmod:platform"})
+            local node = minetest.get_meta(
+                             {x = node_pos.x, y = node_pos.y, z = node_pos.z})
+
+            local corner = node:get_string("corner")
+            local corner_pos = minetest.deserialize(corner)
+
+            local corner_node = minetest.get_meta(
+                                    {
+                    x = corner_pos.x,
+                    y = corner_pos.y,
+                    z = corner_pos.z
+                })
+
+            local host_info_string = corner_node:get_string("host")
+            local host_info = minetest.deserialize(host_info_string)
+
             local player = puncher:get_player_name()
-            local file = io.open(self.path)
-            if file == nil then return end
-            local content = file:read("*all")
+            local tcp = socket:tcp()
+            local connection, err = tcp:connect(host_info["host"],
+                                                host_info["port"])
+            if (err ~= nil) then
+                print("dump of error newest .. " .. dump(err))
+                error("Connection error")
+            end
+            local conn = np.attach(tcp, "dievri", "")
+            local f = conn:newfid()
+            print("PATH IS ... " .. self.path)
+            np:walk(conn.rootfid, f, self.path)
+            conn:open(f, 2)
+            local statistics = conn:stat(f)
+            local buf = conn:read(f, 0, statistics.length - 1)
+            local content = tostring(buf)
+            conn:clunk(f)
+            tcp:close()
 
             -- define form to be shown
             local formspec = {

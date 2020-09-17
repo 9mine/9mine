@@ -31,6 +31,13 @@ minetest.register_tool("cdmod:enter", {
     tool_capabilities = {punch_attack_uses = 0, damage_groups = {enter = 1}}
 })
 
+minetest.register_tool("cdmod:read", {
+    desription = "Read file",
+    inventory_image = "cdmod_read.png",
+    wield_image = "cdmod_read.png",
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {read = 1}}
+})
+
 minetest.register_tool("cdmod:wipe", {
     desription = "Wipe platform",
     inventory_image = "cdmod_wipe.png",
