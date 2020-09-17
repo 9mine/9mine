@@ -24,6 +24,17 @@ traceroute = function(host_info, path)
         end
     end
     for k, v in pairs(route) do
-        print(k .. " " .. v)
+       local entity = minetest.add_entity({
+            x = math.random(-15, 15),
+            y = math.random(-15, 15),
+            z = math.random(-15, 15)
+        }, "cdmod:host")
+        entity:set_nametag_attributes({color = "black", text = v})
+        entity:set_armor_groups({immortal = 0})
+        entity:get_luaentity().ip = v
+    end
+
+    for k, v in pairs(route) do
+        
     end
 end
