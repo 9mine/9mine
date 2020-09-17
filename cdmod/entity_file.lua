@@ -51,7 +51,7 @@ minetest.register_entity("cdmod:file", {
             local f = conn:newfid()
             print("PATH IS ... " .. self.path)
             np:walk(conn.rootfid, f, self.path)
-            conn:open(f, 2)
+            conn:open(f, 0)
             local statistics = conn:stat(f)
             local buf = conn:read(f, 0, statistics.length - 1)
             local content = tostring(buf)

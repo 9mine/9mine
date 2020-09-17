@@ -8,16 +8,16 @@ services:
     ports:
       - "30000:30000/udp"
   inferno:
-    image: dievri/inferno-os
+    image: dievri/inferno-os:latest
     networks:
       - minetest-packets
     volumes: 
-      - ./traceroute.txt:/usr/inferno/traceroute.txt
+      - ./traceroute.txt:/usr/inferno-os/usr/inferno/traceroute.txt
     command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
     ports:
       - "31000:31000"
 
 networks:
-  minetest-inferno:
+  minetest-packets:
     name: minetest_packets
     driver: bridge
