@@ -42,7 +42,7 @@ traceroute = function(host_info, path)
     if #space_route > 1 then
         local packet = minetest.add_entity(space_route[1], "cdmod:packet")
         move(space_route[1], space_route[2], packet)
-        minetest.after(1, check_position, space_route, packet, space_route[2],
-                       2, #space_route)
+        minetest.after(0.2, check_position, space_route, packet, space_route[2],
+                       2)
     end
 end
