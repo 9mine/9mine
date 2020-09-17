@@ -5,13 +5,14 @@ minetest.register_on_joinplayer(function(player)
      print(dump(root))
      root:set_nametag_attributes({text = "jsonfs"})
      root:set_armor_groups({immortal = 0})
-     root:get_luaentity().path = "/mnt/jsonfs"
+     root:get_luaentity().path = "."
      root:set_acceleration({x = 0, y = -6, z = 0})
 
     local inventory = player.get_inventory(player)
     inventory:add_item("main", "cdmod:flip")
     inventory:add_item("main", "cdmod:enter")
     inventory:add_item("main", "cdmod:connect")
+    inventory:add_item("main", "cdmod:read")
     inventory:add_item("main", "cdmod:wipe")
     inventory:add_item("main", "cdmod:walk")
     inventory:add_item("main", "cdmod:createdir")
