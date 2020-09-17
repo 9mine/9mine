@@ -4,8 +4,13 @@ check_position = function(route, packet, dest_pos, route_entry)
     local y = dest_pos.y - current_pos.y
     local z = dest_pos.z - current_pos.z
     if math.abs(x) < 1 and math.abs(y) < 1 and math.abs(z) < 1 then
-        if route_entry == #route then return end
+        if route_entry == #route then
+            packet:set_velocity({x = 0, y = 0, z = 0})
+            packet:set_pos(dest_pos)
+            return
+        end
         packet:set_pos(dest_pos)
+
         local pos = dest_pos
         route_entry = route_entry + 1
         dest_pos = route[route_entry]
