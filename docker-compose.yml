@@ -2,20 +2,20 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:jsonfs
+    image: dievri/minetest:server
     networks:
-      - minetest-jsonfs
+      - minetest-inferno
     ports:
       - "30000:30000/udp"
   inferno:
     image: dievri/inferno-os
     networks:
-      - minetest-jsonfs
+      - minetest-inferno
     command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
     ports:
       - "31000:31000"
 
 networks:
-  minetest-jsonfs:
-    name: minetest_jsonfs
+  minetest-inferno:
+    name: minetest_inferno
     driver: bridge
