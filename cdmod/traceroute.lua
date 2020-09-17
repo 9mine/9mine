@@ -23,18 +23,26 @@ traceroute = function(host_info, path)
             table.insert(route, string.match(line, "%d+%.%d+%.%d+%.%d+"))
         end
     end
+    local pos = nil
+    local packet = nil
+    local space_route = {}
     for k, v in pairs(route) do
-       local entity = minetest.add_entity({
-            x = math.random(-15, 15),
-            y = math.random(-15, 15),
-            z = math.random(-15, 15)
-        }, "cdmod:host")
+        local rx = math.random(-15, 15)
+        local ry = math.random(-15, 15)
+        local rz = math.random(-15, 15)
+
+        local entity_pos = {x = rx, y = ry, z = rz}
+        local entity = minetest.add_entity(entity_pos, "cdmod:host")
         entity:set_nametag_attributes({color = "black", text = v})
         entity:set_armor_groups({immortal = 0})
         entity:get_luaentity().ip = v
+        table.insert(space_route, entity_pos)
     end
-
-    for k, v in pairs(route) do
-        
+    print(dump(space_route[1]))
+    if #space_route > 1 then
+        local packet = minetest.add_entity(space_route[1], "cdmod:packet")
+        move(space_route[1], space_route[2], packet)
+        minetest.after(1, check_position, space_route, packet, space_route[2],
+                       2, #space_route)
     end
 end
