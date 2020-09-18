@@ -1,11 +1,5 @@
 minetest.register_on_joinplayer(function(player)
-    local count = 0
-    local spawned = {} 
-    for k, v in pairs(npcf.npcs) do 
-        spawned[v.title.text] = count
-        count = count + 1
-    end
-    minetest.after(2, spawn_npc, spawned, count)
+
     player:set_pos({x = 0, y = 2, z = 0})
 
     local inventory = player.get_inventory(player)

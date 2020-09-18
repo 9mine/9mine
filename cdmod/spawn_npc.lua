@@ -43,3 +43,12 @@ spawn_npc = function(spawned, count)
 end
 
 function table.clone(org) return {table.unpack(org)} end
+
+
+local count = 0
+local spawned = {} 
+for k, v in pairs(npcf.npcs) do 
+    spawned[v.title.text] = count
+    count = count + 1
+end
+minetest.after(2, spawn_npc, spawned, count)
