@@ -1,4 +1,4 @@
-traceroute = function(host_info, path)
+traceroute = function(host_info, path, player)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then error("Connection error: " .. dump(err)) end
@@ -31,16 +31,32 @@ traceroute = function(host_info, path)
         local ry = math.random(-15, 15)
         local rz = math.random(-15, 15)
 
-        local entity_pos = {x = rx, y = ry, z = rz}
-        local entity = minetest.add_entity(entity_pos, "cdmod:host")
+        local e_pos = {x = rx, y = ry, z = rz}
+
+        if pos ~= nil then
+            e_pos = {
+                x = pos.x + e_pos.x,
+                y = pos.y + e_pos.y,
+                z = pos.z + e_pos.z
+            }
+        end
+        local entity = minetest.add_entity(e_pos, "cdmod:host")
         entity:set_nametag_attributes({color = "black", text = v})
         entity:set_armor_groups({immortal = 0})
         entity:get_luaentity().ip = v
-        if pos ~= nil then
-            connect(pos, entity_pos)
+        if pos ~= nil then connect(pos, e_pos) end
+        local size = math.random(4, 10)
+        create_route_platform(e_pos, size, pos)
+        if pos == nil then
+            local corner = {
+                x = e_pos.x - (size / 2) - 3,
+                y = e_pos.y + 3,
+                z = e_pos.z - (size / 2) - 3
+            }
+            player:set_pos(corner)
         end
-        pos = entity_pos
-        table.insert(space_route, entity_pos)
+        pos = e_pos
+        table.insert(space_route, e_pos)
     end
     print(dump(space_route[1]))
     if #space_route > 1 then
