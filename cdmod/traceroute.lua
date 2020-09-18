@@ -38,22 +38,21 @@ traceroute = function(host_info, player)
 
     local pos = nil
     local packet = nil
+    local host = nil
     local space_route = {}
     for k, v in pairs(route) do
         if known_hosts[v] ~= nil then
             table.insert(space_route, known_hosts[v])
         else
-            local rx = math.random(-20, 20)
-            local ry = math.random(-20, 20)
-            local rz = 0
-
-            local host = {x = rx, y = ry, z = rz, t = v}
-
-            if pos ~= nil then
+            if pos == nil then
+                local pp = player:get_pos()
+                print(dump(pp))
+                host = {x = pp.x + 2, y = pp.y, z = 0, t = v}
+            else
                 host = {
-                    x = pos.x + host.x,
-                    y = pos.y + host.y,
-                    z = pos.z,
+                    x = pos.x + math.random(-15, 15),
+                    y = pos.y + math.random(-15, 15),
+                    z = 0,
                     t = v
                 }
             end
@@ -64,6 +63,7 @@ traceroute = function(host_info, player)
     end
 
     if #space_route > 1 then
+        print(space_route[0])
         local packet = minetest.add_entity(space_route[1], "cdmod:packet")
         local entity = minetest.add_entity(space_route[1], "cdmod:host")
         entity:set_nametag_attributes({color = "black", text = space_route[1].t})

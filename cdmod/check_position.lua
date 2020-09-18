@@ -26,6 +26,7 @@ check_position = function(route, packet, dest_pos, route_entry, spawned)
         if route_entry == #route then
             packet:set_velocity({x = 0, y = 0, z = 0})
             packet:set_pos(dest_pos)
+            packet:remove()
             return
         end
         packet:set_pos(dest_pos)

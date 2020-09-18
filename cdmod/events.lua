@@ -14,7 +14,8 @@ minetest.register_on_player_receive_fields(
             local host_info = {
                 type = conn_type,
                 host = conn_host,
-                port = conn_port
+                port = conn_port,
+                path = "/usr/inferno/traceroute.txt"
             }
 
             local tcp = socket:tcp()
