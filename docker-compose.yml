@@ -2,22 +2,23 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:graphroute
+    image: dievri/minetest:${GITHUB_BRANCH}
     networks:
-      - minetest-packets
+      - minetest-network
     ports:
-      - "30000:30000/udp"
+      - "${MINETEST_PORT}:${MINETEST_PORT}/udp"
+    command: --port ${MINETEST_PORT}
   inferno:
     image: dievri/inferno-os:latest
     networks:
-      - minetest-packets
+      - minetest-network
     volumes: 
       - ./traceroute.txt:/usr/inferno-os/usr/inferno/traceroute.txt
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
+    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!${INFERNO_PORT} { export / & };  /dis/sh.dis'
     ports:
-      - "31000:31000"
+      - "${INFERNO_PORT}:${INFERNO_PORT}"
 
 networks:
-  minetest-packets:
-    name: minetest_packets
+  minetest-network:
+    name: minetest_${GITHUB_BRANCH}
     driver: bridge
