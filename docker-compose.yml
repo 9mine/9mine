@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:master
+    image: dievri/minetest:npcs
     networks:
       - minetest-inferno
     ports:
@@ -11,7 +11,7 @@ services:
     image: dievri/inferno-os
     networks:
       - minetest-inferno
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
+    command: sh -c 'ndb/cs; ndb/dns; mkdir users; chmod a+rwx users; listen -A tcp!*!31000 { export / & }; /dis/sh.dis'
     ports:
       - "31000:31000"
 
