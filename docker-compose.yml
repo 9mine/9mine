@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:packets
+    image: dievri/minetest:graphroute
     networks:
       - minetest-packets
     ports:

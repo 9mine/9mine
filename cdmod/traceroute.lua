@@ -36,6 +36,10 @@ traceroute = function(host_info, path)
         entity:set_nametag_attributes({color = "black", text = v})
         entity:set_armor_groups({immortal = 0})
         entity:get_luaentity().ip = v
+        if pos ~= nil then
+            connect(pos, entity_pos)
+        end
+        pos = entity_pos
         table.insert(space_route, entity_pos)
     end
     print(dump(space_route[1]))
