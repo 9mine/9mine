@@ -6,9 +6,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
+      - name: Install Lua
+        run: | 
+          sudo apt-get update --fix-missing && DEBIAN_FRONTEND="noninteractive" apt-get install -y luarocks --no-install-recommends
+          sudo luarocks install luafilesystem
+          sudo luarocks install luacheck
+          
+      - name: Check Lua Files
+        run: luacheck cdmod/*
+
       - name: Docker Layer Caching
         uses: satackey/action-docker-layer-caching@v0.0.8
+        if: ${{ success() }}
 
       - name: build image
         run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
