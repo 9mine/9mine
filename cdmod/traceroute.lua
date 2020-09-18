@@ -1,15 +1,27 @@
-traceroute = function(host_info, path, player, known_hosts)
+traceroute = function(host_info, player)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then error("Connection error: " .. dump(err)) end
     local conn = np.attach(tcp, "dievri", "")
     local f = conn:newfid()
 
-    np:walk(conn.rootfid, f, path)
+    np:walk(conn.rootfid, f, host_info["path"])
     conn:open(f, 0)
     local statistics = conn:stat(f)
-    local buf = conn:read(f, 0, statistics.length - 1)
-    local content = tostring(buf)
+    local READ_BUF_SIZ = 4096
+    local offset = 0
+    local content = nil
+    local data = conn:read(f, offset, READ_BUF_SIZ)
+    content = tostring(data)
+    -- pprint(data)
+    offset = offset + #data
+    while (true) do
+        data = conn:read(f, offset, READ_BUF_SIZ)
+
+        if (data == nil) then break end
+        content = content .. tostring(data)
+        offset = offset + #(tostring(data))
+    end
 
     conn:clunk(f)
     tcp:close()
@@ -33,7 +45,7 @@ traceroute = function(host_info, path, player, known_hosts)
         else
             local rx = math.random(-20, 20)
             local ry = math.random(-20, 20)
-            local rz = math.random(-20, 20)
+            local rz = 0
 
             local host = {x = rx, y = ry, z = rz, t = v}
 
@@ -58,6 +70,7 @@ traceroute = function(host_info, path, player, known_hosts)
         entity:set_armor_groups({immortal = 0})
         entity:get_luaentity().ip = space_route[1].t
         move(space_route[1], space_route[2], packet)
-        minetest.after(0.1, check_position, space_route, packet, space_route[2], 2, nil)
+        minetest.after(0.1, check_position, space_route, packet, space_route[2],
+                       2, nil)
     end
 end

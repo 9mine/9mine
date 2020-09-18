@@ -2,7 +2,8 @@ minetest.register_tool("cdmod:trace", {
     desription = "Trace route",
     inventory_image = "cdmod_trace.png",
     wield_image = "cdmod_trace.png",
-    tool_capabilities = {punch_attack_uses = 0, damage_groups = {trace = 1}}
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {trace = 1}},
+
 })
 
 minetest.register_tool("cdmod:connect", {
