@@ -31,29 +31,10 @@ traceroute = function(host_info, path, player)
         local ry = math.random(-15, 15)
         local rz = math.random(-15, 15)
 
-        local e_pos = {x = rx, y = ry, z = rz}
+        local e_pos = {x = rx, y = ry, z = rz, t = v}
 
         if pos ~= nil then
-            e_pos = {
-                x = pos.x + e_pos.x,
-                y = pos.y + e_pos.y,
-                z = pos.z + e_pos.z
-            }
-        end
-        local entity = minetest.add_entity(e_pos, "cdmod:host")
-        entity:set_nametag_attributes({color = "black", text = v})
-        entity:set_armor_groups({immortal = 0})
-        entity:get_luaentity().ip = v
-        if pos ~= nil then connect(pos, e_pos) end
-        local size = math.random(4, 10)
-        create_route_platform(e_pos, size, pos)
-        if pos == nil then
-            local corner = {
-                x = e_pos.x - (size / 2) - 3,
-                y = e_pos.y + 3,
-                z = e_pos.z - (size / 2) - 3
-            }
-            player:set_pos(corner)
+            e_pos = {x = pos.x + e_pos.x, y = pos.y + e_pos.y, z = pos.z, t = v}
         end
         pos = e_pos
         table.insert(space_route, e_pos)
@@ -61,8 +42,12 @@ traceroute = function(host_info, path, player)
     print(dump(space_route[1]))
     if #space_route > 1 then
         local packet = minetest.add_entity(space_route[1], "cdmod:packet")
+        local entity = minetest.add_entity(space_route[1], "cdmod:host")
+        entity:set_nametag_attributes({color = "black", text = space_route[1].t})
+        entity:set_armor_groups({immortal = 0})
+        entity:get_luaentity().ip = space_route[1].t
         move(space_route[1], space_route[2], packet)
-        minetest.after(0.2, check_position, space_route, packet, space_route[2],
+        minetest.after(0.1, check_position, space_route, packet, space_route[2],
                        2)
     end
 end

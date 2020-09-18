@@ -9,6 +9,7 @@ minetest.register_entity("cdmod:packet", {
             "cdmod_packet.png", "cdmod_packet.png", "cdmod_packet.png"
         },
         spritediv = {x = 1, y = 1},
+        visual_size = {x = 2, y = 2, z = 2},
         initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true,
         makes_footstep_sound = false,
