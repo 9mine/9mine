@@ -36,33 +36,4 @@ minetest.register_on_player_receive_fields(
                             math.floor(math.random(p.z, p.z + d.z * 10)), size,
                             "h", root_dir, host_info)
         end
-
-        if formname == "cdmod:createdir" then
-            print("You will create something soon")
-            if (fields["dirname"] == nil) then end
-            local dir = fields["dirname"]
-            print(dir)
-            local tcp = socket:tcp()
-            local connection, err = tcp:connect("inferno", 31000)
-            if (err ~= nil) then
-                print("dump of error newest .. " .. dump(err))
-                print("Connection error")
-                return
-            end
-            local conn = np.attach(tcp, "dievri", "")
-
-            local f, g = conn:newfid(), conn:newfid()
-
-            conn:walk(conn.rootfid, f, "/users")
-            conn:clone(f, g)
-
-            conn:create(g, dir, 420, 31)
-
-            conn:clunk(g)
-
-            conn:walk(conn.rootfid, g, "/users/" .. dir)
-            conn:open(g, 0)
-
-            tcp:close()
-        end
     end)

@@ -33,19 +33,3 @@ minetest.register_entity("cdmod:host", {
         end
     end
 })
-
-minetest.register_node("cdmod:host", {
-    drawtype = "glasslike",
-    visual_scale = 1.0,
-    tiles = {
-        "cdmod_router.png", "cdmod_router.png", "cdmod_router.png",
-        "cdmod_router.png", "cdmod_router.png", "cdmod_router.png"
-    },
-    use_texture_alpha = false,
-    sunlight_propagates = false,
-    walkable = true,
-    pointable = true,
-    diggable = true,
-    node_box = {type = "regular"}
-})
-

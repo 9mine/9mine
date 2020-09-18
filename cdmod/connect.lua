@@ -5,7 +5,7 @@ connect = function(p1, p2)
     local x2 = p2.x
     local y2 = p2.y
     local z2 = p2.z
-    local distance = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 1)
+    local distance = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 2)
     local step = 1 / (distance * 2)
     local p = step
     while p < 1 do

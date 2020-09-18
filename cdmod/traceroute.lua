@@ -1,4 +1,4 @@
-traceroute = function(host_info, path, player)
+traceroute = function(host_info, path, player, known_hosts)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then error("Connection error: " .. dump(err)) end
@@ -23,23 +23,34 @@ traceroute = function(host_info, path, player)
             table.insert(route, string.match(line, "%d+%.%d+%.%d+%.%d+"))
         end
     end
+
     local pos = nil
     local packet = nil
     local space_route = {}
     for k, v in pairs(route) do
-        local rx = math.random(-15, 15)
-        local ry = math.random(-15, 15)
-        local rz = math.random(-15, 15)
+        if known_hosts[v] ~= nil then
+            table.insert(space_route, known_hosts[v])
+        else
+            local rx = math.random(-20, 20)
+            local ry = math.random(-20, 20)
+            local rz = math.random(-20, 20)
 
-        local e_pos = {x = rx, y = ry, z = rz, t = v}
+            local host = {x = rx, y = ry, z = rz, t = v}
 
-        if pos ~= nil then
-            e_pos = {x = pos.x + e_pos.x, y = pos.y + e_pos.y, z = pos.z, t = v}
+            if pos ~= nil then
+                host = {
+                    x = pos.x + host.x,
+                    y = pos.y + host.y,
+                    z = pos.z,
+                    t = v
+                }
+            end
+            pos = host
+            table.insert(space_route, host)
+            known_hosts[v] = host
         end
-        pos = e_pos
-        table.insert(space_route, e_pos)
     end
-    print(dump(space_route[1]))
+
     if #space_route > 1 then
         local packet = minetest.add_entity(space_route[1], "cdmod:packet")
         local entity = minetest.add_entity(space_route[1], "cdmod:host")
@@ -47,7 +58,6 @@ traceroute = function(host_info, path, player)
         entity:set_armor_groups({immortal = 0})
         entity:get_luaentity().ip = space_route[1].t
         move(space_route[1], space_route[2], packet)
-        minetest.after(0.1, check_position, space_route, packet, space_route[2],
-                       2)
+        minetest.after(0.1, check_position, space_route, packet, space_route[2], 2, nil)
     end
 end
