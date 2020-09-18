@@ -7,18 +7,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Lua
-        run: | 
-          sudo apt-get install -y luarocks --no-install-recommends
-          sudo luarocks install luafilesystem
-          sudo luarocks install luacheck
+      # - name: Install Lua
+      #   run: | 
+      #     sudo apt-get install -y luarocks --no-install-recommends
+      #     sudo luarocks install luafilesystem
+      #     sudo luarocks install luacheck
 
-      - name: Check Lua Files
-        run: luacheck cdmod/*
+      # - name: Check Lua Files
+      #   run: luacheck cdmod/*
 
       - name: Docker Layer Caching
         uses: satackey/action-docker-layer-caching@v0.0.8
-        if: ${{ success() }}
+        # if: ${{ success() }}
 
       - name: build image
         run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
