@@ -3,7 +3,6 @@ minetest.register_tool("cdmod:trace", {
     inventory_image = "cdmod_trace.png",
     wield_image = "cdmod_trace.png",
     tool_capabilities = {punch_attack_uses = 0, damage_groups = {trace = 1}}
-
 })
 
 minetest.register_tool("cdmod:connect", {
@@ -14,7 +13,6 @@ minetest.register_tool("cdmod:connect", {
 
     on_use = function(itemstack, player, pointed_thing)
         local player_name = player:get_player_name()
-
         local formspec = {
             "formspec_version[3]", "size[10,3,false]",
             "field[0.5,0.5;9,1;conn_string;Enter connection string;]",
@@ -22,15 +20,12 @@ minetest.register_tool("cdmod:connect", {
         }
         local form = table.concat(formspec, "")
         minetest.show_formspec(player_name, "cdmod:connect", form)
-
     end
 })
-
 
 minetest.register_tool("cdmod:write", {
     desription = "Write to file",
     inventory_image = "cdmod_write.png",
     wield_image = "cdmod_write.png",
-    tool_capabilities = {punch_attack_uses = 0, damage_groups = {write = 1}},
-
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {write = 1}}
 })

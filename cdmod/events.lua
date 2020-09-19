@@ -44,7 +44,7 @@ minetest.register_on_player_receive_fields(
             local host = fields["host"]
             local port = fields["port"]
             local path = fields["path"]
-            print(cmd .. " " host .. " " .. port .. " " .. path)
+            print(cmd .. " " .. host .. " " .. port .. " " .. path)
 
             local tcp = socket:tcp()
             local connection, err = tcp:connect(host, port)
@@ -53,8 +53,36 @@ minetest.register_on_player_receive_fields(
                 print("Connection error")
                 return
             end
+
+            local conn = np.attach(tcp, "dievri", "")
+
+            local g = conn:newfid(), conn:newfid()
+
+            conn:walk(conn.rootfid, g, "/cmd")
+            conn:open(g, 1)  
+
+            local ftext = cmd
+            local buf = data.new(ftext)
+
+            local n = conn:write(g, 0, buf)
+            if n ~= #buf then
+                error(
+                    "test: expected to write " .. #buf .. " bytes but wrote " ..
+                        n)
+            end
+
+            conn:clunk(g)
+
             tcp:close()
-           
+            local host_info = {
+                type = "tcp",
+                host = host,
+                port = port,
+                path = "/cmd"
+            }
+
+            traceroute(host_info, player)
+
         end
 
     end)
