@@ -1,14 +1,10 @@
 check_position = function(route, packet, dest_pos, route_entry, spawned)
     if spawned == nil then
         local hsp = move(route[route_entry - 1], dest_pos, nil);
-        print("host spawning point ... " .. dump(hsp))
         local current_pos = packet:get_pos()
-        print("current position ... " .. dump(current_pos))
-        local x = hsp.x - current_pos.x
-        local y = hsp.y - current_pos.y
-        local z = hsp.z - current_pos.z
-        
-        if math.abs(x) < 2 and math.abs(y) < 2 and math.abs(z) < 2 then
+        local distance = vector.distance(current_pos, hsp)
+
+        if distance < 2 then
             local entity = minetest.add_entity(route[route_entry], "cdmod:host")
             entity:set_nametag_attributes(
                 {color = "black", text = route[route_entry].t})
@@ -19,10 +15,13 @@ check_position = function(route, packet, dest_pos, route_entry, spawned)
     end
 
     local current_pos = packet:get_pos()
-    local x = dest_pos.x - current_pos.x
-    local y = dest_pos.y - current_pos.y
-    local z = dest_pos.z - current_pos.z
-    if math.abs(x) < 1 and math.abs(y) < 1 and math.abs(z) < 1 then
+    local distance = vector.distance(dest_pos, current_pos)
+    if distance > 50 then
+        packet:remove()
+        return
+    end
+
+    if distance < 2 then
         if route_entry == #route then
             packet:set_velocity({x = 0, y = 0, z = 0})
             packet:set_pos(dest_pos)

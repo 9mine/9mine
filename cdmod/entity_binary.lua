@@ -26,7 +26,6 @@ minetest.register_entity("cdmod:binary", {
                 port = self.port,
                 path = self.path
             }
-            print("PATH IN ENTITY_BINARY " .. host_info["path"])
             traceroute(host_info, puncher)
         end
     end,

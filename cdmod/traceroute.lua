@@ -46,12 +46,11 @@ traceroute = function(host_info, player)
         else
             if pos == nil then
                 local pp = player:get_pos()
-                print(dump(pp))
                 host = {x = pp.x + 2, y = pp.y, z = 0, t = v}
             else
                 host = {
-                    x = pos.x + math.random(-15, 15),
-                    y = pos.y + math.random(-15, 15),
+                    x = pos.x + math.random(-20, 20),
+                    y = pos.y + math.random(-20, 20),
                     z = 0,
                     t = v
                 }
