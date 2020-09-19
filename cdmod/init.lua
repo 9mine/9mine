@@ -5,6 +5,7 @@ socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
 local path = minetest.get_modpath("cdmod")
+dofile(path .. "/spawn_entity.lua")
 dofile(path .. "/read_routes.lua")
 dofile(path .. "/spawn_instance.lua")
 dofile(path .. "/entity_binary.lua")
