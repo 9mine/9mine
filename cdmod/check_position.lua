@@ -25,7 +25,7 @@ check_position = function(route, packet, origin_pos, dest_pos, direction, ip,
             packet:remove()
             return
         end
-        
+
         packet:set_pos(dest_pos)
         local p, ip, direction = get_next_point(route, direction, dest_pos,
                                                 player)

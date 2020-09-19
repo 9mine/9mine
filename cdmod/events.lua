@@ -1,8 +1,11 @@
 minetest.register_on_player_receive_fields(
     function(player, formname, fields)
         if formname == "cdmod:connect" then
-            if (fields["conn_string"] == nil) then end
+            if (fields["conn_string"] == nil) then
+                return
+            end
             local conn_string = fields["conn_string"]
+
             local t = {}
             for str in string.gmatch(conn_string, "[^!]+") do
                 table.insert(t, str)
@@ -17,6 +20,9 @@ minetest.register_on_player_receive_fields(
                 port = conn_port,
                 path = "/cmd"
             }
+            if conn_host == nil then 
+                return
+            end
 
             local tcp = socket:tcp()
             local connection, err = tcp:connect(conn_host, conn_port)
@@ -59,7 +65,7 @@ minetest.register_on_player_receive_fields(
             local g = conn:newfid(), conn:newfid()
 
             conn:walk(conn.rootfid, g, "/cmd")
-            conn:open(g, 1)  
+            conn:open(g, 1)
 
             local ftext = cmd
             local buf = data.new(ftext)
@@ -81,7 +87,7 @@ minetest.register_on_player_receive_fields(
                 path = "/cmd"
             }
 
-            traceroute(host_info, player)
+            -- traceroute(host_info, player)
 
         end
 

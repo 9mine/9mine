@@ -19,7 +19,7 @@ read_routes = function(host_info)
     if data ~= nil then
         offset = offset + #data
     end
-    for i = 1, 1, 10 do
+    for i = 1, 1, 2 do
         data = conn:read(f, offset, READ_BUF_SIZ)
 
         if (data == nil) then break end

@@ -15,7 +15,7 @@ get_next_point = function(route, direction, current_pos, player)
                 return pp, ip, direction
             else
                 local v_zero = vector.new(0, 0, 0)
-                local next_hop = math.random(5, 20)
+                local next_hop = math.random(5, 13)
                 local pp = vector.add(current_pos, vector.multiply(
                                           vector.add(v_zero, next_hop),
                                           direction))
