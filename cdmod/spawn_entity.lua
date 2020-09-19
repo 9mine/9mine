@@ -7,8 +7,6 @@ spawn_entity = function(p, ip, name, color)
         return entity
     end
     if name == "cdmod:packet" then
-        -- [colorize:<color>:<ratio>
-        print("Color in entity adding " .. color)
         local packet =  minetest.add_entity(p, "cdmod:packet")
         packet:set_properties({
                 textures = {

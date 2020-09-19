@@ -6,7 +6,6 @@ traceroute = function(host_info, player)
 
     if #route > 1 then
         local pp, ip, direction = get_next_point(route, nil, nil, player)
-        print("passing color " .. color)
         local packet = spawn_entity(pp, nil, "cdmod:packet", color)
         spawn_entity(pp, ip, "cdmod:host")
         known_hosts[ip] = pp

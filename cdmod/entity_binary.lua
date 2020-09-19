@@ -28,7 +28,6 @@ minetest.register_entity("cdmod:binary", {
                 path = self.path,
                 color = self.color
             }
-            print("host_info dump in entity file: " .. dump(host_info))
             traceroute(host_info, puncher)
         end
 

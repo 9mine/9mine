@@ -1,9 +1,7 @@
 minetest.register_on_player_receive_fields(
     function(player, formname, fields)
         if formname == "cdmod:connect" then
-            if (fields["conn_string"] == nil) then
-                return
-            end
+            if (fields["conn_string"] == nil) then return end
             local conn_string = fields["conn_string"]
 
             local t = {}
@@ -20,17 +18,11 @@ minetest.register_on_player_receive_fields(
                 port = conn_port,
                 path = "/cmd"
             }
-            if conn_host == nil then 
-                return
-            end
-            local color = {
-                "red", "green", "blue", "yellow", "black"
-            }
-            print("conn_host is:" .. conn_host)
+            if conn_host == nil then return end
+            local color = {"red", "green", "blue", "yellow", "black"}
             host_colors[conn_host] = color[math.random(#color)]
             host_info["color"] = host_colors[conn_host]
 
-            print("host_colors are " .. dump(host_colors))
             local tcp = socket:tcp()
             local connection, err = tcp:connect(conn_host, conn_port)
             if (err ~= nil) then
@@ -58,7 +50,6 @@ minetest.register_on_player_receive_fields(
             local port = fields["port"]
             local path = fields["path"]
             local color = fields["color"]
-
 
             local tcp = socket:tcp()
             local connection, err = tcp:connect(host, port)
