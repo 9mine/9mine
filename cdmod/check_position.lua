@@ -1,6 +1,5 @@
 check_position = function(route, packet, origin_pos, dest_pos, direction,
                           player, ip, spawned)
-    print("ip in check position ..." .. ip)
     if spawned == nil then
         local hsp = move(origin_pos, dest_pos, nil);
         local current_pos = packet:get_pos()
@@ -21,7 +20,6 @@ check_position = function(route, packet, origin_pos, dest_pos, direction,
 
     if d >= dd then
         if next(route) == nil then
-            print("route is nil")
             packet:remove()
             return
         end
@@ -34,7 +32,7 @@ check_position = function(route, packet, origin_pos, dest_pos, direction,
                        direction, player, ip, spawned)
     else
         minetest.after(0.1, check_position, route, packet, origin_pos, dest_pos,
-                       direction,  player, ip, spawned)
+                       direction, player, ip, spawned)
 
     end
 

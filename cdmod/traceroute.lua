@@ -11,7 +11,6 @@ traceroute = function(host_info, player)
         known_hosts[ip] = pp
         local next_pp, ip, direction = get_next_point(route, direction, pp, player)
         move(pp, next_pp, packet)
-        print("in tarceroute the ip is .." .. ip)
         minetest.after(0.1, check_position, route, packet, pp, next_pp,
                        direction, player, ip, nil)
     end
@@ -19,7 +18,6 @@ end
 
 get_next_point = function(route, direction, current_pos, player)
     if next(route) ~= nil then
-        print("get next point ... " .. dump(route[1]))
         local ip = route[1]
         table.remove(route, 1)
         if known_hosts[ip] ~= nil then
@@ -30,11 +28,12 @@ get_next_point = function(route, direction, current_pos, player)
                 local pp = player:get_pos()
                 pp.x = pp.x + pp.x * direction.x
                 pp.y = pp.y + pp.y * direction.x
+                pp.z = 0
                 known_hosts[ip] = pp
                 return pp, ip, direction
             else
                 local v_zero = vector.new(0, 0, 0)
-                local next_hop = math.random(10, 15)
+                local next_hop = math.random(5, 20)
                 local pp = vector.add(current_pos, vector.multiply(
                     vector.add(v_zero, next_hop),
                     direction))
