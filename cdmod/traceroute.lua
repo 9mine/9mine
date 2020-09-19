@@ -9,39 +9,10 @@ traceroute = function(host_info, player)
         local packet = spawn_entity(pp, nil, "cdmod:packet")
         spawn_entity(pp, ip, "cdmod:host")
         known_hosts[ip] = pp
-        local next_pp, ip, direction = get_next_point(route, direction, pp, player)
+        local next_pp, ip, direction = get_next_point(route, direction, pp,
+                                                      player)
         move(pp, next_pp, packet)
         minetest.after(0.1, check_position, route, packet, pp, next_pp,
                        direction, ip, player, nil)
-    end
-end
-
-get_next_point = function(route, direction, current_pos, player)
-    if next(route) ~= nil then
-        local ip = route[1]
-        table.remove(route, 1)
-        if known_hosts[ip] ~= nil then
-            return known_hosts[ip], ip, direction
-        else
-            if direction == nil then
-                local direction = {x = math.random(), y = math.random(), z = 0}
-                local pp = player:get_pos()
-                pp.x = pp.x + pp.x * direction.x
-                pp.y = pp.y + pp.y * direction.x
-                pp.z = 0
-                known_hosts[ip] = pp
-                return pp, ip, direction
-            else
-                local v_zero = vector.new(0, 0, 0)
-                local next_hop = math.random(5, 20)
-                local pp = vector.add(current_pos, vector.multiply(
-                    vector.add(v_zero, next_hop),
-                    direction))
-                known_hosts[ip] = pp
-                return pp, ip, direction
-            end
-        end
-    else
-        return nil
     end
 end

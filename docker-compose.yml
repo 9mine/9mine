@@ -21,6 +21,18 @@ services:
     stdin_open: true
     tty: true
 
+  inferno2:
+    image: dievri/inferno-os:latest
+    networks:
+      - minetest-network
+    volumes:
+      - ./traceroute2.txt:/usr/inferno-os/usr/inferno/traceroute.txt
+    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!${INFERNO2_PORT} { export / & };'
+    ports:
+      - "${INFERNO2_PORT}:${INFERNO2_PORT}"
+    stdin_open: true
+    tty: true
+
 networks:
   minetest-network:
     name: minetest_${GITHUB_BRANCH}
