@@ -9,13 +9,13 @@ get_next_point = function(route, direction, current_pos, player)
                 local direction = {x = math.random(), y = math.random(), z = 0}
                 local pp = player:get_pos()
                 pp.x = pp.x + pp.x * direction.x
-                pp.y = pp.y + pp.y * direction.x
+                pp.y = pp.y + pp.y * direction.y
                 pp.z = 0
                 known_hosts[ip] = pp
                 return pp, ip, direction
             else
                 local v_zero = vector.new(0, 0, 0)
-                local next_hop = math.random(5, 13)
+                local next_hop = math.random(5, 15)
                 local pp = vector.add(current_pos, vector.multiply(
                                           vector.add(v_zero, next_hop),
                                           direction))

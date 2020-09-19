@@ -8,28 +8,12 @@ services:
     ports:
       - "${MINETEST_PORT}:${MINETEST_PORT}/udp"
     command: --port ${MINETEST_PORT}
-
   inferno:
-    image: dievri/inferno-os:latest
+    image: dievri/inferno-os:traceroute
     networks:
       - minetest-network
-    volumes:
-      - ./traceroute.txt:/usr/inferno-os/usr/inferno/traceroute.txt
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!${INFERNO_PORT} { export / & };'
     ports:
       - "${INFERNO_PORT}:${INFERNO_PORT}"
-    stdin_open: true
-    tty: true
-
-  inferno2:
-    image: dievri/inferno-os:latest
-    networks:
-      - minetest-network
-    volumes:
-      - ./traceroute2.txt:/usr/inferno-os/usr/inferno/traceroute.txt
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!${INFERNO2_PORT} { export / & };'
-    ports:
-      - "${INFERNO2_PORT}:${INFERNO2_PORT}"
     stdin_open: true
     tty: true
 

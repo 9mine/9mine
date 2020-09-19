@@ -28,6 +28,8 @@ minetest.register_on_player_receive_fields(
             }
             print("conn_host is:" .. conn_host)
             host_colors[conn_host] = color[math.random(#color)]
+            host_info["color"] = host_colors[conn_host]
+
             print("host_colors are " .. dump(host_colors))
             local tcp = socket:tcp()
             local connection, err = tcp:connect(conn_host, conn_port)
@@ -55,7 +57,8 @@ minetest.register_on_player_receive_fields(
             local host = fields["host"]
             local port = fields["port"]
             local path = fields["path"]
-            print(cmd .. " " .. host .. " " .. port .. " " .. path)
+            local color = fields["color"]
+
 
             local tcp = socket:tcp()
             local connection, err = tcp:connect(host, port)
@@ -89,7 +92,8 @@ minetest.register_on_player_receive_fields(
                 type = "tcp",
                 host = host,
                 port = port,
-                path = "/cmd"
+                path = "/cmd",
+                color = color
             }
 
             -- traceroute(host_info, player)
