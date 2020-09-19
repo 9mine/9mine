@@ -15,7 +15,7 @@ minetest.register_on_player_receive_fields(
                 type = conn_type,
                 host = conn_host,
                 port = conn_port,
-                path = "/usr/inferno/traceroute.txt"
+                path = "/cmd"
             }
 
             local tcp = socket:tcp()
@@ -37,4 +37,24 @@ minetest.register_on_player_receive_fields(
             create_platform(pos, size)
             spawn_instance(pos, size, host_info)
         end
+
+        if formname == "cdmod:write" then
+            if (fields["cmd"] == nil) then end
+            local cmd = fields["cmd"]
+            local host = fields["host"]
+            local port = fields["port"]
+            local path = fields["path"]
+            print(cmd .. " " host .. " " .. port .. " " .. path)
+
+            local tcp = socket:tcp()
+            local connection, err = tcp:connect(host, port)
+            if (err ~= nil) then
+                print("dump of error newest .. " .. dump(err))
+                print("Connection error")
+                return
+            end
+            tcp:close()
+           
+        end
+
     end)

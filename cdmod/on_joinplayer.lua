@@ -3,7 +3,7 @@ minetest.register_on_joinplayer(function(player)
         type = "tcp",
         host = "inferno",
         port = 31000,
-        path = "/usr/inferno/traceroute.txt"
+        path = "/tmp/remote/cmd"
     }
     local host_info2 = {
         type = "tcp",
@@ -21,7 +21,7 @@ minetest.register_on_joinplayer(function(player)
     local inventory = player.get_inventory(player)
     inventory:add_item("main", "cdmod:trace")
     inventory:add_item("main", "cdmod:connect")
-
+    inventory:add_item("main", "cdmod:write")
 end)
 
 minetest.register_on_generated(function(minp, maxp, blockseed)

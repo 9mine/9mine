@@ -5,7 +5,7 @@ read_routes = function(host_info)
     if (err ~= nil) then error("Connection error: " .. dump(err)) end
     local conn = np.attach(tcp, "dievri", "")
     local f = conn:newfid()
-
+    print("walking to new file")
     np:walk(conn.rootfid, f, host_info["path"])
     conn:open(f, 0)
     local statistics = conn:stat(f)
@@ -16,7 +16,7 @@ read_routes = function(host_info)
     content = tostring(data)
     -- pprint(data)
     offset = offset + #data
-    while (true) do
+    for i = 1, 1, 10 do
         data = conn:read(f, offset, READ_BUF_SIZ)
 
         if (data == nil) then break end

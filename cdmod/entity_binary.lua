@@ -26,8 +26,28 @@ minetest.register_entity("cdmod:binary", {
                 port = self.port,
                 path = self.path
             }
+            print("host_info dump in entity file: " .. dump(host_info))
             traceroute(host_info, puncher)
         end
+
+        if tool_capabilities.damage_groups.write == 1 then
+            local player_name = puncher:get_player_name()
+            local host = self.host
+            local port = self.port
+            local path = self.path
+            local formspec = {
+                "formspec_version[3]", "size[10,3,false]",
+                "field[0.0,0.0;0,0;host;enter host;" .. host .. "]",
+                "field[0.0,0.0;0,0;port;enter port;" .. port .. "]",
+                "field[0.0,0.0;0,0;path;enter path;" .. path .. "]",
+                "field[0.5,0.5;9,1;cmd;Enter command string;]",
+                "button_exit[7,1.8;2.5,0.9;write;write]"
+            }
+            local form = table.concat(formspec, "")
+            minetest.show_formspec(player_name, "cdmod:write", form)
+
+        end
+
     end,
 
     get_staticdata = function(self)

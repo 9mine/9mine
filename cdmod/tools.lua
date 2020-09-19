@@ -25,3 +25,12 @@ minetest.register_tool("cdmod:connect", {
 
     end
 })
+
+
+minetest.register_tool("cdmod:write", {
+    desription = "Write to file",
+    inventory_image = "cdmod_write.png",
+    wield_image = "cdmod_write.png",
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {write = 1}},
+
+})
