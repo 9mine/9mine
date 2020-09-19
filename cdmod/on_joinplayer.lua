@@ -5,8 +5,15 @@ minetest.register_on_joinplayer(function(player)
         port = 31000,
         path = "/usr/inferno/traceroute.txt"
     }
+    local host_info2 = {
+        type = "tcp",
+        host = "inferno2",
+        port = 32000,
+        path = "usr/inferno/traceroute.txt"
+    }
     print("visualizing traceroute")
     spawn_instance({x = 0, y = 0, z = 0}, 10, host_info)
+    spawn_instance({x = 0, y = 0, z = 0}, 10, host_info2)
     player:set_pos({x = 0, y = 2, z = 0})
 
     local inventory = player.get_inventory(player)
