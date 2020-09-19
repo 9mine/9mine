@@ -5,6 +5,7 @@ socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
 local path = minetest.get_modpath("cdmod")
+dofile(path .. "/next_point.lua")
 dofile(path .. "/spawn_entity.lua")
 dofile(path .. "/read_routes.lua")
 dofile(path .. "/spawn_instance.lua")
@@ -21,3 +22,4 @@ dofile(path .. "/on_joinplayer.lua")
 dofile(path .. "/connect.lua")
 dofile(path .. "/graph_edge.lua")
 dofile(path .. "/move.lua")
+

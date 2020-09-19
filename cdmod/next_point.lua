@@ -1,21 +1,3 @@
-traceroute = function(host_info, player)
-    local route = read_routes(host_info)
-    local pos = nil
-    local packet = nil
-    local host = nil
-
-    if #route > 1 then
-        local pp, ip, direction = get_next_point(route, nil, nil, player)
-        local packet = spawn_entity(pp, nil, "cdmod:packet")
-        spawn_entity(pp, ip, "cdmod:host")
-        known_hosts[ip] = pp
-        local next_pp, ip, direction = get_next_point(route, direction, pp, player)
-        move(pp, next_pp, packet)
-        minetest.after(0.1, check_position, route, packet, pp, next_pp,
-                       direction, ip, player, nil)
-    end
-end
-
 get_next_point = function(route, direction, current_pos, player)
     if next(route) ~= nil then
         local ip = route[1]
@@ -35,8 +17,8 @@ get_next_point = function(route, direction, current_pos, player)
                 local v_zero = vector.new(0, 0, 0)
                 local next_hop = math.random(5, 20)
                 local pp = vector.add(current_pos, vector.multiply(
-                    vector.add(v_zero, next_hop),
-                    direction))
+                                          vector.add(v_zero, next_hop),
+                                          direction))
                 known_hosts[ip] = pp
                 return pp, ip, direction
             end

@@ -17,4 +17,4 @@ Inside inferno container `traceroute.txt` located at `/usr/inferno/traceroute.tx
 Minetest server working on port `:${MINETEST_PORT}/udp`.
 
 To explore InfernoOS file system use `connect` tool from inventory and the enter following string:
-`tcp!inferno!{$INFERNO_PORT`
+`tcp!inferno!{$INFERNO_PORT}`

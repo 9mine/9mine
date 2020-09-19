@@ -1,5 +1,6 @@
-check_position = function(route, packet, origin_pos, dest_pos, direction,
-                          player, ip, spawned)
+check_position = function(route, packet, origin_pos, dest_pos, direction, ip,
+                          player, spawned)
+    -- if host is not spawned, check if distance from original position is enough
     if spawned == nil then
         local hsp = move(origin_pos, dest_pos, nil);
         local current_pos = packet:get_pos()
@@ -12,6 +13,7 @@ check_position = function(route, packet, origin_pos, dest_pos, direction,
         end
     end
 
+    -- check if distance packet made is over 95% from whole distance. If so, proceed to next point
     local current_pos = packet:get_pos()
     local apprx_pos = vector.add(origin_pos, vector.multiply(
                                      vector.subtract(dest_pos, origin_pos), 0.95))
@@ -23,16 +25,17 @@ check_position = function(route, packet, origin_pos, dest_pos, direction,
             packet:remove()
             return
         end
+        
         packet:set_pos(dest_pos)
         local p, ip, direction = get_next_point(route, direction, dest_pos,
                                                 player)
         move(dest_pos, p, packet)
         spawned = nil
         minetest.after(0.1, check_position, route, packet, dest_pos, p,
-                       direction, player, ip, spawned)
+                       direction, ip, player, spawned)
     else
         minetest.after(0.1, check_position, route, packet, origin_pos, dest_pos,
-                       direction, player, ip, spawned)
+                       direction, ip, player, spawned)
 
     end
 
