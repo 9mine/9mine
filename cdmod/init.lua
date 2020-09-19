@@ -1,4 +1,5 @@
 known_hosts = {}
+host_colors = {}
 data = require 'data'
 np = require '9p'
 socket = require 'socket'

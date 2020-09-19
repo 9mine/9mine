@@ -11,4 +11,6 @@ spawn_instance = function(p, size, host_info, text)
     entity:get_luaentity().host = host_info["host"]
     entity:get_luaentity().port = host_info["port"]
     entity:get_luaentity().path = host_info["path"]
+    local color = host_colors[host_info["host"]]
+    entity:get_luaentity().color = color
 end

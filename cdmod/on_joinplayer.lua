@@ -9,9 +9,9 @@ minetest.register_on_joinplayer(function(player)
     print("visualizing traceroute")
     spawn_instance({x = 0, y = 0, z = 0}, 10, host_info, "localhost")
 
-    spawn_instance({x = 0, y = 0, z = 0}, 10, host_info2, "compute1")
+    -- spawn_instance({x = 0, y = 0, z = 0}, 10, host_info2, "compute1")
 
-    spawn_instance({x = 0, y = 0, z = 0}, 10, host_info3, "compute0")
+    -- spawn_instance({x = 0, y = 0, z = 0}, 10, host_info3, "compute0")
 
     player:set_pos({x = 0, y = 2, z = 0})
 

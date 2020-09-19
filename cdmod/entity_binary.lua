@@ -16,6 +16,7 @@ minetest.register_entity("cdmod:binary", {
     host = nil,
     port = nil,
     path = nil,
+    color = nil,
 
     on_punch = function(self, puncher, time_from_last_punch, tool_capabilities,
                         dir)
@@ -24,7 +25,8 @@ minetest.register_entity("cdmod:binary", {
                 type = "tcp",
                 host = self.host,
                 port = self.port,
-                path = self.path
+                path = self.path,
+                color = self.color
             }
             print("host_info dump in entity file: " .. dump(host_info))
             traceroute(host_info, puncher)
@@ -56,7 +58,8 @@ minetest.register_entity("cdmod:binary", {
             attr = attributes,
             path = self.path,
             host = self.host,
-            port = self.port
+            port = self.port,
+            color = self.color
         }
         return minetest.serialize(data)
     end,
@@ -68,6 +71,7 @@ minetest.register_entity("cdmod:binary", {
             self.path = data.path
             self.port = data.port
             self.host = data.host
+            self.color = data.color
         end
     end
 })

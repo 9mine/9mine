@@ -23,7 +23,12 @@ minetest.register_on_player_receive_fields(
             if conn_host == nil then 
                 return
             end
-
+            local color = {
+                "red", "green", "blue", "yellow", "black"
+            }
+            print("conn_host is:" .. conn_host)
+            host_colors[conn_host] = color[math.random(#color)]
+            print("host_colors are " .. dump(host_colors))
             local tcp = socket:tcp()
             local connection, err = tcp:connect(conn_host, conn_port)
             if (err ~= nil) then
