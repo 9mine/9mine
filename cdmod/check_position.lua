@@ -1,11 +1,12 @@
 check_position = function(route, packet, dest_pos, route_entry, spawned)
+    local prev = route[route_entry - 1]
     if spawned == nil then
-        local hsp = move(route[route_entry - 1], dest_pos, nil);
+        local hsp = move(prev, dest_pos, nil);
         local current_pos = packet:get_pos()
-        local desired_distance = vector.distance(route[route_entry - 1], hsp)
-        local distance = vector.distance(route[route_entry - 1], current_pos)
-        
-        if distance >= desired_distance then
+        local dd = vector.distance(prev, hsp)
+        local d = vector.distance(prev, current_pos)
+
+        if d >= dd then
             local entity = minetest.add_entity(route[route_entry], "cdmod:host")
             entity:set_nametag_attributes(
                 {color = "black", text = route[route_entry].t})
@@ -16,11 +17,12 @@ check_position = function(route, packet, dest_pos, route_entry, spawned)
     end
 
     local current_pos = packet:get_pos()
-    local apprx_pos =  vector.add(route[route_entry - 1], vector.multiply(vector.subtract(dest_pos, route[route_entry - 1]), 0.95))
-    local desired_distance = vector.distance(route[route_entry - 1], apprx_pos)
-    local distance = vector.distance(route[route_entry - 1], current_pos)
+    local apprx_pos = vector.add(prev, vector.multiply(
+                                     vector.subtract(dest_pos, prev), 0.95))
+    local dd = vector.distance(prev, apprx_pos)
+    local d = vector.distance(prev, current_pos)
 
-    if distance >= desired_distance then
+    if d >= dd then
         if route_entry == #route then
             packet:set_velocity({x = 0, y = 0, z = 0})
             packet:set_pos(dest_pos)
