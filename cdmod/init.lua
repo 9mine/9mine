@@ -3,6 +3,7 @@ np = require '9p'
 socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
+parted = true
 local path = minetest.get_modpath("cdmod")
 dofile(path .. "/entity_directory.lua")
 dofile(path .. "/entity_file.lua")

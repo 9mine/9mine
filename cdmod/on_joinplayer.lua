@@ -1,4 +1,12 @@
 minetest.register_on_joinplayer(function(player)
+    parted = false
+    local count = 0
+    local spawned = {}
+    for k, v in pairs(npcf.npcs) do
+        spawned[v.title.text] = count
+        count = count + 1
+    end
+    spawn_npc(spawned, count, player)
 
     player:set_pos({x = 0, y = 2, z = 0})
 
@@ -11,6 +19,11 @@ minetest.register_on_joinplayer(function(player)
     inventory:add_item("main", "cdmod:walk")
     inventory:add_item("main", "cdmod:createdir")
 
+end)
+
+minetest.register_on_leaveplayer(function(ObjectRef, timed_out)
+    ObjectRef = nil
+    parted = true
 end)
 
 minetest.register_on_generated(function(minp, maxp, blockseed)

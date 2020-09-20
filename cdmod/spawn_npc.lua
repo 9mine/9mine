@@ -1,5 +1,11 @@
 function table.clone(org) return {table.unpack(org)} end
-spawn_npc = function(spawned, count)
+spawn_npc = function(spawned, count, player)
+    local count = 0
+    local spawned = {}
+    for k, v in pairs(npcf.npcs) do
+        spawned[v.title.text] = count
+        count = count + 1
+    end
     local tcp = socket:tcp()
     local connection, err = tcp:connect("inferno", 31000)
     if (err ~= nil) then print("Connection error: " .. dump(err)) end
@@ -39,16 +45,12 @@ spawn_npc = function(spawned, count)
             npcf:delete(v)
         end
     end
-    minetest.after(2, spawn_npc, spawned, count)
+    if parted then
+        print("Player is gone. Stop recursion")
+    else
+        minetest.after(2, spawn_npc, spawned, count, player)
+    end
 end
 
 function table.clone(org) return {table.unpack(org)} end
 
-
-local count = 0
-local spawned = {} 
-for k, v in pairs(npcf.npcs) do 
-    spawned[v.title.text] = count
-    count = count + 1
-end
-minetest.after(2, spawn_npc, spawned, count)
