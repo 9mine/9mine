@@ -30,8 +30,8 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe m
 RUN apt-get update	
 RUN apt-get install git -y --fix-missing
 ADD minetest.conf /root/.minetest/minetest.conf
-RUN git clone https://github.com/9mine/9mine.git 
-RUN cp -r 9mine/cdmod /usr/share/games/minetest/games/minetest_game/mods/cdmod
+ADD minetest.conf /etc/minetest/minetest.conf
+COPY cdmod /usr/share/games/minetest/games/minetest_game/mods/cdmod
 RUN git clone https://github.com/dievri/minetest-npcf.git
 RUN cp -r minetest-npcf /usr/share/games/minetest/games/minetest_game/mods/
 RUN git clone https://github.com/9mine/npcf_p9.git
