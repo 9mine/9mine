@@ -11,14 +11,16 @@ minetest.register_on_joinplayer(function(player)
     player:set_pos({x = 0, y = 2, z = 0})
 
     local inventory = player.get_inventory(player)
-    inventory:add_item("main", "cdmod:flip")
-    inventory:add_item("main", "cdmod:enter")
-    inventory:add_item("main", "cdmod:connect")
-    inventory:add_item("main", "cdmod:read")
-    inventory:add_item("main", "cdmod:wipe")
-    inventory:add_item("main", "cdmod:walk")
-    inventory:add_item("main", "cdmod:createdir")
-
+    local items = {
+        "cdmod:flip", "cdmod:enter", "cdmod:connect", "cdmod:read",
+        "cdmod:wipe", "cdmod:walk", "cdmod:createdir"
+    }
+    for k, v in pairs(items) do
+        if inventory:contains_item("main", v) then
+        else
+            inventory:add_item("main", v)
+        end
+    end
 end)
 
 minetest.register_on_leaveplayer(function(ObjectRef, timed_out)
