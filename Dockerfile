@@ -1,15 +1,15 @@
-FROM ubuntu:groovy as luadata
+FROM ubuntu:latest as luadata
 RUN apt-get update
 RUN apt-get install -y build-essential
 RUN apt-get install -y git
 RUN git clone https://github.com/lneto/luadata.git
-RUN apt-get install -y lua5.4
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y liblua5.4-dev
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y liblua5.4-0
+RUN apt-get install -y lua5.1
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y liblua5.1-dev
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y liblua5.1-0
 WORKDIR luadata
 RUN apt-get install -y wget
-RUN ln -s /usr/lib/x86_64-linux-gnu/liblua5.4.so /usr/lib/x86_64-linux-gnu/liblua.so 
-RUN wget -c http://www.lua.org/ftp/lua-5.4.0.tar.gz -O - | tar -xz && cp -r lua-5.4.0/src/* .
+RUN wget -c http://www.lua.org/ftp/lua-5.1.1.tar.gz -O - | tar -xz && cp -r lua-5.1.1/src/* .
+RUN ln -s /usr/lib/x86_64-linux-gnu/liblua5.1.so /usr/lib/x86_64-linux-gnu/liblua.so 
 RUN make
 
 FROM ubuntu:latest
@@ -21,8 +21,8 @@ RUN apt-get update --fix-missing && DEBIAN_FRONTEND="noninteractive" apt-get ins
 RUN apt-get install -y gcc --no-install-recommends
 RUN luarocks install luafilesystem
 RUN mkdir /users
-COPY --from=luadata /luadata/data.so /usr/local/lib/lua/
-COPY ./libs/ /usr/local/lib/lua/
+COPY --from=luadata /luadata/data.so /usr/local/lib/lua/5.1
+COPY ./libs/ /usr/share/lua/5.1/
 RUN luarocks install luasocket
 RUN apt-get --purge remove -y gcc
 RUN apt autoremove -y
