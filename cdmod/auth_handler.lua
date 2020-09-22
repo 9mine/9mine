@@ -6,9 +6,8 @@ minetest.register_authentication_handler(
             if username ~= nil and name ~= username then
                 local tcp, conn = np_connect()
                 -- GET PASSWORD HASH FROM LOCAL STORE
-                local password = read_file(conn, "/n/client/users/" .. name ..
-                                               "/password")
-
+                local success, password = pcall(read_file, conn, "/tmp" .. name)
+                if success == nil then return end
                 -- GET AUTHENTICATION INFORMATION
                 write_file(conn, "/tmp/cmdchan/export/cmd",
                            "getauthinfo default auth " .. name .. " " ..
@@ -29,14 +28,18 @@ minetest.register_authentication_handler(
 
         create_auth = function(name, password)
             local tcp, conn = np_connect()
-
+            local success, pass = pcall(read_file, conn, "/tmp/" .. name)
+            if success == false then create_file(conn, "/tmp", name) print("after creating") end
+            write_file(conn, "/tmp/" .. name, pass)
             -- CREATE NEW USER 
-            write_file(conn, "/n/client/tmp/cmdchan/export/newuser", name .. " " .. password)
-            local content = read_file(conn, "/n/client/tmp/cmdchan/export/newuser")
+            write_file(conn, "/n/client/tmp/cmdchan/export/newuser",
+                       name .. " " .. pass)
+            local content = read_file(conn,
+                                      "/n/client/tmp/cmdchan/export/newuser")
             print("content of newuser is " .. content)
-    
-            global_cache = {
-                password = password,
+
+            cache = {
+                password = pass,
                 privileges = get_privileges(),
                 last_login = 1600767360
             }

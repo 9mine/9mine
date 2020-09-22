@@ -29,6 +29,7 @@ read_file = function(connection, path)
     end
     print("content of cmd (for password) is " .. content)
     conn:clunk(p)
+    conn:clunk(conn.rootfid)
     return content
 end
 
@@ -43,6 +44,18 @@ write_file = function(connection, path, content)
         error("test: expected to write " .. #buf .. " bytes but wrote " .. n)
     end
     conn:clunk(f)
+    conn:clunk(conn.rootfid)
+end
+
+create_file = function(connection, parent_path, filename)
+    local conn = connection
+    local f, g = conn:newfid(), conn:newfid()
+    conn:walk(conn.rootfid, f, parent_path)
+    conn:clone(f, g)
+    conn:create(g, filename, 777, 1)
+    conn:clunk(f)
+    conn:clunk(g)
+    conn:clunk(conn.rootfid)
 end
 
 get_privileges = function()
