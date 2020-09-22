@@ -1,4 +1,4 @@
-np_connect = function()
+read_file = function(connection, path)
     local tcp = socket:tcp()
     local connection, err = tcp:connect("getauth", 1917)
     if (err ~= nil) then
@@ -7,11 +7,6 @@ np_connect = function()
         return
     end
     local conn = np.attach(tcp, "dievri", "")
-    return tcp, conn
-end
-
-read_file = function(connection, path)
-    local conn = connection
     local p = conn:newfid()
     np:walk(conn.rootfid, p, path)
     conn:open(p, 0)
@@ -30,11 +25,19 @@ read_file = function(connection, path)
     print("content of cmd (for password) is " .. content)
     conn:clunk(p)
     conn:clunk(conn.rootfid)
+    tcp:close()
     return content
 end
 
 write_file = function(connection, path, content)
-    local conn = connection
+    local tcp = socket:tcp()
+    local connection, err = tcp:connect("getauth", 1917)
+    if (err ~= nil) then
+        print("dump of error newest .. " .. dump(err))
+        print("Connection error")
+        return
+    end
+    local conn = np.attach(tcp, "dievri", "")
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, path)
     conn:open(f, 1)
@@ -45,10 +48,18 @@ write_file = function(connection, path, content)
     end
     conn:clunk(f)
     conn:clunk(conn.rootfid)
+    tcp:close()
 end
 
-create_file = function(connection, parent_path, filename)
-    local conn = connection
+create_file = function(parent_path, filename)
+    local tcp = socket:tcp()
+    local connection, err = tcp:connect("getauth", 1917)
+    if (err ~= nil) then
+        print("dump of error newest .. " .. dump(err))
+        print("Connection error")
+        return
+    end
+    local conn = np.attach(tcp, "dievri", "")
     local f, g = conn:newfid(), conn:newfid()
     conn:walk(conn.rootfid, f, parent_path)
     conn:clone(f, g)
@@ -56,6 +67,7 @@ create_file = function(connection, parent_path, filename)
     conn:clunk(f)
     conn:clunk(g)
     conn:clunk(conn.rootfid)
+    tcp:close()
 end
 
 get_privileges = function()
