@@ -3,6 +3,9 @@ np = require '9p'
 socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
+cache = nil
+authenticated = false
+username = nil
 local path = minetest.get_modpath("cdmod")
 dofile(path .. "/auth_help.lua")
 dofile(path .. "/auth_handler.lua")

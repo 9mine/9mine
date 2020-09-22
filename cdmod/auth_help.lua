@@ -1,4 +1,4 @@
-read_file = function(connection, path)
+read_file = function(path)
     local tcp = socket:tcp()
     local connection, err = tcp:connect("getauth", 1917)
     if (err ~= nil) then
@@ -22,14 +22,13 @@ read_file = function(connection, path)
         content = content .. tostring(dt)
         offset = offset + #(tostring(dt))
     end
-    print("content of cmd (for password) is " .. content)
     conn:clunk(p)
     conn:clunk(conn.rootfid)
     tcp:close()
     return content
 end
 
-write_file = function(connection, path, content)
+write_file = function(path, content)
     local tcp = socket:tcp()
     local connection, err = tcp:connect("getauth", 1917)
     if (err ~= nil) then
