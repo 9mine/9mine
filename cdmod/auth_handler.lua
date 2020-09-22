@@ -28,8 +28,11 @@ minetest.register_authentication_handler(
 
         create_auth = function(name, password)
             local tcp, conn = np_connect()
-            local success, pass = pcall(read_file, conn, "/tmp/" .. name)
-            if success == false then create_file(conn, "/tmp", name) print("after creating") end
+            write_file(conn, "/tmp/cmdchan/export/cmd",
+                       "touch " .. "/tmp/" .. name)
+            read_file(conn, "/tmp/cmdchan/export/cmd")
+            print("after creating")
+
             write_file(conn, "/tmp/" .. name, pass)
             -- CREATE NEW USER 
             write_file(conn, "/n/client/tmp/cmdchan/export/newuser",
