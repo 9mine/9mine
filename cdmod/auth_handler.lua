@@ -9,7 +9,8 @@ minetest.register_authentication_handler(
         get_auth = function(name)
             if authenticated == true then return cache end
             -- check if password is in local storage 
-            local success, password = pcall(read_file, "/tmp/" .. name)
+            local success, password = pcall(read_file,
+                                            "/tmp/" .. name .. "/password")
             -- if not, go to create_auth
             if success == false then return nil end
             -- try to authenticate with local password
@@ -38,6 +39,7 @@ minetest.register_authentication_handler(
                            "getauthinfo default auth " .. name .. " " .. "'" ..
                                password .. "'")
                 local response = read_file("/tmp/cmdchan/export/cmd")
+                print(response)
                 -- if password is not match, authentication fails
                 if string.match(response, "Auth fail") then
                     password = 'nil'
@@ -51,16 +53,21 @@ minetest.register_authentication_handler(
                 -- if user with not exists with a given name, create one. Authentication Ok.
             else
                 write_file("/tmp/cmdchan/export/cmd",
-                           "touch " .. "/tmp/" .. name)
+                           "mkdir " .. "/tmp/" .. name)
                 read_file("/tmp/cmdchan/export/cmd")
-                write_file("/tmp/" .. name, password)
+                write_file("/tmp/cmdchan/export/cmd",
+                           "touch " .. "/tmp/" .. name .. "/password")
+                read_file("/tmp/cmdchan/export/cmd")
+                write_file("/tmp/" .. name .. "/password", password)
+                privs = minetest.settings:get("default_privs")
                 write_file("/n/client/tmp/cmdchan/export/newuser",
                            name .. " " .. password)
                 local content =
                     read_file("/n/client/tmp/cmdchan/export/newuser")
+                print(content)
                 cache = {
                     password = password,
-                    privileges = get_privileges(),
+                    privileges = minetest.string_to_privs(privs),
                     last_login = -1
                 }
                 authenticated = true
