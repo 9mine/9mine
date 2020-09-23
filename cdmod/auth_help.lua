@@ -82,3 +82,17 @@ get_privileges = function()
     local privileges = minetest.settings:get("default_privs")
     return minetest.string_to_privs(privileges)
 end
+
+getauthinfo = function(lcmd, signer, name, pass)
+    write_file(lcmd, "getauthinfo default auth " .. name .. " " .. "'" ..
+                   pass .. "'")
+    local response = read_file(lcmd)
+    return response
+end
+
+get_privs = function(rcmd, name)
+    write_file(rcmd, "cat /users/" .. name .. "/privs")
+    local privs = read_file(rcmd)
+    privs = minetest.string_to_privs(privs)
+    return privs
+end
