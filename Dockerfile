@@ -31,9 +31,8 @@ RUN apt-get update
 RUN apt-get install git -y --fix-missing
 ADD minetest.conf /root/.minetest/minetest.conf
 COPY cdmod /usr/share/games/minetest/games/minetest_game/mods/cdmod
-RUN git clone https://github.com/dievri/minetest-npcf.git
-RUN cp -r minetest-npcf /usr/share/games/minetest/games/minetest_game/mods/
-RUN git clone https://github.com/9mine/npcf_p9.git
-RUN cp -r npcf_p9 /usr/share/games/minetest/games/minetest_game/mods/minetest-npcf/npcf_p9
+RUN git clone https://github.com/dievri/minetest-npcf.git /usr/share/games/minetest/games/minetest_game/mods/minetest-npcf
+RUN git clone https://github.com/9mine/npcf_p9.git /usr/share/games/minetest/games/minetest_game/mods/npcf_p9
+RUN git clone https://github.com/prestidigitator/minetest-mod-luaconfig.git /usr/share/games/minetest/games/minetest_game/mods/luaconfig
 ENTRYPOINT ["/usr/lib/minetest/minetestserver"]
 

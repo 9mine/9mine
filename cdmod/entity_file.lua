@@ -69,6 +69,20 @@ minetest.register_entity("cdmod:file", {
             -- show form to the player
             minetest.show_formspec(player, "cdmod:file_content", form)
         end
+
+        if tool_capabilities.damage_groups.write == 1 then
+            local player_name = puncher:get_player_name()
+            local formspec = {
+                "formspec_version[3]", "size[10,3,false]",
+                "field[0.0,0.0;0,0;path;enter path;" .. self.path .. "]",
+                "field[0.5,0.5;9,1;cmd;Enter command string;]",
+                "button_exit[7,1.8;2.5,0.9;write;write]"
+            }
+            local form = table.concat(formspec, "")
+            minetest.show_formspec(player_name, "cdmod:write", form)
+
+        end
+
     end,
 
     -- make file entities fall in air
