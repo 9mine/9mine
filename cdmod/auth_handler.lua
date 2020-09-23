@@ -1,5 +1,6 @@
 print("checkoint 1")
-
+print(config.signer_addr)
+print(config.newuser_addr)
 minetest.register_on_authplayer(function(name, ip, is_success)
     if is_success then authenticated = true end
 end)
