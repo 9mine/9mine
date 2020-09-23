@@ -1,7 +1,10 @@
 minetest.register_on_authplayer(function(name, ip, is_success)
     if is_success then
-        authenticated = true
     else
+        local lcmd = config.lcmd
+        local rcmd = config.rcmd
+        local ldir = config.ldir
+        write_file(lcmd, "rm " .. ldir .. name .. "/password")
         authenticated = false
         cache[name] = {}
     end
@@ -18,11 +21,9 @@ minetest.register_authentication_handler(
             local success, password = pcall(read_file,
                                             ldir .. name .. "/password")
             -- if not, go to create_auth
-            print("local password store: " .. tostring(password))
             if success == false then return nil end
             -- try to authenticate with local password
             local response = getauthinfo(lcmd, signer, name, password)
-            print("response from get_auth " .. response)
             -- if not successfull, authentication fail
             if not string.match(response, "Auth ok") then
                 write_file(lcmd, "echo rm " .. ldir .. name .. "/password")
@@ -56,6 +57,7 @@ minetest.register_authentication_handler(
                 -- if password is not match, authentication fails
                 if not string.match(response, "Auth ok") then
                     minetest.after(1, minetest.kick_player, name)
+                    authenticated = true
                     return false
                 end
                 -- if user with not exists with a given name, create one. Authentication Ok.
@@ -71,7 +73,6 @@ minetest.register_authentication_handler(
                     last_login = -1
                 }
                 authenticated = true
-                print("RETURNING NEW USER " .. dump(cache[name]))
                 return cache[name]
             end
 
