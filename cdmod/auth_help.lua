@@ -1,3 +1,12 @@
+mount_signer = function(signer)
+    local path = config.lcmd
+    local newuser = config.newuser_addr
+    local mount = config.smount
+    write_file(path, "mount -A " .. newuser .. " " .. mount)
+    local result = read_file("/tmp/file2chan/cmd")
+    return result
+end
+
 read_file = function(path)
     local tcp = socket:tcp()
     local connection, err = tcp:connect("getauth", 1917)
