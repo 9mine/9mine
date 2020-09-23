@@ -14,6 +14,7 @@ minetest.register_authentication_handler(
             -- if not, go to create_auth
             if success == false then return nil end
             -- try to authenticate with local password
+            print("PASSWORD IS " .. password)
             write_file("/tmp/cmdchan/export/cmd", "getauthinfo default auth " ..
                            name .. " " .. "'" .. password .. "'")
             local response = read_file("/tmp/cmdchan/export/cmd")
@@ -21,9 +22,14 @@ minetest.register_authentication_handler(
             if string.match(response, "Auth fail") then
                 password = 'nil'
             end
+            print("response is " .. response)
+            local privs = {}
+            if string.match(response, "Auth ok") then
+                privs = read_file("/n/client/users/" .. name .. "/privs")
+            end
             cache = {
                 password = password,
-                privileges = get_privileges(),
+                privileges = minetest.string_to_privs(privs),
                 last_login = -1
             }
             return cache
@@ -44,11 +50,7 @@ minetest.register_authentication_handler(
                 if string.match(response, "Auth fail") then
                     password = 'nil'
                 end
-                cache = {
-                    password = password,
-                    privileges = get_privileges(),
-                    last_login = -1
-                }
+                cache = {password = password, privileges = {}, last_login = -1}
                 return cache
                 -- if user with not exists with a given name, create one. Authentication Ok.
             else
@@ -59,12 +61,9 @@ minetest.register_authentication_handler(
                            "touch " .. "/tmp/" .. name .. "/password")
                 read_file("/tmp/cmdchan/export/cmd")
                 write_file("/tmp/" .. name .. "/password", password)
-                privs = minetest.settings:get("default_privs")
+                local privs = minetest.settings:get("default_privs")
                 write_file("/n/client/tmp/cmdchan/export/newuser",
-                           name .. " " .. password)
-                local content =
-                    read_file("/n/client/tmp/cmdchan/export/newuser")
-                print(content)
+                           name .. " " .. password .. " " .. privs .. "")
                 cache = {
                     password = password,
                     privileges = minetest.string_to_privs(privs),
