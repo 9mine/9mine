@@ -1,6 +1,7 @@
 minetest.register_on_authplayer(function(name, ip, is_success)
     if is_success then
     else
+        local signer = config.signer_addr
         local lcmd = config.lcmd
         local rcmd = config.rcmd
         local ldir = config.ldir
