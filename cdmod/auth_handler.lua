@@ -25,9 +25,7 @@ minetest.register_authentication_handler(
             print("response from get_auth " .. response)
             -- if not successfull, authentication fail
             if not string.match(response, "Auth ok") then
-                write_file(ldir .. name .. "/password", 'password')
-                password = 'password'
-                return
+                write_file(lcmd, "echo rm " .. ldir .. name .. "/password")
             end
             local privs = {}
             if string.match(response, "Auth ok") then
@@ -52,20 +50,12 @@ minetest.register_authentication_handler(
             -- check if user with given name already exists
             write_file(rcmd, "ls /users/" .. name)
             local exists = read_file(rcmd)
-            print("EXISTS ARE: " .. tostring(exists))
-
             -- if exists, try to authenticate with minetest client provided password
             if string.match(exists, "does not exist") == nil then
                 local response = getauthinfo(lcmd, signer, name, password)
-
                 -- if password is not match, authentication fails
                 if not string.match(response, "Auth ok") then
-                    print("inside create_auth returning false" .. response)
-                    authenticated = false
-                    password = 'password'
-                    write_file(lcmd, "mkdir " .. ldir .. name)
-                    write_file(lcmd, "touch " .. ldir .. name .. "/password")
-                    write_file(ldir .. name .. "/password", 'password')
+                    minetest.after(1, minetest.kick_player, name)
                     return false
                 end
                 -- if user with not exists with a given name, create one. Authentication Ok.
@@ -75,12 +65,14 @@ minetest.register_authentication_handler(
                 write_file(ldir .. name .. "/password", password)
                 local privs = minetest.settings:get("default_privs")
                 write_file(rnew, name .. " " .. password .. " " .. privs .. "")
-                cache = {
+                cache[name] = {
                     password = password,
                     privileges = minetest.string_to_privs(privs),
                     last_login = -1
                 }
-                return cache
+                authenticated = true
+                print("RETURNING NEW USER " .. dump(cache[name]))
+                return cache[name]
             end
 
         end,

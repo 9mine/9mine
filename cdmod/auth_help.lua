@@ -84,8 +84,8 @@ get_privileges = function()
 end
 
 getauthinfo = function(lcmd, signer, name, pass)
-    write_file(lcmd, "getauthinfo default auth " .. name .. " " .. "'" ..
-                   pass .. "'")
+    write_file(lcmd,
+               "getauthinfo default auth " .. name .. " " .. "'" .. pass .. "'")
     local response = read_file(lcmd)
     return response
 end
