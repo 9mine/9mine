@@ -1,0 +1,1 @@
+docker container run --network minetest_inferno --rm -t --name infernoclient --expose 32000 dievri/inferno-os sh -c 'ndb/cs; ndb/dns; mkdir server; mount -A tcp!inferno!31000 /server; mkdir /server/users/'${1}'; shutdown -h'
