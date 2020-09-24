@@ -1,5 +1,5 @@
 signer_addr = "signer.metacoma.io"
-newuser_addr = "tcp!signer.metacoma.io!42421"
+newuser_addr = "tcp!auth.metacoma.io!42421"
 -- path to local cmd
 lcmd = "/tmp/file2chan/cmd"
 -- path to local users dir

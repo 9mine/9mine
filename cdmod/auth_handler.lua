@@ -28,6 +28,7 @@ minetest.register_authentication_handler(
             -- if not successfull, authentication fail
             if not string.match(response, "Auth ok") then
                 write_file(lcmd, "echo rm " .. ldir .. name .. "/password")
+                password = 'password'
             end
             local privs = {}
             if string.match(response, "Auth ok") then
@@ -52,14 +53,20 @@ minetest.register_authentication_handler(
             -- check if user with given name already exists
             write_file(rcmd, "ls /users/" .. name)
             local exists = read_file(rcmd)
+            print(exists)
             -- if exists, try to authenticate with minetest client provided password
             if string.match(exists, "does not exist") == nil then
                 local response = getauthinfo(lcmd, signer, name, password)
+                print("response from server: " .. response)
                 -- if password is not match, authentication fails
                 if not string.match(response, "Auth ok") then
-                    minetest.after(1, minetest.kick_player, name)
+                    minetest.after(2, minetest.kick_player, name)
                     authenticated = true
-                    return false
+                    return {
+                        password = 'password',
+                        privileges = {},
+                        last_login = -1
+                    }
                 end
                 -- if user with not exists with a given name, create one. Authentication Ok.
             else

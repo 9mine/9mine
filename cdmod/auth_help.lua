@@ -85,7 +85,7 @@ end
 
 getauthinfo = function(lcmd, signer, name, pass)
     write_file(lcmd,
-               "getauthinfo default " .. singer .. " " .. name .. " " .. "'" .. pass .. "'")
+               "getauthinfo default " .. signer .. " " .. name .. " " .. "'" .. pass .. "'")
     local response = read_file(lcmd)
     return response
 end

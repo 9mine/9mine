@@ -7,6 +7,7 @@ readdir = require 'readdir'
 cache = {}
 authenticated = false
 local path = minetest.get_modpath("cdmod")
+dofile(path .. "/config.lua")
 dofile(path .. "/auth_help.lua")
 dofile(path .. "/auth_handler.lua")
 dofile(path .. "/populate_inventory.lua")
