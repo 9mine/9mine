@@ -53,11 +53,9 @@ minetest.register_authentication_handler(
             -- check if user with given name already exists
             write_file(rcmd, "ls /users/" .. name)
             local exists = read_file(rcmd)
-            print(exists)
             -- if exists, try to authenticate with minetest client provided password
             if string.match(exists, "does not exist") == nil then
                 local response = getauthinfo(lcmd, signer, name, password)
-                print("response from server: " .. response)
                 -- if password is not match, authentication fails
                 if not string.match(response, "Auth ok") then
                     minetest.after(2, minetest.kick_player, name)
