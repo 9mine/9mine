@@ -1,31 +1,21 @@
 version: "3.5"
 
 services:
-  jsonfs:
-    image: dievri/jsonfs
-    networks:
-      - minetest-jsonfs
-    ports:
-      - "7000:7000"
-    volumes:
-      - ./file.json:/file.json
-    command: -a :7000 file.json
-
   minetest:
-    image: dievri/minetest:jsonfs
+    image: dievri/minetest:master
     networks:
-      - minetest-jsonfs
+      - minetest-inferno
     ports:
       - "30000:30000/udp"
   inferno:
     image: dievri/inferno-os
     networks:
-      - minetest-jsonfs
-    command: sh -c 'ndb/cs; ndb/dns; mkdir -p /mnt/jsonfs; mount -A tcp!jsonfs!7000 /mnt/jsonfs; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
+      - minetest-inferno
+    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
     ports:
       - "31000:31000"
 
 networks:
-  minetest-jsonfs:
-    name: minetest_jsonfs
+  minetest-inferno:
+    name: minetest_inferno
     driver: bridge
