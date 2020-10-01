@@ -29,7 +29,7 @@ FROM alpine:latest
 
 RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs
 
-RUN mkdir -p /root/.minetest/worlds/world
+RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
 
 COPY                    ./minetest.conf             /root/.minetest/minetest.conf
 COPY                    ./mods                      /root/.minetest/mods/
@@ -42,7 +42,7 @@ COPY --from=compile     /luadata/data.so            /usr/local/lib/lua/5.1/data.
 COPY --from=compile     /minetest_compiled/bin      /usr/bin/
 COPY --from=compile     /minetest_compiled/share    /usr/share/
 
-COPY --from=compile     /minetest_game/mods/default/ /usr/share/minetest/games/devtest/mods/default
+COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mods/default/textures/
 
 RUN rm -fr /usr/share/minetest/games/devtest/mods/
 
