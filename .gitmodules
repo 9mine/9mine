@@ -7,3 +7,6 @@
 [submodule "mods/console"]
 	path = mods/console
 	url = https://github.com/9mine/console
+[submodule "mods/worldedit"]
+	path = mods/worldedit
+	url = https://github.com/Uberi/Minetest-WorldEdit/

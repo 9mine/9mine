@@ -2,20 +2,21 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:master
+    image: dievri/minetest:plain_auth_server
     networks:
-      - minetest-inferno
+      - mt-console
     ports:
       - "30000:30000/udp"
+    volumes:
+      - ".:/root/.minetest/"
   inferno:
-    image: dievri/inferno-os
+    image: dievri/inferno-os:getauth
     networks:
-      - minetest-inferno
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
+      - mt-console
     ports:
-      - "31000:31000"
+      - "1917:1917"
 
 networks:
-  minetest-inferno:
-    name: minetest_inferno
+  mt-console:
+    name: mt-console
     driver: bridge
