@@ -1,0 +1,24 @@
+name: Minetest Container Image
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: build server image
+        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
+
+      - name: login to hub.docker.com
+        run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: push server image to registry
+        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/}
+      
+      - name: Notify Telegram
+        uses: yanzay/notify-telegram@v0.1.0
+        if: always()
+        with:
+          chat: ${{ secrets.TGBOT_CHAT }} 
+          token: ${{ secrets.TGBOT_TOKEN }} 
+          status: ${{ job.status }} 

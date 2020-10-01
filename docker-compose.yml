@@ -2,13 +2,12 @@ version: "3.5"
 
 services:
   minetest:
-    image: dievri/minetest:plain_auth_server
+    image: minetest:console
     networks:
       - mt-console
     ports:
       - "30000:30000/udp"
-    volumes:
-      - ".:/root/.minetest/"
+      - "30000:30000"
   inferno:
     image: dievri/inferno-os:getauth
     networks:
