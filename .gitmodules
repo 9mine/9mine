@@ -1,0 +1,9 @@
+[submodule "mods/mine9"]
+	path = mods/mine9
+	url = https://github.com/9mine/mine9-mod
+[submodule "mods/directories"]
+	path = mods/directories
+	url = https://github.com/9mine/directories
+[submodule "mods/console"]
+	path = mods/console
+	url = https://github.com/9mine/console
