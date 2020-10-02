@@ -7,7 +7,7 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev              
         lua5.1 luarocks5.1 && git clone -b ${BRANCH} --depth 1                  \
         https://github.com/9mine/minetest.git && mkdir minetest_compiled
 
-RUN export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 minetest ) && \
+RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . ) && cd .. && \
     export DATE=$(date) && \
     sed -i "s#VERSION_EXTRA \"\" CACHE STRING \"Stuff to append to version string\"#VERSION_EXTRA \"${BRANCH} ${COMMIT_VERSION} ${DATE}\"#g" minetest/CMakeLists.txt && \
     sed -i "s#\${VERSION_STRING}-\${VERSION_EXTRA}#\"\${VERSION_STRING} \${VERSION_EXTRA}\"#g" minetest/CMakeLists.txt && \
