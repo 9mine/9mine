@@ -1,0 +1,24 @@
+
+
+-------------
+  Separator
+-------------
+
+2020-10-04 07:54:45: ERROR[Main]: Game specified in default_game [minetest] is invalid.
+2020-10-04 07:54:45: ERROR[Main]: ServerError: Supplied invalid gamespec
+
+
+-------------
+  Separator
+-------------
+
+2020-10-04 07:55:37: ERROR[Main]: Game specified in default_game [minetest] is invalid.
+2020-10-04 07:55:38: ERROR[Main]: ServerError: Supplied invalid gamespec
+
+
+-------------
+  Separator
+-------------
+
+2020-10-04 07:55:47: ERROR[Main]: Game specified in default_game [minetest] is invalid.
+2020-10-04 07:55:48: ERROR[Main]: ServerError: Supplied invalid gamespec
