@@ -2,20 +2,12 @@ version: "3.5"
 
 services:
   minetest:
-    image: minetest:console
+    build:
+      context: .
+    image: minetest:bitcoin_transaction
     networks:
       - mt-console
     ports:
       - "30000:30000/udp"
       - "30000:30000"
-  inferno:
-    image: dievri/inferno-os:getauth
-    networks:
-      - mt-console
-    ports:
-      - "1917:1917"
 
-networks:
-  mt-console:
-    name: mt-console
-    driver: bridge
