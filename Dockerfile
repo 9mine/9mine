@@ -35,7 +35,7 @@ RUN luarocks-5.1 install lua-filesize
 
 FROM alpine:latest
 
-RUN apk add --update --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs jq
+RUN apk add --update --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs gawk
 
 RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
 
@@ -55,5 +55,8 @@ COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mod
 
 RUN rm -fr /usr/share/minetest/games/devtest/mods/
 COPY --from=compile  /usr/local/bin/websocat /usr/local/bin/websocat 
+ADD files/parser.awk /usr/local/bin/
+
+RUN touch /tmp/minetest_input && chmod a+rw /tmp/minetest_input
 
 ENTRYPOINT [ "/usr/bin/minetestserver" ]
