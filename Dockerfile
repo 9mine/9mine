@@ -32,7 +32,7 @@ RUN luarocks-5.1 install lua-filesize
 
 FROM alpine:latest
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs websocat
+RUN apk add --update --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs
 
 RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
 
@@ -48,6 +48,8 @@ COPY --from=compile     /minetest_compiled/bin      /usr/bin/
 COPY --from=compile     /minetest_compiled/share    /usr/share/
 
 COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mods/default/textures/
+ADD https://github-production-release-asset-2e65be.s3.amazonaws.com/74579985/6058fb00-c175-11ea-89b9-af87e3f7a56d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20201004%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201004T065021Z&X-Amz-Expires=300&X-Amz-Signature=00d9b74a59f3ce874bd114096cf2789ad71d8215955c839913251b2e3e7ff7f7&X-Amz-SignedHeaders=host&actor_id=5146707&key_id=0&repo_id=74579985&response-content-disposition=attachment%3B%20filename%3Dwebsocat_amd64-linux-static&response-content-type=application%2Foctet-stream /usr/local/bin/websocat
+RUN chmod +x /usr/local/bin/websocat
 
 RUN rm -fr /usr/share/minetest/games/devtest/mods/
 
