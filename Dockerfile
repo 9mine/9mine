@@ -11,7 +11,8 @@ RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . )
     export DATE=$(date) && \
     sed -i "s#VERSION_EXTRA \"\" CACHE STRING \"Stuff to append to version string\"#VERSION_EXTRA \"${BRANCH} ${COMMIT_VERSION} ${DATE}\"#g" minetest/CMakeLists.txt && \
     sed -i "s#\${VERSION_STRING}-\${VERSION_EXTRA}#\"\${VERSION_STRING} \${VERSION_EXTRA}\"#g" minetest/CMakeLists.txt && \
-    cmake ./minetest    -DCMAKE_INSTALL_PREFIX=/minetest_compiled   \
+    cd minetest && \
+    cmake . -DCMAKE_INSTALL_PREFIX=/minetest_compiled   \
                         -DCMAKE_BUILD_TYPE=RELEASE                  \
                         -DRUN_IN_PLACE=FALSE                        \
                         -DBUILD_UNITTESTS=FALSE                     \
