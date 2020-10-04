@@ -4,7 +4,7 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev              
         libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev       \
         libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev            \
         gmp-dev jsoncpp-dev postgresql-dev ca-certificates lua5.1-dev           \
-        lua5.1 luarocks5.1 && git clone -b ${BRANCH} --depth 1                  \
+        lua5.1 luarocks5.1 jq curl && git clone -b ${BRANCH} --depth 1          \
         https://github.com/minetest/minetest.git && mkdir minetest_compiled
 
 RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . ) && \
@@ -19,6 +19,9 @@ RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . )
                         -DBUILD_SERVER=TRUE                         \
                         -DBUILD_CLIENT=FALSE                        \
                         && make -j$(nproc) && make install         
+
+RUN curl -sL https://api.github.com/repos/vi/websocat/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("websocat_amd64-linux-static")).browser_download_url' | xargs -I{} curl -Lo /usr/local/bin/websocat {}
+RUN chmod +x /usr/local/bin/websocat
     
 RUN git clone https://github.com/lneto/luadata.git &&               \
     sed -i 's#-fPIC#-fPIC -I/usr/include/lua5.1#g'                  \
@@ -36,6 +39,7 @@ RUN apk add --update --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5
 
 RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
 
+
 COPY                    ./minetest.conf             /root/.minetest/minetest.conf
 COPY                    ./mods                      /root/.minetest/mods/
 COPY                    ./worlds/world/world.mt     /root/.minetest/worlds/world/world.mt
@@ -48,9 +52,8 @@ COPY --from=compile     /minetest_compiled/bin      /usr/bin/
 COPY --from=compile     /minetest_compiled/share    /usr/share/
 
 COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mods/default/textures/
-RUN curl -sL https://api.github.com/repos/vi/websocat/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("websocat_amd64-linux-static")).browser_download_url' | xargs -I{} curl -Lo /usr/local/bin/websocat {}
-RUN chmod +x /usr/local/bin/websocat
 
 RUN rm -fr /usr/share/minetest/games/devtest/mods/
+COPY --from=compile  /usr/local/bin/websocat /usr/local/bin/websocat 
 
 ENTRYPOINT [ "/usr/bin/minetestserver" ]
