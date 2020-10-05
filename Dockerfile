@@ -41,7 +41,7 @@ RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/defau
 
 
 COPY                    ./minetest.conf             /root/.minetest/minetest.conf
-COPY                    ./mods                      /root/.minetest/mods/
+#COPY                    ./mods                      /root/.minetest/mods/
 COPY                    ./worlds/world/world.mt     /root/.minetest/worlds/world/world.mt
 COPY                    ./libs/                     /usr/local/share/lua/5.1/
 
@@ -58,5 +58,6 @@ COPY --from=compile  /usr/local/bin/websocat /usr/local/bin/websocat
 ADD files/parser.awk /usr/local/bin/
 
 RUN touch /tmp/minetest_input && chmod a+rw /tmp/minetest_input
+RUN apk add coreutils
 
 ENTRYPOINT [ "/usr/bin/minetestserver" ]
