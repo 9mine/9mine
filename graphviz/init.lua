@@ -1,4 +1,5 @@
 local modpath = minetest.get_modpath("graphviz")
+local socket = require("socket")
 
 dofile(modpath .. "/graphviz.lua")
 
@@ -123,20 +124,19 @@ minetest.register_node("graphviz:route", {
   tiles = { "graphviz_route.png" },
 })
 
-input_data = io.open("/tmp/minetest_input") 
-if (input_data == nil) then
-  print("io.open fails")
-end
+udp = socket.udp()
+udp:setpeername("127.0.0.1", 5555)
+udp:settimeout(0.01)
 
 minetest.register_globalstep(function()
-    if input_data == nil then
-      return
+    udp:send(".")
+    data = udp:receive()
+    if data then
+      for s in data:gmatch("[^\r\n]+") do
+        parse_input(s)
+        print(s)
+      end
     end
-    local data = input_data:read()
-    if (data ~= nil) then
-      print("input data " .. data)
-      parse_input(data)
-    end
-  end)
+end)
 
 
