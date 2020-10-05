@@ -58,6 +58,6 @@ COPY --from=compile  /usr/local/bin/websocat /usr/local/bin/websocat
 ADD files/parser.awk /usr/local/bin/
 
 RUN touch /tmp/minetest_input && chmod a+rw /tmp/minetest_input
-RUN apk add coreutils
+RUN apk add coreutils netcat-openbsd
 
 ENTRYPOINT [ "/usr/bin/minetestserver" ]
