@@ -1,13 +1,30 @@
 version: "3.5"
 
 services:
-  minetest:
+  minetest-server:
     build:
       context: .
-    image: minetest:bitcoin_transaction
+    volumes:
+      - ./graphviz:/root/.minetest/mods/graphviz
+    
     networks:
-      - mt-console
+      - minetest
+    image: minetest:bitcoin_transaction
     ports:
       - "30000:30000/udp"
       - "30000:30000"
 
+
+  minetest-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.minetest-client
+    
+    image: minetest-client:bitcoin_transaction
+    networks: 
+      - minetest
+
+networks:
+  minetest:
+    name: minetest
+    driver: bridge
