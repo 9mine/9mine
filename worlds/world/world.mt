@@ -1,11 +1,6 @@
 gameid = devtest
-load_mod_directories = true
-load_mod_mine9 = true
-load_mod_worldedit = true
-load_mod_console = true
-load_mod_default = true
-load_mod_worldedit_shortcommands = false
-load_mod_worldedit_commands = false
-load_mod_worldedit_brush = false
-load_mod_worldedit_gui = false
+load_mod_graphviz = true
 backend = sqlite3
+load_mod_default = false
+player_backend = files
+auth_backend = files
