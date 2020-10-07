@@ -1,4 +1,14 @@
 # Run Minetest with inferno as authentication manually using containers
+0. Use latest images
+    * server
+
+            docker pull dievri/minetest:auth
+    * client 
+
+            docker pull dievri/minetest:client-x
+    * inferno OS
+
+            docker pull dievri/inferno-os:getauth
 
 1. Create network for minetest 
 
