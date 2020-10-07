@@ -119,9 +119,10 @@
 # Run minetest with inferno as authentication backend without images 
 ## Compile and install minetest server and server
 1. Install lua 5.1
-2. Compile minetestserver using branch [stable-5](https://github.com/9mine/minetest/tree/stable-5) from 9mine/minetest repository. Follow instruction from there for build.
-3. Compile minetest client using branch [plan_auth_method](https://github.com/9mine/minetest/tree/plan_auth_method) from 9mine/minetest repository. Follow instruction from there for build.
+2. Compile minetestserver using branch [stable-5](https://github.com/9mine/minetest/tree/stable-5) from `9mine/minetest` repository. Follow instruction from there for build.
+3. Compile minetest client using branch [plan_auth_method](https://github.com/9mine/minetest/tree/plan_auth_method) from `9mine/minetest` repository. Follow instruction from there for build.
 4. Clone this branch and cd into it
+
         git clone -b auth https://github.com/9mine/9mine.git
 
 5. Copy content of `libs` to `/usr/local/share/lua/5.1/`
@@ -146,7 +147,7 @@
 
 2. Follow instructions from there to build inferno OS (you may use [Dockerfile](https://github.com/9mine/inferno-os/blob/changelogin_noninteractive/Dockerfile) as a reference)
 
-3. copy [profile](https://github.com/9mine/9mine-auth/blob/master/profile) to the ${INFERNO_ROOT}/lib/sh/
+3. copy [profile](https://github.com/9mine/9mine-auth/blob/master/profile) to the `${INFERNO_ROOT}/lib/sh/`
 
 4. Run CA (use [auth.sh](https://github.com/9mine/9mine-auth/blob/master/auth.sh) as a reference)
 
@@ -155,7 +156,7 @@
 
         git clone -b getauth https://github.com/9mine/inferno-os.git
 
-2. Copy `profile` from root repository directory to the ${INFERNO_ROOT}/lib/sh/
+2. Copy `profile` from root repository directory to the `${INFERNO_ROOT}/lib/sh/`
 
 ## Run complete set
 1. Run CA (certifying authority)
