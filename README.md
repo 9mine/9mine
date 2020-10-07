@@ -18,7 +18,7 @@
 
         docker network create $NETWORK_NAME
 
-2.  Choose signing authority (CA). By default, this branch uses remote CA. For using local CA, please, follow instruction in https://github.com/9mine/9mine-auth
+2.  Choose certifying authority (CA). By default, this branch uses remote CA - `signer.metacoma.io`. For using local CA, please, follow instruction in https://github.com/9mine/9mine-auth
 
 3.  Run local inferno instance with cmdchan. This can be done by running container
 
@@ -58,3 +58,60 @@
         docker-compose up
 
 5. In minetest client use `mt-server` for hostname and `30000` for port.  
+
+# Build images manually 
+
+## Server
+
+1. Clone this branch with all it submodules and cd into directory 
+
+        git clone --recurse-submodules --remote-submodules -b auth https://github.com/9mine/9mine.git
+
+2. For build image with custom `auth.conf` file, uncomment COPY line in Dockerfile. Use can specify custom version string by replacing `${BRANCH} ${COMMIT_VERSION} ${DATE}` with your string. Build image
+
+                docker image build -t <image_name> .
+
+3. After build you can check build string:
+
+
+                docker run <image_name> --version
+
+## Client
+
+1. Clone branch `client` and cd into directory 
+
+        git clone -b client https://github.com/9mine/9mine.git
+
+2. Build image 
+
+         docker image build -t <image_name> .
+
+## Certyfing Authority
+
+1. Clone `changelogin_noninteractive` branch from [inferno-os](https://github.com/9mine/inferno-os) repository and cd into directory
+
+        git clone -b changelogin_noninteractive https://github.com/9mine/inferno-os.git
+
+2. Image to be built could be used with [script](https://github.com/9mine/9mine-auth).
+
+    For using with script cd into directory and run
+
+        docker image build -t <image_name> .
+
+    Clone [9mine-auth](https://github.com/9mine/9mine-auth) repository and cd into directory 
+
+        git clone https://github.com/9mine/9mine-auth.git
+
+   Change `dievri/inferno-os:changelogin_noninteractive` to `<image_name>` and follow instructions in that repository
+
+3. For using without script add the following line to the Dockerfile
+        
+        COPY profile /usr/inferno-os/lib/sh/profile
+
+4. Copy https://github.com/9mine/9mine-auth/blob/master/profile into current directory.
+
+5. Build image 
+
+        docker image build -t <image_name> .
+
+6. Use instructions from the [first section](https://github.com/9mine/9mine/tree/auth#run-minetest-with-inferno-as-authentication-manually-using-containers) substituting provided image names with your own image names.

@@ -39,6 +39,7 @@ COPY                    ./minetest.conf             /root/.minetest/minetest.con
 COPY                    ./mods                      /root/.minetest/mods/
 COPY                    ./worlds/world/world.mt     /root/.minetest/worlds/world/world.mt
 COPY                    ./libs/                     /usr/local/share/lua/5.1/
+#COPY                   ./auth.conf                 /root/.minetest/mods/auth/mod.conf
 
 COPY --from=compile     /usr/local/share/lua/5.1    /usr/local/share/lua/5.1/
 COPY --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
