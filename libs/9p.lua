@@ -174,6 +174,8 @@ local LQid = data.layout{
   type    = num9p(0, 1),
   version = num9p(1, 4),
   path    = num9p(5, 8),
+  path_lo = num9p(5, 4),
+  path_hi = num9p(9, 4)
 }
 
 local function getqid(from)
@@ -187,6 +189,8 @@ local function getqid(from)
   qid.type    = p.type
   qid.version = p.version
   qid.path    = p.path
+  qid.path_lo = p.path_lo
+  qid.path_hi = p.path_hi
 
   return qid
 end
