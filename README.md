@@ -36,24 +36,25 @@
 
         docker run --rm -ti --network $NAME -v /path/to/auth.conf:/root/.minetest/mods/auth/mod.conf --name mt-server -p 30000:30000/udp dievri/minetest:auth
 
-5.  Allow local xhost and run minetest client
+5.  Allow local xhost and run minetest client. Use `mt-server` for hostname and `30000` for port.  
 
         xhost +local: && docker run --rm -ti --network $NETWORK_NAME -e DISPLAY=unix$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix dievri/minetest:client
 
 # Automated run with remote CA
 0. Use [docker-compose](https://docs.docker.com/compose/)
 
-1. Download `docker-compose.yml`
+1. Download [docker-compose.yml](https://github.com/9mine/9mine/blob/auth/docker-compose.yml)
 
 2. Allow localhost to make connections to the X server
 
         xhost +local:
 
-4.  Update images 
+3.  Update images 
         
         docker-compose pull
 
-5. Run local inferno, client and server 
+4. Run local inferno, client and server 
 
         docker-compose up
 
+5. In minetest client use `mt-server` for hostname and `30000` for port.  
