@@ -47,5 +47,7 @@
         
         docker-compose pull
 
-3. Run local inferno, client and server
+3. Run local inferno, client and server. Following command will create docker images with names: 
+
+        docker-compose up
 
