@@ -39,3 +39,13 @@
 5.  Allow local xhost and run minetest client
 
         xhost +local: && docker run --rm -ti --network $NETWORK_NAME -e DISPLAY=unix$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix dievri/minetest:client
+
+# Automated run with remote CA
+1. Use [docker-compose](https://docs.docker.com/compose/)
+
+2.  Update images 
+        
+        docker-compose pull
+
+3. Run local inferno, client and server
+
