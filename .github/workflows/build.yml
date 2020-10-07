@@ -6,9 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@v0.0.8
+        with:
+           submodules: true
 
       - name: build image
         run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
