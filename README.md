@@ -41,13 +41,19 @@
         xhost +local: && docker run --rm -ti --network $NETWORK_NAME -e DISPLAY=unix$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix dievri/minetest:client
 
 # Automated run with remote CA
-1. Use [docker-compose](https://docs.docker.com/compose/)
+0. Use [docker-compose](https://docs.docker.com/compose/)
 
-2.  Update images 
+1. Download `docker-compose.yml`
+
+2. Allow localhost to make connections to the X server
+
+        xhost +local:
+
+4.  Update images 
         
         docker-compose pull
 
-3. Run local inferno, client and server. Following command will create docker images with names: 
+5. Run local inferno, client and server 
 
         docker-compose up
 
