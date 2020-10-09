@@ -25,11 +25,11 @@ FROM alpine:latest
 
 RUN apk add sqlite-libs libstdc++ libgcc libpq curl gmp         \
     irrlicht-dev irrlicht libvorbis freetype libx11 openal-soft \
-    xf86-video-amdgpu xvfb x11vnc ffmpeg
+    xf86-video-amdgpu xvfb x11vnc ffmpeg fvwm
 
 COPY --from=compile /minetest_compiled/bin /usr/bin/
 COPY --from=compile /minetest_compiled/share /usr/share/
 ADD files/minetest-client.conf /root/.minetest/minetest.conf
-ADD files/youtube.sh /usr/local/bin/youtube.sh
+#ADD files/youtube.sh /usr/local/bin/youtube.sh
 ENV DISPLAY :0
 ENTRYPOINT ["sh", "-c", "'Xvfb'&  'x11vnc'&  /usr/bin/minetest"]
