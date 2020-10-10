@@ -2,6 +2,7 @@ local modpath = minetest.get_modpath("graphviz")
 local socket = require("socket")
 
 dofile(modpath .. "/graphviz.lua")
+dofile(modpath .. "/format_num.lua") 
 
 local graph = GraphVizNew()
 total = 0
@@ -23,7 +24,7 @@ show_stats = function()
         hud_elem_type = "text",
         position = {x = 0.8, y = 0.2},
         offset = {x = 0, y = 0},
-        text = string.format("Total $ on screen\n%d", total),
+        text = string.format("Total $ on screen\n%s", format_num(total, 0)),
         alignment = {x = 1, y = 0},
         size = 25
     })
@@ -68,7 +69,10 @@ function parse_input(input_data)
     })
     value = tonumber(string.sub(args[3], 2))
     total = total + value
-    obj:set_nametag_attributes({color = "black", text = args[3]})
+    obj:set_nametag_attributes({
+      color = "black", 
+      text = format_num(value, 2, '$'):gsub('\.00$', '')
+    }) 
     obj:set_acceleration(vector.direction(from_pos, to_pos))
     minetest.after(15, minetest.remove_node, from_pos) 
     minetest.after(25, minetest.remove_node, to_pos) 
