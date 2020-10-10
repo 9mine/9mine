@@ -22,11 +22,13 @@ show_stats = function()
     end
     hud_id = observer:hud_add({
         hud_elem_type = "text",
-        position = {x = 0.8, y = 0.2},
-        offset = {x = 0, y = 0},
-        text = string.format("Total $ on screen\n%s", format_num(total, 0)),
-        alignment = {x = 1, y = 0},
-        size = 25
+        --position = {x = 0.8, y = 0.2},
+		    offset = {x = 1450, y = 950} ,
+        text = string.format("Total on the screen\n%s", format_num(total, 0, '$')),
+        --alignment = {x = 1, y = 0},
+        number = 0xFFFFFF,
+        --scale = { x = 2, y = 2 },
+        size = { x = 3, y = 3 },
     })
 end
 
@@ -37,6 +39,14 @@ minetest.register_on_joinplayer(function(player)
 
   player:set_look_horizontal(313) 
   observer = player
+  player:hud_add({
+		hud_elem_type = "image",
+		position = {x = 0, y = 0},
+		offset = {x = 1200, y = 1000},
+		scale = {x = -30, y = -30},
+		alignment = {x = 1, y = 0},
+		text = "hud_bg.png"
+  })
 	show_stats()
 
 
