@@ -4,14 +4,41 @@ local socket = require("socket")
 dofile(modpath .. "/graphviz.lua")
 
 local graph = GraphVizNew()
+total = 0
+observer= nil
+hud_id = nil
 
 
 minetest.log("GRAPHVIZ")
 
 
+show_stats = function()
+    if (observer == nil) then
+      return
+    end 
+    if (hud_id ~= nil) then
+      observer:hud_remove(hud_id) 
+    end
+    hud_id = observer:hud_add({
+        hud_elem_type = "text",
+        position = {x = 0.8, y = 0.2},
+        offset = {x = 0, y = 0},
+        text = string.format("Total $ on screen\n%d", total),
+        alignment = {x = 1, y = 0},
+        size = 25
+    })
+end
 
 
 minetest.register_on_joinplayer(function(player)
+  player:move_to({ x =  14, y = 54 , z = 10}, false)
+  player:set_look_vertical(34) 
+
+  player:set_look_horizontal(313) 
+  observer = player
+	show_stats()
+
+
   --local player_inventory = player:get_inventory()  
   --player_inventory:add_item("main", "graphviz:node" .. " 1")
 end)
@@ -39,10 +66,17 @@ function parse_input(input_data)
     obj:set_properties({
       infotext = args[2]
     })
+    value = tonumber(string.sub(args[3], 2))
+    total = total + value
     obj:set_nametag_attributes({color = "black", text = args[3]})
     obj:set_acceleration(vector.direction(from_pos, to_pos))
     minetest.after(15, minetest.remove_node, from_pos) 
     minetest.after(25, minetest.remove_node, to_pos) 
+    show_stats()
+    minetest.after(3, function(obj, size) 
+      obj:remove() 
+      total = total - size
+    end, obj, value)
   end
 
 end
