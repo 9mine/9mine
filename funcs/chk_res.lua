@@ -6,11 +6,11 @@ chk_res = function(name, node, req)
     if st.length > 0 then
         local content = file_read(a, rp, name)
         local res = spawn_youtube(st, node.result_p, a, rp)
-
+        local ss = req:get_luaentity().search_string
         res:get_luaentity().content = content
-
+        res:get_luaentity().req = ss
         res:set_nametag_attributes({
-            text = "Query: " .. req:get_luaentity().search_string
+            text = "Query: " .. ss 
         })
 
         req:set_nametag_attributes({text = "Search Video"})

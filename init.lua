@@ -12,7 +12,7 @@ dofile(path .. "/entities/search.lua")
 dofile(path .. "/entities/video.lua")
 
 -- tools
-dofile(path .. "/tools/connect.lua")
+dofile(path .. "/tools/connect_search.lua")
 dofile(path .. "/tools/arrow.lua")
 
 -- functions

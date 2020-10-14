@@ -17,6 +17,7 @@ minetest.register_entity("youtube:result", {
     },
 
     content = "",
+    req = "",
 
     get_staticdata = function(self)
         local attributes = self.object:get_nametag_attributes()
@@ -32,7 +33,8 @@ minetest.register_entity("youtube:result", {
     end,
 
     on_punch = function(self, puncher, dtime, tool, dir)
-        process_urls(puncher:get_player_name(), self.content)
+        self.object:set_properties({automatic_rotate = math.pi, nametag = "Processing . . . "})
+        minetest.after(0.2, process_urls, puncher:get_player_name(), self)
     end
 
 })

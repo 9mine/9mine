@@ -1,4 +1,4 @@
-minetest.register_tool("youtube:connect", {
+minetest.register_tool("youtube:connect_search", {
     desription = "Connect to YouTube",
     inventory_image = "youtube_connect.png",
     wield_image = "youtube_connect.png",
@@ -11,7 +11,7 @@ minetest.register_tool("youtube:connect", {
             "button_exit[7,1.8;2.5,0.9;spawn_attach;connect]"
         }
         local form = table.concat(formspec, "")
-        minetest.show_formspec(player_name, "youtube:connect", form)
+        minetest.show_formspec(player_name, "youtube:connect_search", form)
     end
 })
 
