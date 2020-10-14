@@ -1,15 +1,8 @@
 list_youtube = function(addr, path, player)
-    local player_name = player:get_player_name()
-    local graph = graphs[player_name]
-    local addr_node = graph:findnode(addr)
-    local conn = connections[player_name][addr]
-
-    local plt_node = graph:findnode(md5.sumhexa(addr .. path))
-    local is_plt = plt_node and plt_node.plt
-    if is_plt then
-        to_plt(player, plt_node.root)
-        return
-    end
+    local name = player:get_player_name()
+    local g = graphs[name]
+    local addr_node = g:findnode(addr)
+    local conn = connections[name][addr]
 
     -- read directory specified in connection string or root
     local listing = name_as_key(readdir(conn, path == "/" and "../" or path) or
@@ -30,7 +23,7 @@ list_youtube = function(addr, path, player)
     local result_p = {x = root.x + 6, y = root.y + 1, z = root.z + 4}
 
     -- attach host info to the absolute path and hash
-    local plt_node = graph:node(md5.sumhexa(addr .. path), {
+    local plt_node = g:node(md5.sumhexa(addr .. path), {
         plt = true,
         listing = listing,
         addr = addr,
@@ -45,7 +38,7 @@ list_youtube = function(addr, path, player)
     })
 
     -- connect directory to the host node                    
-    graph:edge(addr_node, plt_node)
+    g:edge(addr_node, plt_node)
 
     -- handle root path prefix without host
 

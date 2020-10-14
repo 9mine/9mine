@@ -12,8 +12,8 @@ dofile(path .. "/entities/search.lua")
 dofile(path .. "/entities/video.lua")
 
 -- tools
-dofile(path .. "/tools/youtube.lua")
-dofile(path .. "/tools/youtube_connect.lua")
+dofile(path .. "/tools/connect.lua")
+dofile(path .. "/tools/arrow.lua")
 
 -- functions
 dofile(path .. "/funcs/populate_inventory.lua")
@@ -23,15 +23,15 @@ dofile(path .. "/funcs/spawn_video.lua")
 dofile(path .. "/funcs/blink.lua")
 dofile(path .. "/funcs/list_youtube.lua")
 dofile(path .. "/funcs/spawn_youtube.lua")
-dofile(path .. "/funcs/check_results.lua")
+dofile(path .. "/funcs/chk_res.lua")
 
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
 
 -- events
-dofile(path .. "/events/init.lua")
-dofile(path .. "/events/video_id.lua")
+dofile(path .. "/events/events.lua")
+dofile(path .. "/events/process_urls.lua")
 dofile(path .. "/events/youtube.lua")
 dofile(path .. "/events/youtube_connect.lua")
 dofile(path .. "/events/youtube_search.lua")
@@ -39,7 +39,9 @@ dofile(path .. "/events/youtube_search.lua")
 -- entities 
 dofile(path .. "/entities/video.lua")
 dofile(path .. "/entities/search.lua")
+dofile(path .. "/entities/result.lua")
 
 -- chat commands
 -- chat messages
 -- 9p interactions
+dofile(path .. "/9p/stat_drop.lua")

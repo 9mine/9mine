@@ -1,28 +1,22 @@
-minetest.register_entity("youtube:search", {
+minetest.register_entity("youtube:result", {
     initial_properties = {
         physical = true,
         pointable = true,
-        visual = "sprite",
+        visual = "cube",
         collide_with_objects = true,
-        textures = {"youtube_search.png"},
+        textures = {
+            "youtube_video.png", "youtube_video.png", "youtube_video.png",
+            "youtube_video.png", "youtube_video.png", "youtube_video.png"
+        },
         is_visible = true,
         nametag_color = "black",
         infotext = "",
         static_save = true,
-        shaded = true
+        shaded = true,
+        armor_groups = {immortal = 0}
     },
 
-    search_string = "",
-
-    on_punch = function(self, puncher, dtime, tool, dir)
-        local form = table.concat({
-            "formspec_version[3]", "size[10,3,false]",
-            "field[0.5,0.5;9,1;search_string;Search on YouTube;]",
-            "button_exit[7,1.8;2.5,0.9;search;search]"
-        }, "")
-
-        minetest.show_formspec(puncher:get_player_name(), "youtube:search", form)
-    end,
+    content = "",
 
     get_staticdata = function(self)
         local attributes = self.object:get_nametag_attributes()
@@ -35,5 +29,10 @@ minetest.register_entity("youtube:search", {
             local data = minetest.deserialize(staticdata) or {}
             self.object:set_nametag_attributes(data.attr)
         end
+    end,
+
+    on_punch = function(self, puncher, dtime, tool, dir)
+        process_urls(puncher:get_player_name(), self.content)
     end
+
 })

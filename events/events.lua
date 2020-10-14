@@ -3,10 +3,7 @@ minetest.register_on_player_receive_fields(
         if formname == "youtube:youtube" then
             youtube(player, formname, fields)
         end
-        if formname == "youtube:video_id" then
-            video_id(player, formname, fields)
-        end
-        if formname == "youtube:youtube_connect" then
+        if formname == "youtube:connect" then
             youtube_connect(player, formname, fields)
         end
         if formname == "youtube:search" then
