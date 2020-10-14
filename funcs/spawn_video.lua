@@ -7,16 +7,13 @@ spawn_video = function(player, k)
         y = math.ceil(pp.y + dst.y + math.random(5, 10)),
         z = math.ceil(pp.z + dst.z + math.random(-9, 9))
     }
-    local rand_transp = 150
+    local alpha = 150
+    local t = k .. "^[colorize:red:" .. alpha
     local video = minetest.add_entity(res, "youtube:video")
-    video:set_nametag_attributes({color = "black", text = "Generating subs . . ."})
-    video:set_properties({textures = {
-                    k .. "^[colorize:red:" .. rand_transp, 
-                    k .. "^[colorize:red:" .. rand_transp, 
-                    k .. "^[colorize:red:" .. rand_transp, 
-                    k .. "^[colorize:red:" .. rand_transp, 
-                    k .. "^[colorize:red:" .. rand_transp, 
-                    k .. "^[colorize:red:" .. rand_transp
-                }})
-    minetest.after(0.25, blink, video, k, rand_transp)
+    video:set_nametag_attributes({
+        color = "black",
+        text = "Generating subs . . ."
+    })
+    video:set_properties({textures = {t, t, t, t, t, t}})
+    minetest.after(0.25, blink, video, k, alpha)
 end

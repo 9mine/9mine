@@ -10,7 +10,7 @@ chk_res = function(name, node, req)
         res:get_luaentity().content = content
 
         res:set_nametag_attributes({
-            text = "Queary: " .. req:get_luaentity().search_string
+            text = "Query: " .. req:get_luaentity().search_string
         })
 
         req:set_nametag_attributes({text = "Search Video"})

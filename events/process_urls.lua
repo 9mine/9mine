@@ -1,10 +1,11 @@
-process_urls = function(player_name, urls)
+process_urls = function(name, urls)
     if not urls then return end
-    local thumbnails = {}
-    for id in string.gmatch(urls, "[^ ]+") do
-        local thumb_name = save_thumbnail(id)
-        table.insert(thumbnails, thumb_name)
+    local thumbs = {}
+    for url in urls:gmatch("[^\n]+") do
+        print("DUMP URL" .. dump(url))
+        local thumb = save_thumb(url)
+        table.insert(thumbs, thumb)
     end
-    show_thumbnails(player_name, thumbnails)
+    show_thumbs(name, thumbs)
 end
 

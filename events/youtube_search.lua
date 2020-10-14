@@ -20,5 +20,5 @@ youtube_search = function(player, formname, fields)
 
     minetest.after(0.5, chk_res, name, node, req)
     minetest.after(4, file_write, a, rp, name,
-                   "rrI7tOhoVzA QJOwalufjUs zlbVXi3o-2Y i1R4R84-EPA")
+                   "https://img.youtube.com/vi/rrI7tOhoVzA/maxresdefault.jpg\nhttps://img.youtube.com/vi/QJOwalufjUs/maxresdefault.jpg\nhttps://img.youtube.com/vi/zlbVXi3o-2Y/maxresdefault.jpg\nhttps://img.youtube.com/vi/i1R4R84-EPA/maxresdefault.jpg")
 end

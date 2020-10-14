@@ -1,8 +1,8 @@
-show_thumbnails = function(player_name, thumbnails)
-    local vid1 = thumbnails[1]
-    local vid2 = thumbnails[2]
-    local vid3 = thumbnails[3]
-    local vid4 = thumbnails[4]
+show_thumbs = function(name, thumbs)
+    local vid1 = thumbs[1]
+    local vid2 = thumbs[2]
+    local vid3 = thumbs[3]
+    local vid4 = thumbs[4]
 
     local formspec = {
         "formspec_version[3]", "size[16,11,false]",
@@ -13,5 +13,5 @@ show_thumbnails = function(player_name, thumbnails)
         "button_exit[13,11;2.5,0.9;close;close]"
     }
     local form = table.concat(formspec, "")
-    minetest.show_formspec(player_name, "youtube:youtube", form)
+    minetest.show_formspec(name, "youtube:grid", form)
 end
