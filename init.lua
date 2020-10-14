@@ -23,6 +23,7 @@ dofile(path .. "/funcs/spawn_video.lua")
 dofile(path .. "/funcs/blink.lua")
 dofile(path .. "/funcs/list_youtube.lua")
 dofile(path .. "/funcs/spawn_youtube.lua")
+dofile(path .. "/funcs/check_results.lua")
 
 
 -- on player join

@@ -25,6 +25,10 @@ list_youtube = function(addr, path, player)
     -- create platform
     local _, root, size = plt.create(p, 10, addr, path)
     to_plt(player, p)
+    local prefix = path == "/" and path or path .. "/"
+    local ctl_p = {x = root.x + 3, y = root.y + 1, z = root.z + 4}
+    local result_p = {x = root.x + 6, y = root.y + 1, z = root.z + 4}
+
     -- attach host info to the absolute path and hash
     local plt_node = graph:node(md5.sumhexa(addr .. path), {
         plt = true,
@@ -33,16 +37,18 @@ list_youtube = function(addr, path, player)
         root = root,
         size = size,
         path = path,
-        addr_path = addr .. path
+        addr_path = addr .. path,
+        ctl_path = prefix .. "ctl",
+        ctl_p = ctl_p,
+        result_path = prefix .. "result",
+        result_p = result_p
     })
 
     -- connect directory to the host node                    
     graph:edge(addr_node, plt_node)
 
     -- handle root path prefix without host
-    local prefix = path == "/" and path or path .. "/"
 
     -- make edges between content of directory and directory itself
-    spawn_youtube(listing["ctl"], {x = root.x + 3, y = root.y, z = root.z + 4},
-                  addr, prefix .. listing["ctl"].name)
+    spawn_youtube(listing["ctl"], ctl_p, addr, prefix .. listing["ctl"].name)
 end

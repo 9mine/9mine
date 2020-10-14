@@ -9,7 +9,7 @@ minetest.register_entity("youtube:search", {
         nametag_color = "black",
         infotext = "",
         static_save = true,
-        shaded = true
+        shaded = true,
     },
 
     on_punch = function(self, puncher, dtime, tool, dir)

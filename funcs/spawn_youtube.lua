@@ -5,7 +5,7 @@ spawn_youtube = function(file, slot, addr, path)
     local specific_entity = nil
     local text = nil
     if file.name == "ctl" then specific_entity = "youtube:search" text = "Search Video" end
-    if file.name == "result" then specific_entity = "youtube:result" text = "Show Results" end
+    if file.name == "result" then specific_entity = "youtube:video" text = "Results" end
     e = minetest.add_entity(p, specific_entity or (file.qid.type == 128 and "control9p:dir" or
                                 "control9p:file"))
 
