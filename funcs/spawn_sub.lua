@@ -1,14 +1,25 @@
-spawn_sub = function(f, s, a, path)
-    local p = {x = s.x, y = s.y + math.random(5, 14), z = s.z}
+spawn_sub = function(f, s, a, path, name)
+    local p = {x = s.x, y = s.y + math.random(3, 8), z = s.z}
     local e = minetest.add_entity(p, "youtube:video")
     local le = e:get_luaentity()
-    e:set_acceleration({x = 0, y = -9, z = 0})
     le.path = path
     le.addr = a
     le.stat = f
-    local alpha = 150
-    local t = f.name .. "^[colorize:red:" .. alpha
-    e:set_properties({textures = {t, t, t, t, t, t}, nametag = f.name})
+    if f.length < 1 then
+        e:set_properties({automatic_rotate = math.pi})
+        local alpha = 150
+        local t = f.name .. "^[colorize:red:" .. alpha
+        e:set_properties({
+            textures = {t, t, t, t, t, t},
+            nametag = "Generating Subs for " .. f.name
+        })
+        minetest.after(0.5, blink, e, f.name, alpha, a, path, name)
+    else
+        e:set_acceleration({x = 0, y = -9, z = 0})
+        local t = f.name
+        e:set_properties({textures = {t, t, t, t, t, t}, nametag = f.name})
+    end
+
     return e
 end
 

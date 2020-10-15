@@ -23,7 +23,7 @@ update_subs = function(a, p, pn)
                 p = s
             })
             g:edge(n, fn)
-            spawn_sub(f, s, a, prefix .. f.name)
+            spawn_sub(f, s, a, fn.path, pn)
             table.remove(slots, i)
             o_lst[name] = f
         else
