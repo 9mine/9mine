@@ -1,45 +1,37 @@
-update_subs = function(a, p, pn)
-    local cnx = connections[pn][a]
-    local g = graphs[pn]
+update_subs = function(addr, path, player_name)
+    local cnx = connections[player_name][addr]
+    local g = graphs[player_name]
     -- 
-    local n = g:findnode(hex(a .. p))
-    local an = g:findnode(a)
+    local n = g:findnode(hex(addr .. path))
+    local an = g:findnode(addr)
 
     local o_lst = n and n.listing
     local slots = n and n.slots
 
-    local lst = name_as_key(readdir(cnx, p == "/" and "../" or p) or {})
-    local prefix = p == "/" and p or p .. "/"
-    local pfx = a .. (p == "/" and p or p .. "/")
+    local lst = name_as_key(readdir(cnx, path == "/" and "../" or path) or {})
+    local prefix = path == "/" and path or path .. "/"
+    local pfx = addr .. prefix
 
-    for name, f in pairs(lst) do
+    for name, stat in pairs(lst) do
         if o_lst[name] == nil then
-            local i, s = next(slots)
-            local hs = hex(pfx .. f.name)
-            local fn = g:node(hs, {
-                stat = f,
-                addr = a,
-                path = prefix .. f.name,
-                p = s
+            local i, slot = next(slots)
+            local hash = hex(pfx .. name)
+            local fn = g:node(hash, {
+                stat = stat,
+                addr = addr,
+                path = prefix .. name,
+                p = slot
             })
             g:edge(n, fn)
-            spawn_sub(f, s, a, fn.path, pn)
+            spawn_subs(stat, slot, addr, fn.path, player_name)
             table.remove(slots, i)
-            o_lst[name] = f
-        else
-            -- local fn = g:findnode(hex(pfx .. f.name))
-            -- local e = get_entity(fn.p)
-            -- if not e then
-            --     local i, s = next(slots)
-            --     spawn_sub(f, s, a, prefix .. f.name)
-            --     table.remove(slots, i)
-            -- end
+            o_lst[name] = stat
         end
 
-        for name, f in pairs(o_lst) do
+        for name, stat in pairs(o_lst) do
             if lst[name] == nil then
-                local hs = hex(pfx .. f.name)
-                local fn = g:findnode(hs)
+                local hash = hex(pfx .. name)
+                local fn = g:findnode(hash)
                 table.insert(slots, fn.p)
                 local new_p = {x = fn.p.x, y = fn.p.y + 1, z = fn.p.z}
                 get_entity(fn.p):remove()
@@ -49,5 +41,5 @@ update_subs = function(a, p, pn)
             end
         end
     end
-    minetest.after(5, update_subs, a, p, pn)
+    minetest.after(3, update_subs, addr, path, player_name)
 end

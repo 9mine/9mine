@@ -6,10 +6,10 @@ show_thumbs = function(name, thumbs)
 
     local formspec = {
         "formspec_version[3]", "size[16,11,false]",
-        "image_button[0.5, 0.5; 7.5, 5;" .. vid1 .. ";" .. vid1 .. ";]",
-        "image_button[8.0, 0.5; 7.5, 5;" .. vid2 .. ";" .. vid2 .. ";]",
-        "image_button[0.5, 5.5; 7.5, 5;" .. vid3 .. ";" .. vid3 .. ";]",
-        "image_button[8.0, 5.5; 7.5, 5;" .. vid4 .. ";" .. vid4 .. ";]",
+        "image_button[0.5, 0.5; 7.5, 5;" .. vid1 .. ".png" .. ";" .. vid1 .. ";]",
+        "image_button[8.0, 0.5; 7.5, 5;" .. vid2 .. ".png" .. ";" .. vid2 .. ";]",
+        "image_button[0.5, 5.5; 7.5, 5;" .. vid3 .. ".png" .. ";" .. vid3 .. ";]",
+        "image_button[8.0, 5.5; 7.5, 5;" .. vid4 .. ".png" .. ";" .. vid4 .. ";]",
         "button_exit[13,11;2.5,0.9;close;close]"
     }
     local form = table.concat(formspec, "")

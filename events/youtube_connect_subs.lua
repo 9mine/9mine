@@ -1,9 +1,9 @@
 youtube_connect_subs = function(player, formname, fields)
-    local name = player:get_player_name()
-    local g = graphs[name]
+    local player_name = player:get_player_name()
+    local g = graphs[player_name]
     local addr, path, player = connect(player, formname, fields)
     if not (addr and path and player) then return end
-    local cnx = connections[name][addr]
+    local cnx = connections[player_name][addr]
     local ap = addr .. path
 
     if not goto_plt(ap, player) then
@@ -29,20 +29,20 @@ youtube_connect_subs = function(player, formname, fields)
 
         local prefix = path == "/" and path or path .. "/"
         local pfx = addr .. prefix
-        for _, f in pairs(lst) do
-            local i, s = next(slots)
-            local hs = hex(pfx .. f.name)
+        for name, stat in pairs(lst) do
+            local i, slot = next(slots)
+            local hs = hex(pfx .. name)
             local fnd = g:node(hs, {
-                stat = f,
+                stat = stat,
                 addr = addr,
-                path = prefix .. f.name,
-                p = s
+                path = prefix .. name,
+                p = slot
             })
             graph:edge(plt, fnd)
-            spawn_sub(f, s, addr, fnd.path, name)
+            spawn_subs(stat, slot, addr, fnd.path, player_name)
             table.remove(slots, i)
         end
-        minetest.after(2, update_subs, addr, path, name)
+        minetest.after(2, update_subs, addr, path, player_name)
     end
 
 end

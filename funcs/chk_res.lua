@@ -9,10 +9,7 @@ chk_res = function(name, node, req)
         local ss = req:get_luaentity().search_string
         res:get_luaentity().content = content
         res:get_luaentity().req = ss
-        res:set_nametag_attributes({
-            text = "Query: " .. ss 
-        })
-
+        res:set_nametag_attributes({text = "Query: " .. ss})
         req:set_nametag_attributes({text = "Search Video"})
     else
         req:set_pos(node.ctl_p)
