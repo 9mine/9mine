@@ -12,6 +12,7 @@ dofile(path .. "/entities/search.lua")
 dofile(path .. "/entities/video.lua")
 
 -- tools
+dofile(path .. "/tools/connect_subs.lua")
 dofile(path .. "/tools/connect_search.lua")
 dofile(path .. "/tools/arrow.lua")
 
@@ -24,7 +25,8 @@ dofile(path .. "/funcs/blink.lua")
 dofile(path .. "/funcs/list_youtube.lua")
 dofile(path .. "/funcs/spawn_youtube.lua")
 dofile(path .. "/funcs/chk_res.lua")
-
+dofile(path .. "/funcs/spawn_sub.lua")
+dofile(path .. "/funcs/update_subs.lua")
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
@@ -35,6 +37,7 @@ dofile(path .. "/events/process_urls.lua")
 dofile(path .. "/events/youtube_grid.lua")
 dofile(path .. "/events/youtube_connect.lua")
 dofile(path .. "/events/youtube_search.lua")
+dofile(path .. "/events/youtube_connect_subs.lua")
 
 -- entities 
 dofile(path .. "/entities/video.lua")

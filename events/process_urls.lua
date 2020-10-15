@@ -6,7 +6,10 @@ process_urls = function(name, entity)
         local thumb = save_thumb(url)
         table.insert(thumbs, thumb)
     end
-    entity.object:set_properties({automatic_rotate = 0, nametag = "Query: " .. entity.req})
+    entity.object:set_properties({
+        automatic_rotate = 0,
+        nametag = "Query: " .. entity.req
+    })
     show_thumbs(name, thumbs)
 end
 

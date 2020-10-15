@@ -12,7 +12,9 @@ minetest.register_entity("youtube:video", {
         nametag_color = "black",
         infotext = "",
         static_save = true,
-        shaded = true
+        shaded = true,
+        armor_groups = {immortal = 0},
+        nametag_color = "black"
     },
 
     get_staticdata = function(self)

@@ -7,7 +7,7 @@ list_youtube = function(addr, path, player)
     -- read directory specified in connection string or root
     local listing = name_as_key(readdir(conn, path == "/" and "../" or path) or
                                     {})
-
+    
     -- set player above platform and focus view on its 
     local p = player:get_pos()
     p.x = p.x + math.random(-10, 10)
