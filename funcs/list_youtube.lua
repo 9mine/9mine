@@ -13,7 +13,7 @@ list_youtube = function(addr, path, player)
     p.z = p.z + math.random(-10, 10)
     p = vector.floor(p)
 
-    local _, root, size = plt.create(p, 10, addr, path)
+    local slots, root, size = plt.create(p, 10, addr, path)
     to_plt(player, p)
     local prefix = path == "/" and path or path .. "/"
     local ctl_p = {x = root.x + 3, y = root.y + 1, z = root.z + 4}
@@ -26,6 +26,7 @@ list_youtube = function(addr, path, player)
         root = root,
         size = size,
         path = path,
+        slots = slots,
         addr_path = addr .. path,
         ctl_path = prefix .. "ctl",
         ctl_p = ctl_p,
