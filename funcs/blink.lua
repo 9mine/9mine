@@ -12,7 +12,7 @@ blink = function(subs, ID, alpha, addr, path, player_name)
         alpha = alpha == 0 and 150 or 0
         local tx = ID .. ".png^[colorize:red:" .. alpha
         subs:set_properties({textures = {tx, tx, tx, tx, tx, tx}})
-        minetest.after(alpha == 0 and 0.5 or 0.25, blink, subs, ID, alpha,
-                       addr, path, player_name)
+        minetest.after(alpha == 0 and 0.5 or 0.25, blink, subs, ID, alpha, addr,
+                       path, player_name)
     end
 end

@@ -1,9 +1,9 @@
 save_thumb = function(url)
+    local ID = url:gsub("https://www%.youtube%.com/watch%?v=", "")
     local path = minetest.get_modpath("youtube") .. "/textures/thumbnails/"
-    local wo_host = url:gsub("https://img.youtube.com/vi/", "")
-    local ID = wo_host:gsub("/maxresdefault.jpg", "")
+    url = "https://img.youtube.com/vi/" .. ID .. "/maxresdefault.jpg"
     local name = ID .. ".png"
-    
+
     if not tx_exists(ID) then
         local http = require("socket.http")
         local body, code = http.request(url)

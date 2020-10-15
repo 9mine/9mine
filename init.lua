@@ -7,6 +7,9 @@ local path = minetest.get_modpath("youtube")
 -- load mod.conf settings
 youtube_conf = Settings(path .. "/mod.conf")
 
+-- nodes
+
+
 -- tools
 dofile(path .. "/tools/connect_subs.lua")
 dofile(path .. "/tools/connect_search.lua")
@@ -42,3 +45,4 @@ dofile(path .. "/entities/result.lua")
 
 -- 9p interactions
 dofile(path .. "/9p/stat_drop.lua")
+dofile(path .. "/nodes/video.lua")

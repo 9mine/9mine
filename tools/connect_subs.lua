@@ -1,5 +1,5 @@
 minetest.register_tool("youtube:connect_subs", {
-    desription = "Connect to YouTube",
+    description = "Connect to YouTube",
     inventory_image = "youtube_connect_subs.png",
     wield_image = "youtube_connect_subs.png",
     on_use = function(itemstack, player, pointed_thing)

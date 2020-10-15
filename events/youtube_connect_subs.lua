@@ -11,8 +11,8 @@ youtube_connect_subs = function(player, formname, fields)
         local lst = name_as_key(readdir(cnx, path == "/" and "../" or path) or
                                     {})
         -- create platform
-        local sz = plt.get_size(get_table_length(lst)) 
-        if sz < 7 then sz = 7 end 
+        local sz = plt.get_size(get_table_length(lst))
+        if sz < 7 then sz = 7 end
         local slots, root, size = plt.create(player:get_pos(), sz, addr, path)
         to_plt(player, root)
         local plt = g:node(hex(ap), {

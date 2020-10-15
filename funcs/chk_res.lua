@@ -5,11 +5,20 @@ chk_res = function(name, node, req)
 
     if st.length > 0 then
         local content = file_read(a, rp, name)
-        local res = spawn_youtube(st, node.result_p, a, rp)
+        local i, s = next(node.slots)
+        local p = {x = s.x, y = s.y + 1, z = s.z}
+        local player = minetest.get_player_by_name(name)
+        local res, nwp = spawn_youtube(st, p, a, rp)
+        local dir = vector.direction(player:get_pos(), nwp)
+        local yw = minetest.dir_to_yaw(dir)
+        print(dump(yw))
+        player:set_look_horizontal(yw)
+        table.remove(node.slots, i)
         local ss = req:get_luaentity().search_string
         res:get_luaentity().content = content
         res:get_luaentity().req = ss
         res:set_nametag_attributes({text = "Query: " .. ss})
+        res:set_acceleration(vector.new())
         req:set_nametag_attributes({text = "Search Video"})
     else
         req:set_pos(node.ctl_p)

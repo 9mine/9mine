@@ -1,15 +1,12 @@
 youtube_search = function(player, formname, fields)
     local ss = fields["search_string"]
+    if (ss == "") or (not ss) then return end  
     local name = player:get_player_name()
     local a, path, player = plt_by_name(name)
     local node = graphs[name]:findnode(md5.sumhexa(a .. path))
     local rp = node.result_path
 
-    stat_drop(a, rp, name)
     file_write(a, node.ctl_path, name, ss)
-
-    local res = get_entity(node.result_p)
-    if res then res:remove() end
 
     local req = get_entity(node.ctl_p)
 
@@ -19,6 +16,4 @@ youtube_search = function(player, formname, fields)
     req:get_luaentity().search_string = ss
 
     minetest.after(0.5, chk_res, name, node, req)
-    minetest.after(2, file_write, a, rp, name,
-                   "https://img.youtube.com/vi/Zt8UqIC2jxI/maxresdefault.jpg\nhttps://img.youtube.com/vi/rrI7tOhoVzA/maxresdefault.jpg\nhttps://img.youtube.com/vi/QJOwalufjUs/maxresdefault.jpg\nhttps://img.youtube.com/vi/zlbVXi3o-2Y/maxresdefault.jpg\nhttps://img.youtube.com/vi/i1R4R84-EPA/maxresdefault.jpg\nhttps://img.youtube.com/vi/_dfLOzuIg2o/maxresdefault.jpg\nhttps://img.youtube.com/vi/1JAx2npuprk/maxresdefault.jpg\nhttps://img.youtube.com/vi/75CiRDGZwZQ/maxresdefault.jpg\nhttps://img.youtube.com/vi/8xQtGK97Y60/maxresdefault.jpg\nhttps://img.youtube.com/vi/HNIJeL-Su0g/maxresdefault.jpg\n")
 end
