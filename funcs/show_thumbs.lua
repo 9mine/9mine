@@ -1,13 +1,13 @@
 show_thumbs = function(name, ids)
+    local ids_num = #ids > 16 and 16 or #ids
     local padding_left = 0.5
     local padding_top = 0.5
     local spacing_h = 0.5
     local spacing_v = 0.5
-
     local row = 0
     local column = 0
-    local max_row = 1
-    local max_column = 1
+    local max_column = math.ceil(math.sqrt(#ids)) - 1
+    local max_row = math.ceil(#ids / (max_column + 1)) - 1
     local video_width = 10
     local video_height = 6
     local w = 2 * padding_left + max_column * spacing_h + video_width *
