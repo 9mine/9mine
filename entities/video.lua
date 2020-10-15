@@ -17,6 +17,21 @@ minetest.register_entity("youtube:video", {
         nametag_color = "black"
     },
 
+    on_punch = function(self, puncher, dtime, tool, dir)
+        local pn = puncher:get_player_name()
+        local addr = plt_by_name(pn)
+        local content = file_read(addr, self.path, pn)
+        local formspec = {
+            "formspec_version[3]", "size[13,13,false]",
+            "textarea[0.5,0.5;12.0,12.0;;;", minetest.formspec_escape(content),
+            "]"
+        }
+        local form = table.concat(formspec, "")
+
+        minetest.show_formspec(pn, "youtube:subs_content", form)
+
+    end,
+
     get_staticdata = function(self)
         local attributes = self.object:get_nametag_attributes()
         local data = {attr = attributes}
