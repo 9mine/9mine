@@ -1,5 +1,6 @@
 show_thumbs = function(name, ids)
-    local ids_num = #ids > 16 and 16 or #ids
+    local max_thumbs = tonumber(youtube_conf:get("max_thumbs"))
+    local ids_num = #ids > max_thumbs and max_thumbs or #ids
     local padding_left = 0.5
     local padding_top = 0.5
     local spacing_h = 0.5
