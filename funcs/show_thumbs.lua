@@ -21,10 +21,11 @@ show_thumbs = function(name, ids)
         if row > max_row then break end
         local w = padding_left + column * (video_width + spacing_h)
         local h = padding_top + row * (video_height + spacing_v)
-        thumbnails = thumbnails .. table.concat({
-            "image_button[", w, ",", h, ";", video_width, ",", video_height,
-            ";", id, ".png;", id, ";]"
-        })
+        thumbnails = thumbnails .. table.concat(
+                         {
+                "image_button[", w, ",", h, ";", video_width, ",", video_height,
+                ";", id, ".png;", id, ";]"
+            })
         if column < max_column then
             column = column + 1
         else

@@ -8,16 +8,16 @@ spawn_subs = function(f, s, a, path, name)
     if f.length < 1 then
         e:set_properties({automatic_rotate = math.pi})
         local alpha = 150
-        local t = f.name .. ".png" .. "^[colorize:red:" .. alpha
+        local tx = f.name .. ".png" .. "^[colorize:red:" .. alpha
         e:set_properties({
-            textures = {t, t, t, t, t, t},
+            textures = {tx, tx, tx, tx, tx, tx},
             nametag = "Generating Subs for " .. f.name
         })
         minetest.after(0.5, blink, e, f.name, alpha, a, path, name)
     else
         e:set_acceleration({x = 0, y = -9, z = 0})
-        local t = f.name .. ".png"
-        e:set_properties({textures = {t, t, t, t, t, t}, nametag = f.name})
+        local tx = f.name .. ".png"
+        e:set_properties({textures = {tx, tx, tx, tx, tx, tx}, nametag = f.name})
     end
 
     return e
