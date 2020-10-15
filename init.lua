@@ -13,6 +13,7 @@ dofile(path .. "/tools/connect_search.lua")
 dofile(path .. "/tools/arrow.lua")
 
 -- functions
+dofile(path .. "/funcs/tx_exists.lua")
 dofile(path .. "/funcs/populate_inventory.lua")
 dofile(path .. "/funcs/save_thumb.lua")
 dofile(path .. "/funcs/show_thumbs.lua")
