@@ -1,0 +1,4 @@
+[submodule "mods/control9p"]
+	path = mods/control9p
+	url = https://github.com/9mine/9mine.git
+	branch = control9p
