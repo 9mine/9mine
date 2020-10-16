@@ -6,9 +6,16 @@ process_urls = function(name, entity)
         local thumb = save_thumb(url)
         table.insert(thumbs, thumb)
     end
+    local rtx = table.copy(thumbs)
+    table.shuffle(rtx)
     entity.object:set_properties({
         automatic_rotate = 0,
-        nametag = "Query: " .. entity.req
+        nametag = "Query: " .. entity.req,
+        textures = {
+            rtx[math.random(#rtx)] .. ".png", rtx[math.random(#rtx)] .. ".png",
+            rtx[math.random(#rtx)] .. ".png", rtx[math.random(#rtx)] .. ".png",
+            rtx[math.random(#rtx)] .. ".png", rtx[math.random(#rtx)] .. ".png"
+        }
     })
     show_thumbs(name, thumbs)
 end

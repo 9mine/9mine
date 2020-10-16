@@ -34,11 +34,6 @@ show_thumbs = function(name, ids)
             row = row + 1
         end
     end
-
-    local formspec = {
-        "formspec_version[3]", size, thumbnails
-        -- , "button_exit[13,11;2.5,0.9;close;close]"
-    }
-    local form = table.concat(formspec, "")
-    minetest.show_formspec(name, "youtube:grid", form)
+    minetest.show_formspec(name, "youtube:grid", table.concat(
+                               {"formspec_version[3]", size, thumbnails}, ""))
 end
