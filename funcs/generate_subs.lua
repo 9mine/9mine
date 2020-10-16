@@ -3,6 +3,7 @@ generate_subs = function(entity, player)
     local entity_pos = entity:get_pos()
     local player_name = player:get_player_name()
     local ID = entity:get_luaentity().id
+
     local plt_node = minetest.find_node_near(entity_pos, 1, "control9p:plt",
                                              true)
     if not plt_node then
@@ -19,7 +20,9 @@ generate_subs = function(entity, player)
 
     local prefix = path == "/" and path or path .. "/"
     local pfx = addr .. prefix
-    local result, stat = pcall(stat_read, addr, prefix .. ID, player_name)
+    local file_path = prefix .. ID
+
+    local result, stat = pcall(stat_read, addr, file_path, player_name)
     if not result or stat.length > 0 then
         entity:remove()
         add_video_item(ID, player)
@@ -27,8 +30,7 @@ generate_subs = function(entity, player)
         return
     end
 
-    local result, response = pcall(file_write, addr, prefix .. ID, player_name,
-                                   "CreateFile")
+    local result = pcall(file_write, addr, file_path, player_name, "bit")
     if not result then
         entity:remove()
         add_video_item(ID, player)
@@ -41,7 +43,7 @@ generate_subs = function(entity, player)
     local file_gnode = graph:node(hex(pfx .. ID), {
         stat = stat,
         addr = addr,
-        path = prefix .. ID,
+        path = file_path,
         p = plt_node
     })
 
@@ -49,15 +51,17 @@ generate_subs = function(entity, player)
     subs_gnode.listing[ID] = stat
     if stat.length == 0 then
         entity:get_luaentity().addr = addr
-        entity:get_luaentity().path = file_gnode.path
+        entity:get_luaentity().path = file_path
         entity:set_properties({automatic_rotate = math.pi})
+
         local alpha = 150
         local tx = ID .. ".png" .. "^[colorize:red:" .. alpha
         entity:set_properties({
             textures = {tx, tx, tx, tx, tx, tx},
             nametag = "Generating Subs for " .. ID
         })
-        minetest.after(0.5, blink, entity, ID, alpha, addr, file_gnode.path,
+        
+        minetest.after(0.5, blink, entity, ID, alpha, addr, file_path,
                        player_name)
     end
 end
