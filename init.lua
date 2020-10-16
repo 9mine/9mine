@@ -9,7 +9,6 @@ youtube_conf = Settings(path .. "/mod.conf")
 
 -- nodes
 
-
 -- tools
 dofile(path .. "/tools/connect_subs.lua")
 dofile(path .. "/tools/connect_search.lua")
@@ -30,17 +29,16 @@ dofile(path .. "/funcs/generate_subs.lua")
 dofile(path .. "/funcs/add_video_item.lua")
 dofile(path .. "/funcs/send_warning.lua")
 
-
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
 
 -- events
 dofile(path .. "/events/events.lua")
 dofile(path .. "/events/process_urls.lua")
-dofile(path .. "/events/youtube_grid.lua")
-dofile(path .. "/events/youtube_search.lua")
-dofile(path .. "/events/youtube_connect_subs.lua")
-dofile(path .. "/events/youtube_connect_search.lua")
+dofile(path .. "/events/grid.lua")
+dofile(path .. "/events/search.lua")
+dofile(path .. "/events/connect_subs.lua")
+dofile(path .. "/events/connect_search.lua")
 
 -- entities 
 dofile(path .. "/entities/subs.lua")
@@ -48,5 +46,4 @@ dofile(path .. "/entities/search.lua")
 dofile(path .. "/entities/result.lua")
 
 -- 9p interactions
-dofile(path .. "/9p/stat_drop.lua")
 dofile(path .. "/nodes/video.lua")

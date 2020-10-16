@@ -14,7 +14,7 @@ spawn_youtube = function(file, slot, addr, path)
         entity = minetest.add_entity(pos, "youtube:result")
     end
 
-    lua_entity = entity:get_luaentity()
+    local lua_entity = entity:get_luaentity()
     entity:set_properties({nametag = nametag})
     lua_entity.path = path
     lua_entity.addr = addr

@@ -8,7 +8,7 @@ youtube_search = function(player, formname, fields)
 
     file_write(addr, node.ctl_path, player_name, ss)
 
-    local req = get_entity(node.ctl_p)
+    local req = get_entity(node.ctl_pos)
     req:set_nametag_attributes({text = "Searching . . . "})
     req:set_acceleration({x = 0, y = -2, z = 0})
     req:set_velocity({x = 0, y = 1, z = 0})

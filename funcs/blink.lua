@@ -1,15 +1,15 @@
 blink = function(entity, ID, alpha, addr, path, player_name)
-    local result, st = pcall(stat_read, addr, path, player_name)
+    local result, stat = pcall(stat_read, addr, path, player_name)
     if not result then
         entity:set_properties({nametag = "Error. Deleting . . ."})
         return
     end
-    if st.length > 0 then
+    if stat.length > 0 then
         local tx = ID .. ".png"
         entity:set_properties({
             textures = {tx, tx, tx, tx, tx, tx},
             automatic_rotate = 0,
-            nametag = "Subs Ready For " .. st.name
+            nametag = "Subs Ready For " .. stat.name
         })
     else
         alpha = alpha == 0 and 150 or 0

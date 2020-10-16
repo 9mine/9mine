@@ -21,6 +21,7 @@ check_results = function(name, node, req)
         res:get_luaentity().req = ss
         res:set_nametag_attributes({text = "Query: " .. ss})
         res:set_acceleration(vector.new())
+        
         req:set_nametag_attributes({text = "Search Video"})
     else
         req:set_pos(node.ctl_p)
