@@ -5,12 +5,9 @@ youtube_connect_subs = function(player, formname, fields)
     if not (addr and path and player) then return end
     local cnx = connections[player_name][addr]
     local ap = addr .. path
-
     if not goto_plt(ap, player) then
-        -- get listing
         local lst = name_as_key(readdir(cnx, path == "/" and "../" or path) or
                                     {})
-        -- create platform
         local sz = plt.get_size(get_table_length(lst))
         if sz < 7 then sz = 7 end
         local slots, root, size = plt.create(player:get_pos(), sz, addr, path)
@@ -31,8 +28,7 @@ youtube_connect_subs = function(player, formname, fields)
         local pfx = addr .. prefix
         for name, stat in pairs(lst) do
             local i, slot = next(slots)
-            local hs = hex(pfx .. name)
-            local fnd = g:node(hs, {
+            local fnd = g:node(hex(pfx .. name), {
                 stat = stat,
                 addr = addr,
                 path = prefix .. name,

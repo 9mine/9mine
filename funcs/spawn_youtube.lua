@@ -1,4 +1,3 @@
--- spawn given file at provided position ('slot') 
 spawn_youtube = function(file, slot, addr, path)
     local tx, e, le, p = nil
     if file.name == "ctl" then

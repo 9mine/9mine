@@ -50,11 +50,5 @@ generate_subs = function(entity, player)
         })
         minetest.after(0.5, blink, entity, ID, alpha, addr, file_gnode.path,
                        player_name)
-    else
-        -- should not be called
-        -- entity:set_properties({
-        --     textures = {tx, tx, tx, tx, tx, tx},
-        --     nametag = "Subs Ready for " .. ID
-        -- })
     end
 end

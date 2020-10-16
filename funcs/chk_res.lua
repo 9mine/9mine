@@ -11,7 +11,6 @@ chk_res = function(name, node, req)
         local res, nwp = spawn_youtube(st, p, a, rp)
         local dir = vector.direction(player:get_pos(), nwp)
         local yw = minetest.dir_to_yaw(dir)
-        print(dump(yw))
         player:set_look_horizontal(yw)
         table.remove(node.slots, i)
         local ss = req:get_luaentity().search_string
