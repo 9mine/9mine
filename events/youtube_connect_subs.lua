@@ -38,12 +38,11 @@ youtube_connect_subs = function(player, formname, fields)
                 path = prefix .. name,
                 p = slot
             })
-            graph:edge(plt, fnd)
+            g:edge(plt, fnd)
             spawn_subs(stat, slot, addr, fnd.path, player_name)
             table.remove(slots, i)
         end
         minetest.after(2, update_subs, addr, path, player_name)
     end
-
 end
 

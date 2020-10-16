@@ -17,7 +17,10 @@ spawn_subs = function(f, s, a, path, name)
         minetest.after(0.5, blink, e, f.name, alpha, a, path, name)
     else
         local tx = f.name .. ".png"
-        e:set_properties({textures = {tx, tx, tx, tx, tx, tx}, nametag = f.name})
+        e:set_properties({
+            textures = {tx, tx, tx, tx, tx, tx},
+            nametag = "Subs Ready for " .. f.name
+        })
     end
 
     return e

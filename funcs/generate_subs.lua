@@ -39,6 +39,8 @@ generate_subs = function(entity, player)
     graph:edge(subs_gnode, file_gnode)
     subs_gnode.listing[ID] = stat
     if stat.length == 0 then
+        entity:get_luaentity().addr = addr
+        entity:get_luaentity().path = file_gnode.path
         entity:set_properties({automatic_rotate = math.pi})
         local alpha = 150
         local tx = ID .. ".png" .. "^[colorize:red:" .. alpha
@@ -49,9 +51,10 @@ generate_subs = function(entity, player)
         minetest.after(0.5, blink, entity, ID, alpha, addr, file_gnode.path,
                        player_name)
     else
-        entity:set_properties({
-            textures = {tx, tx, tx, tx, tx, tx},
-            nametag = "Subs Ready for " .. ID
-        })
+        -- should not be called
+        -- entity:set_properties({
+        --     textures = {tx, tx, tx, tx, tx, tx},
+        --     nametag = "Subs Ready for " .. ID
+        -- })
     end
 end

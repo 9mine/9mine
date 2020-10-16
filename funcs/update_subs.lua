@@ -27,13 +27,16 @@ update_subs = function(addr, path, player_name)
 
     for name, stat in pairs(o_lst) do
         if lst[name] == nil then
+            print("DUMP pfx..name", pfx .. name)
             local hash = hex(pfx .. name)
             local fn = g:findnode(hash)
-            print(dump(fn.p))
+            print(dump(fn))
             fn.p.y = fn.p.y + 1
-            --get_entity(fn.p):remove()
+            -- get_entity(fn.p):remove()
             pcall(function(p) get_entity(p):remove() end, fn.p)
+
             local efn = fn:nextinput(nil)
+            print(dump(efn))
             efn:delete()
             o_lst[name] = nil
         end

@@ -18,17 +18,16 @@ minetest.register_entity("youtube:subs", {
     },
 
     on_punch = function(self, puncher, dtime, tool, dir)
-        local pn = puncher:get_player_name()
-        local addr = plt_by_name(pn)
-        local content = file_read(addr, self.path, pn)
-        local formspec = {
-            "formspec_version[3]", "size[13,13,false]",
-            "textarea[0.5,0.5;12.0,12.0;;;", minetest.formspec_escape(content),
-            "]"
-        }
-        local form = table.concat(formspec, "")
+        local player_name = puncher:get_player_name()
+        local content = file_read(self.addr, self.path, player_name)
 
-        minetest.show_formspec(pn, "youtube:subs_content", form)
+        minetest.show_formspec(player_name, "youtube:subs_content",
+                               table.concat(
+                                   {
+                "formspec_version[3]", "size[13,13,false]",
+                "textarea[0.5,0.5;12.0,12.0;;;",
+                minetest.formspec_escape(content), "]"
+            }, ""))
 
     end,
 
