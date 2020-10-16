@@ -7,11 +7,14 @@ chk_res = function(name, node, req)
         local content = file_read(a, rp, name)
         local i, s = next(node.slots)
         local p = {x = s.x, y = s.y + 1, z = s.z}
-        local player = minetest.get_player_by_name(name)
+        local pl = minetest.get_player_by_name(name)
         local res, nwp = spawn_youtube(st, p, a, rp)
-        local dir = vector.direction(player:get_pos(), nwp)
-        local yw = minetest.dir_to_yaw(dir)
-        player:set_look_horizontal(yw)
+
+        nwp.y = nwp.y - 1.5
+        local d = vector.direction(pl:get_pos(), nwp)
+        pl:set_look_vertical(-math.atan2(d.y, math.sqrt(d.x * d.x + d.z * d.z)))
+        pl:set_look_horizontal(-math.atan2(d.x, d.z))
+
         table.remove(node.slots, i)
         local ss = req:get_luaentity().search_string
         res:get_luaentity().content = content
