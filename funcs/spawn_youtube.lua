@@ -1,23 +1,23 @@
 spawn_youtube = function(file, slot, addr, path)
-    local tx, e, le, p = nil
+    local pos = table.copy(slot)
+    local nametag, entity
+
     if file.name == "ctl" then
-        e = "youtube:search"
-        tx = "Search Video"
-        p = {x = slot.x, y = slot.y + math.random(5, 14), z = slot.z}
-        e = minetest.add_entity(p, e)
-        e:set_acceleration({x = 0, y = -9, z = 0})
+        nametag = "Search Video"
+        pos.y = pos.y + math.random(5, 10)
+        entity = minetest.add_entity(pos, "youtube:search")
+        entity:set_acceleration({x = 0, y = -9, z = 0})
     end
     if file.name == "result" then
-        e = "youtube:result"
-        tx = "Results"
-        p = {x = slot.x, y = slot.y + math.random(3), z = slot.z}
-        e = minetest.add_entity(p, e)
+        nametag = "Results"
+        pos.y = pos.y + math.random(1.1, 3.2)
+        entity = minetest.add_entity(pos, "youtube:result")
     end
 
-    le = e:get_luaentity()
-    e:set_nametag_attributes({color = "black", text = tx})
-    le.path = path
-    le.addr = addr
-    le.stat = file
-    return e, p
+    lua_entity = entity:get_luaentity()
+    entity:set_properties({nametag = nametag})
+    lua_entity.path = path
+    lua_entity.addr = addr
+    lua_entity.stat = file
+    return entity, pos
 end
