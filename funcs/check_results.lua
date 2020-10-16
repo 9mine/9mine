@@ -1,14 +1,14 @@
-chk_res = function(name, node, req)
-    local a = node.addr
-    local rp = node.result_path
-    local st = stat_read(a, rp, name)
+check_results = function(name, node, req)
+    local addr = node.addr
+    local path = node.result_path
+    local st = stat_read(addr, path, name)
 
     if st.length > 0 then
-        local content = file_read(a, rp, name)
+        local content = file_read(addr, path, name)
         local i, s = next(node.slots)
         local p = {x = s.x, y = s.y + 1, z = s.z}
         local pl = minetest.get_player_by_name(name)
-        local res, nwp = spawn_youtube(st, p, a, rp)
+        local res, nwp = spawn_youtube(st, p, addr, path)
 
         nwp.y = nwp.y - 1.5
         local d = vector.direction(pl:get_pos(), nwp)
@@ -26,6 +26,6 @@ chk_res = function(name, node, req)
         req:set_pos(node.ctl_p)
         req:set_acceleration({x = 0, y = -4, z = 0})
         req:set_velocity({x = 0, y = 2, z = 0})
-        minetest.after(0.5, chk_res, name, node, req)
+        minetest.after(0.5, check_results, name, node, req)
     end
 end

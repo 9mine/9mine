@@ -17,9 +17,8 @@ list_youtube = function(addr, path, player)
     to_plt(player, p)
     local prefix = path == "/" and path or path .. "/"
     local ctl_p = {x = root.x + 3, y = root.y + 1, z = root.z + 4}
-    local result_p = {x = root.x + 6, y = root.y + 1, z = root.z + 4}
 
-    local plt_node = g:node(md5.sumhexa(addr .. path), {
+    local plt_node = g:node(hex(addr .. path), {
         plt = true,
         listing = listing,
         addr = addr,
@@ -30,10 +29,9 @@ list_youtube = function(addr, path, player)
         addr_path = addr .. path,
         ctl_path = prefix .. "ctl",
         ctl_p = ctl_p,
-        result_path = prefix .. "result",
-        result_p = result_p
+        result_path = prefix .. "result"
     })
 
     g:edge(addr_node, plt_node)
-    spawn_youtube(listing["ctl"], ctl_p, addr, prefix .. listing["ctl"].name)
+    spawn_youtube(listing["ctl"], ctl_p, addr, plt_node.ctl_path)
 end

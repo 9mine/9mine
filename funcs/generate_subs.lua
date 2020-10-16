@@ -25,17 +25,26 @@ generate_subs = function(entity, player)
                          " exists. Video set back to inventory")
         return
     end
+ 
+    local prefix = path == "/" and path or path .. "/"
+    local pfx = addr .. prefix
+    local result, stat = pcall(stat_read, addr, prefix .. ID, player_name)
+    if not result then
+        entity:remove()
+        add_video_item(ID, player)
+        send_warning(player_name, stat)
+        return
+    end
+
     local graph = graphs[player_name]
     local subs_gnode = graph:findnode(hex(addr .. path))
-    local prefix = path == "/" and path or path .. "/"
-    local stat = stat_read(addr, prefix .. ID, player_name)
-    local pfx = addr .. prefix
     local file_gnode = graph:node(hex(pfx .. ID), {
         stat = stat,
         addr = addr,
         path = prefix .. ID,
         p = plt_node
     })
+
     graph:edge(subs_gnode, file_gnode)
     subs_gnode.listing[ID] = stat
     if stat.length == 0 then
