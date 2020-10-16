@@ -24,5 +24,5 @@ list_youtube = function(addr, path, player)
     })
 
     g:edge(addr_node, plt_node)
-    spawn_youtube(listing["ctl"], ctl_pos, addr, plt_node.ctl_path)
+    spawn_youtube(plt_node.listing["ctl"], ctl_pos, addr, plt_node.ctl_path)
 end

@@ -38,7 +38,7 @@ minetest.register_entity("youtube:subs", {
     end,
 
     on_activate = function(self, staticdata, dtime_s)
-        sel.object:set_acceleration({x = 0, y = -9, z = 0})
+        self.object:set_acceleration({x = 0, y = -9, z = 0})
         if staticdata ~= "" and staticdata ~= nil then
             local data = minetest.deserialize(staticdata) or {}
             self.object:set_nametag_attributes(data.attr)
