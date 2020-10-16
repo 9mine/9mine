@@ -1,12 +1,26 @@
 process_urls = function(name, entity)
+    --local modpath = minetest.get_modpath("youtube")
+    --local file = io.open(modpath .. "/urls.txt", "r")
+    --local urls = file:read("*all")
+    --file:close()
     local urls = entity.content
     if not urls then return end
     if entity.thumbs then
+        local thumbs = minetest.deserialize(entity.thumbs)
+        table.shuffle(thumbs)
         entity.object:set_properties({
             automatic_rotate = 0,
-            nametag = "Query: " .. entity.req
+            nametag = "Query: " .. entity.req,
+            textures = {
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png"
+            }
         })
-        show_thumbs(name, minetest.deserialize(entity.thumbs))
+        show_thumbs(name, thumbs)
     else
 
         local thumbs = {}
@@ -20,18 +34,17 @@ process_urls = function(name, entity)
             send_warning(name, "No video found")
             return
         end
-        local rtx = table.copy(thumbs)
-        table.shuffle(rtx)
+        table.shuffle(thumbs)
         entity.object:set_properties({
             automatic_rotate = 0,
             nametag = "Query: " .. entity.req,
             textures = {
-                rtx[math.random(#rtx)] .. ".png",
-                rtx[math.random(#rtx)] .. ".png",
-                rtx[math.random(#rtx)] .. ".png",
-                rtx[math.random(#rtx)] .. ".png",
-                rtx[math.random(#rtx)] .. ".png",
-                rtx[math.random(#rtx)] .. ".png"
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png",
+                thumbs[math.random(#thumbs)] .. ".png"
             }
         })
 

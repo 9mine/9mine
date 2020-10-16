@@ -9,7 +9,7 @@ blink = function(entity, ID, alpha, addr, path, player_name)
         entity:set_properties({
             textures = {tx, tx, tx, tx, tx, tx},
             automatic_rotate = 0,
-            nametag = "Subs For " .. st.name
+            nametag = "Subs Ready For " .. st.name
         })
     else
         alpha = alpha == 0 and 150 or 0

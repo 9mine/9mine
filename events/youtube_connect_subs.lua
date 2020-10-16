@@ -6,8 +6,10 @@ youtube_connect_subs = function(player, formname, fields)
     local cnx = connections[player_name][addr]
     local ap = addr .. path
     if not goto_plt(ap, player) then
+        local path = minetest.get_modpath("youtube") .. "/textures/thumbnails/"
         local lst = name_as_key(readdir(cnx, path == "/" and "../" or path) or
                                     {})
+        for ID, _ in pairs(lst) do minetest.dynamic_add_media(path .. ID .. ".png") end
         local sz = plt.get_size(get_table_length(lst))
         if sz < 7 then sz = 7 end
         local slots, root, size = plt.create(player:get_pos(), sz, addr, path)

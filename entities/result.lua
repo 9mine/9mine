@@ -37,7 +37,7 @@ minetest.register_entity("youtube:result", {
             automatic_rotate = math.pi,
             nametag = "Processing . . . "
         })
-        minetest.after(0.2, process_urls, puncher:get_player_name(), self)
+        minetest.after(0.4, process_urls, puncher:get_player_name(), self)
     end
 
 })

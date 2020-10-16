@@ -8,7 +8,6 @@ update_subs = function(addr, path, player_name)
     local pfx = addr .. prefix
     for name, stat in pairs(o_lst) do
         if lst[name] == nil then
-            print("DUMP pfx..name", pfx .. name)
             local hash = hex(pfx .. name)
             local fn = g:findnode(hash)
             fn.p.y = fn.p.y + 1
@@ -18,6 +17,5 @@ update_subs = function(addr, path, player_name)
             o_lst[name] = nil
         end
     end
-
     minetest.after(3, update_subs, addr, path, player_name)
 end

@@ -17,22 +17,22 @@ generate_subs = function(entity, player)
     local path = plt_node_meta:get_string("path")
     local cnx = connections[player_name][addr]
 
-    local result, response = pcall(file_create, addr, path, player_name, ID)
-    if (not result) and response:match("File exists") then
-        entity:remove()
-        add_video_item(ID, player)
-        send_warning(player_name, "Subs for " .. ID ..
-                         " exists. Video set back to inventory")
-        return
-    end
- 
     local prefix = path == "/" and path or path .. "/"
     local pfx = addr .. prefix
     local result, stat = pcall(stat_read, addr, prefix .. ID, player_name)
+    if not result or stat.length > 0 then
+        entity:remove()
+        add_video_item(ID, player)
+        send_warning(player_name, "Subs for ID Already Exist")
+        return
+    end
+
+    local result, response = pcall(file_write, addr, prefix .. ID, player_name,
+                                   "CreateFile")
     if not result then
         entity:remove()
         add_video_item(ID, player)
-        send_warning(player_name, stat)
+        send_warning(player_name, "Error Creating File")
         return
     end
 
