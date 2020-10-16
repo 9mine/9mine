@@ -24,7 +24,7 @@ check_results = function(name, node, req)
         
         req:set_nametag_attributes({text = "Search Video"})
     else
-        req:set_pos(node.ctl_p)
+        req:set_pos(node.ctl_pos)
         req:set_acceleration({x = 0, y = -4, z = 0})
         req:set_velocity({x = 0, y = 2, z = 0})
         minetest.after(0.5, check_results, name, node, req)
