@@ -15,6 +15,8 @@ process_urls = function(name, entity)
             table.insert(thumbs, thumb)
         end
         if #thumbs == 0 then
+            entity.object:set_properties(
+                {automatic_rotate = 0, nametag = "Query: " .. entity.req})
             send_warning(name, "No video found")
             return
         end
