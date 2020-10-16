@@ -1,6 +1,7 @@
 spawn_subs = function(f, s, a, path, name)
     local p = {x = s.x, y = s.y + math.random(3, 8), z = s.z}
     local e = minetest.add_entity(p, "youtube:subs")
+    e:set_acceleration({x = 0, y = -9, z = 0})
     local le = e:get_luaentity()
     le.path = path
     le.addr = a
@@ -15,7 +16,6 @@ spawn_subs = function(f, s, a, path, name)
         })
         minetest.after(0.5, blink, e, f.name, alpha, a, path, name)
     else
-        e:set_acceleration({x = 0, y = -9, z = 0})
         local tx = f.name .. ".png"
         e:set_properties({textures = {tx, tx, tx, tx, tx, tx}, nametag = f.name})
     end

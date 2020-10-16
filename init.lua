@@ -28,6 +28,8 @@ dofile(path .. "/funcs/spawn_subs.lua")
 dofile(path .. "/funcs/update_subs.lua")
 dofile(path .. "/funcs/generate_subs.lua")
 dofile(path .. "/funcs/add_video_item.lua")
+dofile(path .. "/funcs/send_warning.lua")
+
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
