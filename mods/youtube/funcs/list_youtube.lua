@@ -22,7 +22,7 @@ list_youtube = function(addr, path, player)
         addr_path = addr .. path,
         result_path = prefix .. "result"
     })
-
-    g:edge(addr_node, plt_node)
+    g:edge(g:findnode(name), addr_node, name .. "->" .. addr)
+    g:edge(addr_node, plt_node, addr .. "->" .. path)
     spawn_youtube(plt_node.listing["ctl"], ctl_pos, addr, plt_node.ctl_path)
 end

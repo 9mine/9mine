@@ -1,0 +1,32 @@
+version: "3.5"
+
+services:
+
+  inferno:
+    image: dievri/inferno-os:getauth
+    container_name: mt-local
+    networks:
+      - minetest
+    ports:
+      - "1917:1917"
+    volumes:
+        - "./profile:/usr/inferno-os/lib/sh/profile"
+    stdin_open: true 
+    tty: true
+
+  server:
+    depends_on: 
+      - inferno
+    image: minetest:demo
+    container_name: mt-server
+    networks:
+      - minetest
+    volumes:
+        - "./storage:/storage"
+    ports:
+      - "30000:30000/udp"
+
+networks:
+  minetest:
+    name: minetest
+    driver: bridge

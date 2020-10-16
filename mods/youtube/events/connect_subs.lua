@@ -20,8 +20,7 @@ youtube_connect_subs = function(player, formname, fields)
         end
 
         local size = plt.get_size(get_table_length(lst))
-        local slots, root, size = plt.create(player:get_pos(), size, addr,
-                                             path)
+        local slots, root, size = plt.create(player:get_pos(), size, addr, path)
         to_plt(player, root)
         local plt = g:node(hex(ap), {
             plt = true,
@@ -33,7 +32,7 @@ youtube_connect_subs = function(player, formname, fields)
             path = path,
             addr_path = ap
         })
-        g:edge(g:findnode(addr), plt)
+        g:edge(g:findnode(addr), plt, addr .. "->" .. path)
 
         local prefix = path == "/" and path or path .. "/"
         local pfx = addr .. prefix
@@ -46,7 +45,7 @@ youtube_connect_subs = function(player, formname, fields)
                 path = prefix .. name,
                 p = slot
             })
-            g:edge(plt, fnd)
+            g:edge(plt, fnd, plt.path .. "->" .. name)
             spawn_subs(stat, slot, addr, fnd.path, player_name)
             table.remove(slots, i)
         end
