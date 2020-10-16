@@ -26,6 +26,8 @@ dofile(path .. "/funcs/chk_res.lua")
 dofile(path .. "/funcs/blink.lua")
 dofile(path .. "/funcs/spawn_subs.lua")
 dofile(path .. "/funcs/update_subs.lua")
+dofile(path .. "/funcs/generate_subs.lua")
+dofile(path .. "/funcs/add_video_item.lua")
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")

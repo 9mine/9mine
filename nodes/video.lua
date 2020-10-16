@@ -26,12 +26,17 @@ minetest.register_node("youtube:video", {
         p.y = p.y + dir.y
         p.z = p.z + dir.z
         local e = minetest.add_entity(p, "youtube:subs")
+        e:get_luaentity().id = id
         e:set_properties({
             textures = {tx, tx, tx, tx, tx, tx},
             nametag = id,
             nametag_color = "black"
         })
-
+        e:set_acceleration({x = 0, y = -9.81, z = 0})
+        minetest.after(1, function(e, player)
+            e:set_properties({nametag = "Establishing connection"})
+            generate_subs(e, player)
+        end, e, dropper)
         return itemstack
     end
 })

@@ -3,12 +3,7 @@ youtube_grid = function(player, formname, fields)
     local pn = player:get_player_name()
     local ID, rsp = next(fields)
     if ID == "quit" then return end
-    local item = ItemStack("youtube:video")
-    local item_meta = item:get_meta()
-    item_meta:set_string("ID", ID)
-    item_meta:set_string("description", ID)
-    player:get_inventory():add_item("main", item)
-
+    add_video_item(ID, player)
     local formspec = {
         "formspec_version[3]", "size[10,2,false]",
         "label[0.5,0.5;VideoID " .. ID .. " added to inventory]",
