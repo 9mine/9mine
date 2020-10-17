@@ -12,12 +12,15 @@ youtube_connect_subs = function(player, formname, fields)
     if not goto_plt(ap, player) then
         local lst = name_as_key(readdir(cnx, path == "/" and "../" or path) or
                                     {})
-        local modpath = minetest.get_modpath("youtube") ..
-                            "/textures/thumbnails/"
 
+        minetest.chat_send_player(player_name,
+                                  "\nDownloading missing textures . . . \n")
         for ID, _ in pairs(lst) do
-            minetest.dynamic_add_media(modpath .. ID .. ".png")
+            save_thumb(ID)
+            minetest.chat_send_player(player_name,
+                                      "Texture ID " .. ID .. " downloaded.\n")
         end
+        minetest.chat_send_player(player_name, "\nAll textures downloaded\n")
 
         local size = plt.get_size(get_table_length(lst))
         local slots, root, size = plt.create(player:get_pos(), size, addr, path)
