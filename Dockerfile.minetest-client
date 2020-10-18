@@ -32,4 +32,4 @@ COPY --from=compile /minetest_compiled/share /usr/share/
 ADD files/minetest-client.conf /root/.minetest/minetest.conf
 #ADD files/youtube.sh /usr/local/bin/youtube.sh
 ENV DISPLAY :0
-ENTRYPOINT ["sh", "-c", "'Xvfb'&  'x11vnc'&  /usr/bin/minetest"]
+ENTRYPOINT ["sh", "-c", "Xvfb -screen 0 1920x1080x24+32 & sleep 5 && fvwm2 & sleep 5 && x11vnc & /usr/bin/minetest --go --address minetest --name streamer --password streamer"]
