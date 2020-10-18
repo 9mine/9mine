@@ -21,6 +21,10 @@ services:
       dockerfile: Dockerfile.minetest-client
     
     image: minetest-client:bitcoin_transaction
+    ports:
+      - "5900:5900"
+    devices:
+      - /dev/dri:/dev/dri #optional
     networks: 
       - minetest
 
