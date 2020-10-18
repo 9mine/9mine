@@ -44,7 +44,7 @@ function GraphViz.register_node(self, node_name)
     local node_type = "graphviz:node"
 
     --if string.match(node_name, "...") then
-    if string.len(node_name) == 11 then
+    if string.len(node_name) == 64 then
       node_type = "graphviz:route"
     end
 
