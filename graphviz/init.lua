@@ -24,7 +24,7 @@ show_stats = function()
         hud_elem_type = "text",
         --position = {x = 0.8, y = 0.2},
 		    offset = {x = 1450, y = 950} ,
-        text = string.format("Total on the screen\n%s", format_num(total, 0, '$')),
+        text = string.format("Total on the screen\n%s", format_num(math.floor(total/2), 0, '$')),
         --alignment = {x = 1, y = 0},
         number = 0xFFFFFF,
         --scale = { x = 2, y = 2 },
