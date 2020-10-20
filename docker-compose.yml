@@ -1,21 +1,32 @@
 version: "3.5"
 
 services:
-  minetest:
-    image: dievri/minetest:master
+
+  inferno:
+    image: dievri/inferno-os:getauth
+    container_name: mt-local
     networks:
-      - minetest-inferno
+      - minetest
+    ports:
+      - "1917:1917"
+    volumes:
+        - "./profile:/usr/inferno-os/lib/sh/profile"
+    stdin_open: true 
+    tty: true
+
+  server:
+    depends_on: 
+      - inferno
+    image: dievri/minetest:master
+    container_name: mt-server
+    networks:
+      - minetest
+    volumes:
+        - "./storage:/storage"
     ports:
       - "30000:30000/udp"
-  inferno:
-    image: dievri/inferno-os
-    networks:
-      - minetest-inferno
-    command: sh -c 'ndb/cs; ndb/dns; listen -A tcp!*!31000 { export / & };  /dis/sh.dis'
-    ports:
-      - "31000:31000"
 
 networks:
-  minetest-inferno:
-    name: minetest_inferno
+  minetest:
+    name: minetest
     driver: bridge
