@@ -30,7 +30,7 @@ connect = function(player, formname, fields)
     if not addr_node then
         addr_node = g:node(addr, {host_info = host_info, addr = addr})
         local player_node = g:findnode(player_name)
-        -- g:edge(player_node, addr_node, player_name .. "->" .. addr)
+        g:edge(player_node, addr_node, player_name .. "->" .. addr)
     else
     end
 

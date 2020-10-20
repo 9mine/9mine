@@ -3,7 +3,10 @@ minetest.register_on_player_receive_fields(
         if formname == "core:spawn_attach" then
             spawn_attach(player, formname, fields)
         end
+        if formname == "core:spawn_console" then
+            spawn_console(player, formname, fields)
+        end
         if formname == "core:console" then
-            spawn_attach(player, formname, fields)
+            console(player, formname, fields)
         end
     end)
