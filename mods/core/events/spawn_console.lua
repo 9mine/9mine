@@ -1,6 +1,5 @@
 spawn_console = function(player, formname, fields)
     local addr, path, player = connect(player, formname, fields)
-    print("You are here")
     if addr and path and player then
         local dir = player:get_look_dir()
         local dis = vector.multiply(dir, 5)
@@ -9,6 +8,8 @@ spawn_console = function(player, formname, fields)
         fp.y = fp.y + 2
         local entity = minetest.add_entity(fp, "core:console")
         entity:set_properties({nametag = addr})
+        entity:get_luaentity().addr = addr 
+        entity:get_luaentity().path = path
     end
 end
 

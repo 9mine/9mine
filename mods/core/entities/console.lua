@@ -25,7 +25,8 @@ minetest.register_entity("core:console", {
 
         local formspec = {
             "formspec_version[3]", "size[13,13,false]",
-            "textarea[0.5,0.5;12.0,10;;;" .. self.output .. "]",
+            "textarea[0.5,0.5;12.0,10;;;" ..
+                minetest.formspec_escape(self.output) .. "]",
             "field[0.5,10.5;12,1;input;;\\; ]",
             "field_close_on_enter[input;false]",
             "button[10,11.6;2.5,0.9;send;send]",
@@ -34,8 +35,7 @@ minetest.register_entity("core:console", {
         }
         local form = table.concat(formspec, "")
 
-        minetest.show_formspec(player:get_player_name(), "control9p:console",
-                               form)
+        minetest.show_formspec(player:get_player_name(), "core:console", form)
 
     end,
 
