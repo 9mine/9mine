@@ -41,7 +41,13 @@ minetest.register_entity("core:console", {
 
     get_staticdata = function(self)
         local attributes = self.object:get_nametag_attributes()
-        local data = {attr = attributes, path = self.path, addr = self.addr}
+        local data = {
+            attr = attributes,
+            path = self.path,
+            addr = self.addr,
+            input = self.input,
+            output = self.output
+        }
         return minetest.serialize(data)
     end,
 
@@ -51,6 +57,9 @@ minetest.register_entity("core:console", {
             self.object:set_nametag_attributes(data.attr)
             self.path = data.path
             self.addr = data.addr
+            self.input = data.input
+            self.output = data.output
+
         end
     end
 })
