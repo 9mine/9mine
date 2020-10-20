@@ -11,7 +11,7 @@ minetest.register_chatcommand("graph", {
             time.min, ":", time.sec
         }, "")
 
-        local pfx = minetest.get_modpath("control9p")
+        local pfx = minetest.get_modpath("core")
         local name = os.date("%Y-%m-%d_%H-%M-%S") .. ".png"
         local full_name = pfx .. "/rendered_graphs/" .. name
 

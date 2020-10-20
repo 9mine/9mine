@@ -2,8 +2,8 @@ minetest.register_on_chat_message(function(player_name, message)
     if string.match(message, "^[%a%d]+") then
         local graph = graphs[player_name]
         local cmd = string.match(message, "^[%a][%a%d/]+")
-        local pcmd = tostring(control9p_conf:get("pcmd"))
-        local lcmd = tostring(control9p_conf:get("lcmd"))
+        local pcmd = tostring(core_conf:get("pcmd"))
+        local lcmd = tostring(core_conf:get("lcmd"))
         if string.match(pcmd, cmd) then
             local addr, path, player = plt_by_name(player_name)
             cmd_write(addr, path, player_name, message, lcmd)

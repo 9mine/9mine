@@ -1,5 +1,5 @@
 cp = function(player_name, params)
-    local lcmd = tostring(control9p_conf:get("lcmd"))
+    local lcmd = tostring(core_conf:get("lcmd"))
     local addr, path, player = plt_by_name(player_name)
     local sources, destination, _ = parse_mvcp_params(params, path)
     local graph = graphs[player_name]

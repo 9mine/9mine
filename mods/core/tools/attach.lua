@@ -1,7 +1,7 @@
-minetest.register_tool("control9p:attach", {
+minetest.register_tool("core:attach", {
     desription = "Attach to 9p fs",
-    inventory_image = "control9p_attach.png",
-    wield_image = "control9p_attach.png",
+    inventory_image = "core_attach.png",
+    wield_image = "core_attach.png",
     tool_capabilities = {punch_attack_uses = 0, damage_groups = {attach = 1}},
 
     on_use = function(itemstack, player, pointed_thing)
@@ -13,6 +13,6 @@ minetest.register_tool("control9p:attach", {
             "button_exit[7,1.8;2.5,0.9;spawn_attach;attach]"
         }
         local form = table.concat(formspec, "")
-        minetest.show_formspec(player_name, "control9p:spawn_attach", form)
+        minetest.show_formspec(player_name, "core:spawn_attach", form)
     end
 })

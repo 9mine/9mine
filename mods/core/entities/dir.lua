@@ -1,11 +1,11 @@
 -- register directory entity blueprint
-minetest.register_entity("control9p:dir", {
+minetest.register_entity("core:dir", {
     initial_properties = {
         physical = true,
         pointable = true,
         visual = "sprite",
         collide_with_objects = true,
-        textures = {"control9p_dir.png"},
+        textures = {"core_dir.png"},
         is_visible = true,
         nametag_color = "black",
         infotext = "",

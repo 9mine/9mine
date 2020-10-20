@@ -1,4 +1,4 @@
-minetest.register_node("control9p:plt", {
+minetest.register_node("core:plt", {
     drawtype = "glasslike",
     visual_scale = 1.0,
     tiles = {

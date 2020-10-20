@@ -1,10 +1,10 @@
-minetest.register_entity("control9p:file", {
+minetest.register_entity("core:file", {
     initial_properties = {
         physical = true,
         pointable = true,
         visual = "sprite",
         collide_with_objects = true,
-        textures = {"control9p_file.png"},
+        textures = {"core_file.png"},
         spritediv = {x = 1, y = 1},
         initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true,
@@ -47,7 +47,7 @@ minetest.register_entity("control9p:file", {
             local form = table.concat(formspec, "")
 
             minetest.show_formspec(puncher:get_player_name(),
-                                   "control9p:write_file", form)
+                                   "core:write_file", form)
         end
     end,
 

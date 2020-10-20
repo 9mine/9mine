@@ -8,7 +8,7 @@ plt.create = function(root, size, addr, path)
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
                 local p = {x = x, y = y, z = z}
-                minetest.add_node(p, {name = "control9p:plt"})
+                minetest.add_node(p, {name = "core:plt"})
                 local node = minetest.get_meta(p)
                 node:set_string("addr", addr)
                 node:set_string("path", path)

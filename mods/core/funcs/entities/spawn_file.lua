@@ -3,8 +3,8 @@ spawn_file = function(file, slot, addr, path)
     local e = nil
     local p = {x = slot.x, y = slot.y + math.random(5, 14), z = slot.z}
 
-    e = minetest.add_entity(p, file.qid.type == 128 and "control9p:dir" or
-                                "control9p:file")
+    e = minetest.add_entity(p, file.qid.type == 128 and "core:dir" or
+                                "core:file")
 
     e:set_nametag_attributes({color = "black", text = file.name})
     e:set_armor_groups({immortal = 0})

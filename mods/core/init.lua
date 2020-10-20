@@ -14,10 +14,10 @@ graphs = {}
 -- used to bind platform functions
 plt = {}
 -- include files 
-local path = minetest.get_modpath("control9p")
+local path = minetest.get_modpath("core")
 
 -- load mod.conf settings
-control9p_conf = Settings(path .. "/mod.conf")
+core_conf = Settings(path .. "/mod.conf")
 
 -- entities
 dofile(path .. "/entities/dir.lua")
