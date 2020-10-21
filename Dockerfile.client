@@ -1,0 +1,32 @@
+FROM alpine:latest as compile 
+
+ENV BRANCH master
+RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev              \
+        libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev       \
+        libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev            \
+        gmp-dev jsoncpp-dev postgresql-dev ca-certificates lua5.1-dev           \
+        lua5.1 luarocks5.1 && git clone --depth 1                               \
+        https://github.com/minetest/minetest.git && mkdir minetest_compiled
+
+RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . ) && cd .. && \
+    export DATE=$(date) && \
+    sed -i "s#VERSION_EXTRA \"\" CACHE STRING \"Stuff to append to version string\"#VERSION_EXTRA \"${BRANCH} ${COMMIT_VERSION} ${DATE}\"#g" minetest/CMakeLists.txt && \
+    sed -i "s#\${VERSION_STRING}-\${VERSION_EXTRA}#\"\${VERSION_STRING} \${VERSION_EXTRA}\"#g" minetest/CMakeLists.txt && \
+    cmake ./minetest    -DCMAKE_INSTALL_PREFIX=/minetest_compiled   \
+                        -DCMAKE_BUILD_TYPE=RELEASE                  \
+                        -DRUN_IN_PLACE=FALSE                        \
+                        -DBUILD_UNITTESTS=FALSE                     \
+                        -DBUILD_SERVER=FALSE                        \
+                        -DBUILD_CLIENT=TRUE                         \
+                        && make -j$(nproc) && make install 
+
+FROM alpine:latest
+
+RUN apk add sqlite-libs libstdc++ libgcc libpq curl gmp         \
+    irrlicht-dev irrlicht libvorbis freetype libx11 openal-soft \
+    mesa-dri-swrast
+
+COPY --from=compile /minetest_compiled/bin /usr/bin/
+COPY --from=compile /minetest_compiled/share /usr/share/
+
+ENTRYPOINT [ "/usr/bin/minetest" ]

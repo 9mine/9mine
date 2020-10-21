@@ -1,12 +1,11 @@
 name: Minetest Container Image
-on:
-  push
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Docker Layer Caching
         uses: satackey/action-docker-layer-caching@v0.0.8
 
@@ -18,11 +17,17 @@ jobs:
 
       - name: push image to registry
         run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/}
-      
+
+      - name: build client image
+        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/} -f Dockerfile.client .
+
+      - name: push image to registry
+        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/}
+
       - name: Notify Telegram
         uses: yanzay/notify-telegram@v0.1.0
         if: always()
         with:
-          chat: ${{ secrets.TGBOT_CHAT }} 
-          token: ${{ secrets.TGBOT_TOKEN }} 
-          status: ${{ job.status }} 
+          chat: ${{ secrets.TGBOT_CHAT }}
+          token: ${{ secrets.TGBOT_TOKEN }}
+          status: ${{ job.status }}
