@@ -1,0 +1,12 @@
+version: "3.5"
+
+services:
+  client:
+    image: dievri/minetest-client:master
+    container_name: mt-client
+    networks:
+      - minetest
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+    environment:
+      - DISPLAY=unix$DISPLAY
