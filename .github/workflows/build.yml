@@ -19,7 +19,7 @@ jobs:
         run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/}
 
       - name: build client image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/} .
+        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/} -f Dockerfile.client .
 
       - name: push image to registry
         run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/}
