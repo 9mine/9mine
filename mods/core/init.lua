@@ -22,6 +22,7 @@ core_conf = Settings(path .. "/mod.conf")
 -- entities
 dofile(path .. "/entities/dir.lua")
 dofile(path .. "/entities/file.lua")
+dofile(path .. "/entities/console.lua")
 
 -- manage platforms
 dofile(path .. "/platforms/get_size.lua")
@@ -33,6 +34,7 @@ dofile(path .. "/platforms/update.lua")
 dofile(path .. "/tools/attach.lua")
 dofile(path .. "/tools/enter.lua")
 dofile(path .. "/tools/write.lua")
+dofile(path .. "/tools/console.lua")
 
 -- forms
 dofile(path .. "/forms/send_warning.lua")
@@ -82,7 +84,9 @@ dofile(path .. "/on_join/init_conn.lua")
 
 -- events
 dofile(path .. "/events/events.lua")
+dofile(path .. "/events/console.lua")
 dofile(path .. "/events/spawn_attach.lua")
+dofile(path .. "/events/spawn_console.lua")
 
 -- chat commands
 dofile(path .. "/chat/commands/cd.lua")

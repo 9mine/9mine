@@ -1,7 +1,7 @@
 file_read = function(addr, path, player_name)
     local conn = connections[player_name][addr]
     local f = conn:newfid()
-    np:walk(conn.rootfid, f, path)
+    conn:walk(conn.rootfid, f, path)
     conn:open(f, 0)
     local buf_size = 4096
     local offset = 0

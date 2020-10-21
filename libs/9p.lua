@@ -30,6 +30,12 @@ local data = require'data'
 
 local np = {}
 
+function np:new() 
+    local obj = {}
+    setmetatable(obj, np)
+		return obj
+end
+
 -- message types
 local Tversion = 100
 local Rversion = 101
@@ -64,8 +70,6 @@ local HEADSZ   = 7
 local FIDSZ    = 4
 local QIDSZ    = 13
 local IOHEADSZ = 24  -- io (Twrite/Rread) header size, i.e. minimum msize
-
-
 function np.newfid(conn)
   local f = conn.fidfree
 
@@ -98,7 +102,7 @@ end
 
 -- Returns a 9P number in table format. Offset and size in bytes
 local function num9p(offset, size)
-  return {offset*8, size*8, 'number', 'le'}
+  return {offset*8, size*8, 'number', 'little'}
 end
 
 local function putstr(to, s)
@@ -173,10 +177,11 @@ end
 local LQid = data.layout{
   type    = num9p(0, 1),
   version = num9p(1, 4),
-  path    = num9p(5, 8),
+  path = num9p(5, 8),
   path_lo = num9p(5, 4),
   path_hi = num9p(9, 4)
 }
+
 
 local function getqid(from)
   if #from < QIDSZ then
@@ -188,10 +193,9 @@ local function getqid(from)
 
   qid.type    = p.type
   qid.version = p.version
-  qid.path    = p.path
+  qid.path = p.path
   qid.path_lo = p.path_lo
   qid.path_hi = p.path_hi
-
   return qid
 end
 
@@ -244,7 +248,6 @@ function getstat(seg)
   st.uid    = getstr(seg:segment(41 + 2 + #st.name))
   st.gid    = getstr(seg:segment(41 + 2 + #st.name + 2 + #st.uid))
   st.muid   = getstr(seg:segment(41 + 2 + #st.name + 2 + #st.uid + 2 + #st.gid))
-
   return st
 end
 
@@ -337,8 +340,9 @@ local function doattach(conn, uname, aname)
 end
 
 function np.attach(connection, uname, aname, msize, endpoint)
-  local conn = np
+  local conn = np:new()
   conn.curtag = 0xFFFF
+	conn.uname = uname
 
   conn.fidfree   = nil
   conn.fidactive = nil
@@ -570,5 +574,6 @@ function np.wstat(conn, fid, st)
   return readmsg(conn.connection, Rwstat)
 end
 
+np.__index = np
 
 return np

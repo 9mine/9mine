@@ -1,11 +1,11 @@
-# Start youtube2text
+# Start 9mine
 This repository provides minetest mod for converting youtube video to text
 
 To start:
 
 1. Clone this branch and cd into directory
 
-        git clone --depth=1 https://github.com/9mine/9mine.git && cd 9mine
+        git clone --depth=1 https://github.com/9mine/9mine.git
 
 2. Update Docker Images
 
