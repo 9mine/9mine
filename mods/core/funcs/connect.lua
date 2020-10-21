@@ -3,14 +3,15 @@ connect = function(player, formname, fields)
     if not (fields.spawn_attach or fields.key_enter) then return end
 
     local player_name = player:get_player_name()
-    local addr = fields.remote_address
-    if not addr or (addr == "") then
+    local remote_address = fields.remote_address
+    if not remote_address or (remote_address == "") then
         send_warning(player_name, "No connection string provided")
         return
     end
 
     -- parse provided string and handle errors
-    local host_info, addr, path = parse_remote_address(addr)
+    local host_info, addr, path = parse_remote_address(remote_address)
+
     if not host_info or not addr or not path then
         send_warning(player_name,
                      "Connection string parser returned no information")
@@ -31,15 +32,16 @@ connect = function(player, formname, fields)
         addr_node = g:node(addr, {host_info = host_info, addr = addr})
         local player_node = g:findnode(player_name)
         g:edge(player_node, addr_node, player_name .. "->" .. addr)
-    else
     end
 
     -- retrieve 9p attached connection or create new if not exists
     local conn = connections[player_name][addr]
+
     if not conn then
         print("Connecting to " .. addr .. " . . . ")
         local tcp = socket:tcp()
         local _, err = tcp:connect(host_info.host, host_info.port, "*", 0)
+
         if (err ~= nil) then
             minetest.chat_send_player(player_name, "Connection error to " ..
                                           addr .. ": " .. err)

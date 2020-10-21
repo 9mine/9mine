@@ -1,7 +1,6 @@
 console = function(player, formname, fields)
-    print("You zzzz here")
     if fields["quit"] then return end
-    player_name = player:get_player_name()
+    local player_name = player:get_player_name()
     local p = fields["entity_pos"]
     local pos = minetest.deserialize(p)
     local entity = get_entity(pos)
@@ -9,10 +8,8 @@ console = function(player, formname, fields)
     local path = entity:get_luaentity().path
     local lcmd = tostring(core_conf:get("lcmd"))
     local inpt = fields["input"]:gsub("; ", "")
-    print("You were here")
     cmd_write(addr, path, player_name, fields["input"], lcmd)
     local response = cmd_read(addr, player_name, lcmd)
-    print("You rocks here")
     entity:get_luaentity().output =
         fields["input"] .. ": " .. response .. "\n" ..
             entity:get_luaentity().output

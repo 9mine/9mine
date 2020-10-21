@@ -19,10 +19,7 @@ minetest.register_entity("core:console", {
     input = "",
     on_punch = function(self, player, dtime, tool, dir)
         local p = self.object:get_pos()
-        print(dump(p))
         local pos = minetest.serialize(p)
-        print(pos)
-
         local formspec = {
             "formspec_version[3]", "size[13,13,false]",
             "textarea[0.5,0.5;12.0,10;;;" ..
