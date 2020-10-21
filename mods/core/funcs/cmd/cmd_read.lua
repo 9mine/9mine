@@ -3,7 +3,7 @@
 cmd_read = function(addr, player_name, lcmd)
     local conn = connections[player_name][addr]
     local f = conn:newfid()
-    np.walk(conn, conn.rootfid, f, lcmd)
+    conn:walk(conn.rootfid, f, lcmd)
     conn:open(f, 0)
     local buf_size = 4096
     local offset = 0
