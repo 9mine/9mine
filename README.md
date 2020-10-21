@@ -26,4 +26,4 @@ This repository provides minetest mod for converting youtube video to text
         docker-compose -f docker-compose.yml -f docker-compose.client.yml up
 
       
-Use `minetest` client to connect to server. `minetest server` listening on default `:30000/udp` port, and `inferno` export its filesystem on port `:1917`. For `minetest server` the `inferno` instance is visible as `mt-local` (they are inside one docker network). For example, when using connect tools, the connection string should look like following `tcp!mt-local!1917`. For `minetest client` the `minetest server` visible simply as `localhost:30000`.
+Use `minetest` client to connect to server. `minetest server` listening on default `:30000/udp` port, and `inferno` export its filesystem on port `:1917`. For `minetest server` the `inferno` instance is visible as `mt-local` (they are inside one docker network). For example, when using connect tools, the connection string should look like following `tcp!mt-local!1917`. For `minetest client` container the `minetest server` visible simply  `mt-server:30000`. If `minetest client` is local, then `minetest server` visible as `localhost:30000`.
