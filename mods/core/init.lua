@@ -45,6 +45,7 @@ dofile(path .. "/funcs/to_plt.lua")
 dofile(path .. "/funcs/goto_plt.lua")
 dofile(path .. "/funcs/plt_by_name.lua")
 dofile(path .. "/funcs/connect.lua")
+dofile(path .. "/funcs/automount.lua")
 
 --- cmd
 dofile(path .. "/funcs/cmd/cmd_write.lua")

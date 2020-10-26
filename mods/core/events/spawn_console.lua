@@ -1,5 +1,5 @@
 spawn_console = function(player, formname, fields)
-    local addr, path, player = connect(player, formname, fields)
+    local addr, path, player = connect(player, fields)
     if addr and path and player then
         local dir = player:get_look_dir()
         local dis = vector.multiply(dir, 5)

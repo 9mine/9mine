@@ -1,4 +1,4 @@
-connect = function(player, formname, fields)
+connect = function(player, fields)
     -- if "attach" button was not pressed by mouse or by enter key, return
     if not (fields.spawn_attach or fields.key_enter) then return end
 
@@ -8,7 +8,6 @@ connect = function(player, formname, fields)
         send_warning(player_name, "No connection string provided")
         return
     end
-
     -- parse provided string and handle errors
     local host_info, addr, path = parse_remote_address(remote_address)
 
