@@ -39,7 +39,6 @@ RUN apk add --update graphviz graphviz-dev font-bitstream-type1 ghostscript-font
 RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
 
 COPY                    ./minetest.conf             /root/.minetest/minetest.conf
-COPY                    ./mods                      /root/.minetest/mods/
 COPY                    ./world.mt     /root/.minetest/worlds/world/world.mt
 COPY                    ./libs/                     /usr/local/share/lua/5.1/
 
@@ -48,6 +47,8 @@ COPY --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
 COPY --from=compile     /luadata/data.so            /usr/local/lib/lua/5.1/data.so
 COPY --from=compile     /minetest_compiled/bin      /usr/bin/
 COPY --from=compile     /minetest_compiled/share    /usr/share/
+
+COPY                    ./mods                      /root/.minetest/mods/
 
 
 
