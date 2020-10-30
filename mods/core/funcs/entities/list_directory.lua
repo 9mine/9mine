@@ -33,6 +33,7 @@ list_directory = function(addr, path, player)
     -- attach host info to the absolute path and hash
     local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
                                       core_conf:get("refresh_time"))
+    minetest.chat_send_player(player_name, "REFRESH TIME IS " .. refresh_time)
     local plt_node = graph:node(hex(addr .. path), {
         plt = true,
         listing = listing,
@@ -74,9 +75,5 @@ list_directory = function(addr, path, player)
         table.remove(slots, i)
     end
     plt_node.slots = slots
-
-    if refresh_time ~= 0 then
-        minetest.after(refresh_time, platform_refresh, addr, path, player_name)
-    end
-
+    minetest.after(1, platform_refresh, plt_node, addr, path, player_name)
 end
