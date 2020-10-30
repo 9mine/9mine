@@ -33,7 +33,7 @@ list_directory = function(addr, path, player)
     -- attach host info to the absolute path and hash
     local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
                                       core_conf:get("refresh_time"))
-    minetest.chat_send_player(player_name, "REFRESH TIME IS " .. refresh_time)
+    minetest.chat_send_player(player_name, "Refresh time is " .. refresh_time)
     local plt_node = graph:node(hex(addr .. path), {
         plt = true,
         listing = listing,
