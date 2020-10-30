@@ -25,7 +25,9 @@ services:
         - "./storage:/storage"
     ports:
       - "30000:30000/udp"
-
+    environment:
+      - INFERNO_ADDRESS=${INFERNO_ADDRESS}
+      - REFRESH_TIME=${REFRESH_TIME}
 networks:
   minetest:
     name: minetest

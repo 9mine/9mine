@@ -5,6 +5,12 @@ This repository provides minetest mod for 9mine project
 
         git clone --depth=1 https://github.com/9mine/9mine.git
 
+2. Set environment variables in `.env` file.
+
+    `INFERNO_AFRESS` - full adress of the 9p filesystem. Minetest will connect to this host during login process. By default it will connect to the inferno instance started by docker-compose.
+
+    `REFRESH_TIME` - time period (in seconds) on which platform content will be read again an new entities will be spawn if needed. By default equals to 0, which mean no refresh of the content will be maid.
+
 ### To start just backend:
 
 2. Update Docker Images
