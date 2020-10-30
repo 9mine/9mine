@@ -10,6 +10,6 @@ minetest.register_on_player_receive_fields(
             console(player, formname, fields)
         end
         if formname == "platform:settings" then
-            platform_settings(player, fields)
+            platform_settings(player, fields, formname)
         end
     end)
