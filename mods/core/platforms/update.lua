@@ -21,15 +21,9 @@ plt.update = function(addr, path, player_name)
                 p = slot
             })
             graph:edge(plt_node, file_node, path .. "->" .. file.name)
+            old_lst[name] = file
             spawn_file(file, slot, addr, prefix .. file.name)
             table.remove(slots, i)
-            old_lst[name] = file
-        else
-            local file_node = graph:findnode(hex(addr .. prefix .. file.name))
-            local e = minetest.get_objects_inside_radius(file_node.p, 1.2)[1]
-            if not e then
-                spawn_file(file, file_node.p, addr, prefix .. file.name)
-            end
         end
     end
 
@@ -38,10 +32,10 @@ plt.update = function(addr, path, player_name)
             local hash = hex(addr .. prefix .. file.name)
             local file_node = graph:findnode(hash)
             table.insert(slots, file_node.p)
+            old_lst[name] = nil
             remove_file(file_node.p)
             local edge_file_node = file_node:nextinput(nil)
             edge_file_node:delete()
-            old_lst[name] = nil
         end
     end
 

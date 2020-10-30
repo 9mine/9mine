@@ -10,5 +10,8 @@ minetest.register_node("core:plt", {
     walkable = true,
     pointable = true,
     diggable = true,
-    node_box = {type = "regular"}
+    node_box = {type = "regular"},
+    on_punch = function(pos, _, puncher)
+        show_settings(pos, puncher)
+    end
 })
