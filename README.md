@@ -1,5 +1,5 @@
 # Start 9mine
-This repository provides minetest mod for converting youtube video to text
+This repository provides minetest mod for 9mine project
 
 1. Clone this branch and cd into directory
 
