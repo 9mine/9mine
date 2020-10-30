@@ -39,8 +39,10 @@ list_directory = function(addr, path, player)
         root = root,
         size = size,
         path = path,
-
-        addr_path = addr .. path
+        addr_path = addr .. path,
+        settings = {
+            refresh_time = 0
+        }
     })
 
     -- TODO attach to previoud node

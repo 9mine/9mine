@@ -29,6 +29,7 @@ dofile(path .. "/platforms/get_size.lua")
 dofile(path .. "/platforms/node.lua")
 dofile(path .. "/platforms/create.lua")
 dofile(path .. "/platforms/update.lua")
+dofile(path .. "/platforms/settings.lua")
 
 -- tools
 dofile(path .. "/tools/attach.lua")
@@ -42,7 +43,6 @@ dofile(path .. "/forms/send_warning.lua")
 -- functions
 dofile(path .. "/funcs/parse_remote_address.lua")
 dofile(path .. "/funcs/to_plt.lua")
-dofile(path .. "/funcs/goto_plt.lua")
 dofile(path .. "/funcs/plt_by_name.lua")
 dofile(path .. "/funcs/connect.lua")
 dofile(path .. "/funcs/automount.lua")
@@ -51,7 +51,7 @@ dofile(path .. "/funcs/automount.lua")
 dofile(path .. "/funcs/cmd/cmd_write.lua")
 dofile(path .. "/funcs/cmd/cmd_read.lua")
 
---- common 
+--- common
 dofile(path .. "/funcs/common/hex.lua")
 dofile(path .. "/funcs/common/name_as_key.lua")
 dofile(path .. "/funcs/common/get_table_length.lua")
@@ -88,6 +88,7 @@ dofile(path .. "/events/events.lua")
 dofile(path .. "/events/console.lua")
 dofile(path .. "/events/spawn_attach.lua")
 dofile(path .. "/events/spawn_console.lua")
+dofile(path .. "/events/platform_settings.lua")
 
 -- chat commands
 dofile(path .. "/chat/commands/cd.lua")
