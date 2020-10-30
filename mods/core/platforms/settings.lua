@@ -17,8 +17,8 @@ show_settings = function(pos, player)
                 "label[4,0.5;Platform settings]",
                 "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. refresh_time .. "]",
                 "button_exit[0.5,4.8;2.5,0.7;close;close]",
-               -- "button_exit[3.8,4.8;2.5,0.7;close;reset]",
-                "button[7,4.8;2.5,0.7;close;save]",
+                "button_exit[3.8,4.8;2.5,0.7;close;reset]",
+                "button_exit[7,4.8;2.5,0.7;close;save]",
                 "field[0,0;0,0;addr;;" .. addr .. "]",
                 "field[0,0;0,0;path;;" .. path .. "]",
             }, ""))

@@ -9,8 +9,7 @@ minetest.register_on_chat_message(function(player_name, message)
             cmd_write(addr, path, player_name, message, lcmd)
             local response = cmd_read(addr, player_name, lcmd)
             minetest.chat_send_player(player_name, "\n" .. response .. "\n")
-            
-            -- plt.update(addr, path, player_name)
+            plt.update(addr, path, player_name)
 
             if response:match("^/") then
                 response = response:gsub("\n", "")
