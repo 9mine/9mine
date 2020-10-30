@@ -30,6 +30,7 @@ dofile(path .. "/platforms/node.lua")
 dofile(path .. "/platforms/create.lua")
 dofile(path .. "/platforms/update.lua")
 dofile(path .. "/platforms/settings.lua")
+dofile(path .. "/platforms/refresh.lua")
 
 -- tools
 dofile(path .. "/tools/attach.lua")

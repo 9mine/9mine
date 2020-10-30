@@ -31,6 +31,8 @@ list_directory = function(addr, path, player)
     local slots, root, size = plt.create(p, size, addr, path)
     to_plt(player, p)
     -- attach host info to the absolute path and hash
+    local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
+                                      core_conf:get("refresh_time"))
     local plt_node = graph:node(hex(addr .. path), {
         plt = true,
         listing = listing,
@@ -41,7 +43,7 @@ list_directory = function(addr, path, player)
         path = path,
         addr_path = addr .. path,
         settings = {
-            refresh_time = 0
+            refresh_time = refresh_time
         }
     })
 
@@ -72,4 +74,9 @@ list_directory = function(addr, path, player)
         table.remove(slots, i)
     end
     plt_node.slots = slots
+
+    if refresh_time ~= 0 then
+        minetest.after(refresh_time, platform_refresh, addr, path, player_name)
+    end
+
 end
