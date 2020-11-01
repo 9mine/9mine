@@ -35,9 +35,9 @@ dofile(path .. "/platforms/refresh.lua")
 -- tools
 dofile(path .. "/tools/attach.lua")
 dofile(path .. "/tools/enter.lua")
-dofile(path .. "/tools/write.lua")
 dofile(path .. "/tools/console.lua")
 dofile(path .. "/tools/read.lua")
+dofile(path .. "/tools/edit.lua")
 
 -- forms
 dofile(path .. "/forms/send_warning.lua")
@@ -91,6 +91,7 @@ dofile(path .. "/events/console.lua")
 dofile(path .. "/events/spawn_attach.lua")
 dofile(path .. "/events/spawn_console.lua")
 dofile(path .. "/events/platform_settings.lua")
+dofile(path .. "/events/edit.lua")
 
 -- chat commands
 dofile(path .. "/chat/commands/cd.lua")
