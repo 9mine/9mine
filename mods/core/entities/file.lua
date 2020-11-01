@@ -24,17 +24,16 @@ minetest.register_entity("core:file", {
         end
 
         if tool.damage_groups.read == 1 then
-            -- local host_info = get_host_near(puncher)
-            -- local content = read_file_content(host_info, self.path)
-            -- local formspec = {
-            --     "formspec_version[3]", "size[13,13,false]",
-            --     "textarea[0.5,0.5;12.0,12.0;;;",
-            --     minetest.formspec_escape(content), "]"
-            -- }
-            -- local form = table.concat(formspec, "")
-
-            -- minetest.show_formspec(puncher:get_player_name(),
-            --                        "directories:file_content", form)
+                local player_name = puncher:get_player_name()
+                local content = file_read(self.addr, self.path, player_name)
+        
+                minetest.show_formspec(player_name, "core:file_content",
+                                       table.concat(
+                                           {
+                        "formspec_version[3]", "size[13,13,false]",
+                        "textarea[0.5,0.5;12.0,12.0;;;",
+                        minetest.formspec_escape(content), "]"
+                    }, ""))
         end
 
         if tool.damage_groups.write == 1 then
