@@ -19,12 +19,12 @@ minetest.register_entity("core:file", {
     addr = "",
     stat = "",
     on_punch = function(self, puncher, dtime, tool, dir)
+        local player_name = puncher:get_player_name()
         if tool.damage_groups.stats == 1 then
             -- show_stats(puncher, self.path)
         end
 
         if tool.damage_groups.read == 1 then
-                local player_name = puncher:get_player_name()
                 local content = file_read(self.addr, self.path, player_name)
         
                 minetest.show_formspec(player_name, "core:file_content",
@@ -36,8 +36,7 @@ minetest.register_entity("core:file", {
                     }, ""))
         end
 
-        if tool.damage_groups.edit == 1 then
-            local player_name = puncher:get_player_name()
+        if tool.damage_groups.edit == 1 then  
             local content = file_read(self.addr, self.path, player_name)
             local formspec = {
                 "formspec_version[3]", "size[13,13,false]",
@@ -48,8 +47,22 @@ minetest.register_entity("core:file", {
             }
             local form = table.concat(formspec, "")
 
-            minetest.show_formspec(puncher:get_player_name(),
+            minetest.show_formspec(player_name,
                                    "core:edit", form)
+        end
+        if tool.damage_groups.write == 1 then
+            local player_name = puncher:get_player_name()
+            local formspec = {
+                "formspec_version[3]", "size[13,13,false]",
+                "field[0,0;0,0;addr;;" .. self.addr .. "]",
+                "field[0,0;0,0;file_path;;" .. self.path .. "]",
+                "textarea[0.5,0.5;12.0,10.6;content;;]",
+                "button_exit[10,11.6;2.5,0.9;write;write]"
+            }
+            local form = table.concat(formspec, "")
+
+            minetest.show_formspec(player_name,
+                                   "core:write", form)
         end
     end,
 

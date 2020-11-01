@@ -12,7 +12,7 @@ minetest.register_on_player_receive_fields(
         if formname == "platform:settings" then
             platform_settings(player, fields, formname)
         end
-        if formname == "core:edit" then
+        if formname == "core:edit" or formname == "core:write" then
             edit(player, fields)
         end
     end)
