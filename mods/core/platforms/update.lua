@@ -13,6 +13,14 @@ plt.update = function(addr, path, player_name)
     for name, file in pairs(new_lst) do
         if old_lst[name] == nil then
             local i, slot = next(slots)
+            if not slot then 
+                local size = plt.get_size(plt_node.size * 2)
+                slots, size = plt.resize(plt_node.root, plt_node.size, size, addr, path)
+                plt_node.size = size
+                plt_node.slots = slots
+                i, slot = next(slots)
+            end
+            
             local hash = hex(addr .. prefix .. file.name)
             local file_node = graph:node(hash, {
                 stat = file,
