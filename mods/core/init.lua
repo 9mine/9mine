@@ -38,6 +38,7 @@ dofile(path .. "/tools/enter.lua")
 dofile(path .. "/tools/console.lua")
 dofile(path .. "/tools/read.lua")
 dofile(path .. "/tools/edit.lua")
+dofile(path .. "/tools/write.lua")
 
 -- forms
 dofile(path .. "/forms/send_warning.lua")
