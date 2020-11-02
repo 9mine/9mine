@@ -14,7 +14,6 @@ plt.update = function(addr, path, player_name)
         if old_lst[name] == nil then
             local i, slot = next(slots)
             table.remove(slots, i)
-            print(#slots / (plt_node.size * plt_node.size))
             if (#slots / (plt_node.size * plt_node.size )) <  0.5 then 
                 local size = plt.get_size(plt_node.size * plt_node.size)
                 size = plt.resize(plt_node.root, slots, plt_node.size, size, addr, path)
