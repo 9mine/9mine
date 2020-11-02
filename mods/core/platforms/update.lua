@@ -16,8 +16,10 @@ plt.update = function(addr, path, player_name)
             table.remove(slots, i)
             if (#slots / (plt_node.size * plt_node.size )) <  0.5 then 
                 local size = plt.get_size(plt_node.size * plt_node.size)
-                size = plt.resize(plt_node.root, slots, plt_node.size, size, addr, path)
+                local root = nil
+                root, size = plt.resize(plt_node.root, slots, plt_node.size, size, addr, path)
                 plt_node.size = size
+                plt_node.root = root
             end
             
             local hash = hex(addr .. prefix .. file.name)
