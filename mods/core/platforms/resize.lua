@@ -1,5 +1,4 @@
-plt.resize = function(root, old_size, size, addr, path)
-    local slots = {}
+plt.resize = function(root, slots, old_size, size, addr, path)
     local p1 = root
     local p2 = {x = p1.x + size, y = p1.y, z = p1.z + size}
     for z = p1.z, p2.z do
@@ -18,5 +17,5 @@ plt.resize = function(root, old_size, size, addr, path)
         end
     end
     table.shuffle(slots)
-    return slots, size
+    return size
 end

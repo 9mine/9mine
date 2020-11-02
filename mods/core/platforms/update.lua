@@ -13,12 +13,12 @@ plt.update = function(addr, path, player_name)
     for name, file in pairs(new_lst) do
         if old_lst[name] == nil then
             local i, slot = next(slots)
-            if not slot then 
-                local size = plt.get_size(plt_node.size * 2)
-                slots, size = plt.resize(plt_node.root, plt_node.size, size, addr, path)
+            table.remove(slots, i)
+            print(#slots / (plt_node.size * plt_node.size))
+            if (#slots / (plt_node.size * plt_node.size )) <  0.5 then 
+                local size = plt.get_size(plt_node.size * plt_node.size)
+                size = plt.resize(plt_node.root, slots, plt_node.size, size, addr, path)
                 plt_node.size = size
-                plt_node.slots = slots
-                i, slot = next(slots)
             end
             
             local hash = hex(addr .. prefix .. file.name)
@@ -31,7 +31,6 @@ plt.update = function(addr, path, player_name)
             graph:edge(plt_node, file_node, path .. "->" .. file.name)
             old_lst[name] = file
             spawn_file(file, slot, addr, prefix .. file.name)
-            table.remove(slots, i)
         end
     end
 
