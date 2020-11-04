@@ -43,6 +43,7 @@ dofile(path .. "/tools/write.lua")
 
 -- forms
 dofile(path .. "/forms/send_warning.lua")
+dofile(path .. "/forms/show_output.lua")
 
 -- functions
 dofile(path .. "/funcs/parse_remote_address.lua")
