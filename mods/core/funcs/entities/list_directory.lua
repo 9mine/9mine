@@ -1,6 +1,5 @@
 list_directory = function(addr, path, player)
     local player_name = player:get_player_name()
-    local graph = graphs[player_name]
     local addr_node = graph:findnode(addr)
     local conn = connections[player_name][addr]
 
@@ -52,9 +51,9 @@ list_directory = function(addr, path, player)
     local parent_path = get_parent_path(path)
     local parent_node = graph:findnode(hex(addr .. parent_path))
     if path == "/" then
-        graph:edge(addr_node, plt_node, addr .. "->" .. path)
+        graph:edge(addr_node, plt_node)
     elseif parent_node then
-        graph:edge(parent_node, plt_node, parent_path .. "->" .. path)
+        graph:edge(parent_node, plt_node)
     end
 
     -- handle root path prefix without host
@@ -70,7 +69,7 @@ list_directory = function(addr, path, player)
             path = prefix .. file_name,
             p = slot
         })
-        graph:edge(plt_node, file_node, path .. "->" .. file_name)
+        graph:edge(plt_node, file_node)
         spawn_file(file, slot, addr, prefix .. file_name)
         table.remove(slots, i)
     end

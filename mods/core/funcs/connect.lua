@@ -20,17 +20,14 @@ connect = function(player, fields)
         send_warning(player_name, "Hostname or port number is not provided")
         return
     end
-    -- prefix for directory listing
-    local main_path = addr .. path
 
     -- retieve graph for player and check if provided host already exists
-    local g = graphs[player_name]
-    local addr_node = g:findnode(addr)
+    local addr_node = graph:findnode(addr)
 
     if not addr_node then
-        addr_node = g:node(addr, {host_info = host_info, addr = addr})
-        local player_node = g:findnode(player_name)
-        g:edge(player_node, addr_node, player_name .. "->" .. addr)
+        addr_node = graph:node(addr, {host_info = host_info, addr = addr})
+        local root_node = graph:findnode("mt-root")
+        graph:edge(root_node, addr_node)
     end
 
     -- retrieve 9p attached connection or create new if not exists

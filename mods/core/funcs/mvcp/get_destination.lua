@@ -1,5 +1,5 @@
-get_destination = function(destination, addr, graph)
-    local destination_path, destination_value = next(destination)
+get_destination = function(destination, addr)
+    local destination_path = next(destination)
     local node = graph:findnode(hex(addr .. destination_path))
     if node then
         destination[destination_path].plt = node.plt or false

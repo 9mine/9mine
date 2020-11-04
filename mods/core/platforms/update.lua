@@ -1,6 +1,4 @@
 plt.update = function(addr, path, player_name)
-    local graph = graphs[player_name]
-    local addr_node = graph:findnode(addr)
     local conn = connections[player_name][addr]
     local plt_node = graph:findnode(hex(addr .. path))
     local old_lst = plt_node and plt_node.listing
@@ -29,7 +27,7 @@ plt.update = function(addr, path, player_name)
                 path = prefix .. file.name,
                 p = slot
             })
-            graph:edge(plt_node, file_node, path .. "->" .. file.name)
+            graph:edge(plt_node, file_node)
             old_lst[name] = file
             spawn_file(file, slot, addr, prefix .. file.name)
         end

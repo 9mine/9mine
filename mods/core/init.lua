@@ -1,7 +1,7 @@
 -- include libraries
 socket = require 'socket'
 np = require '9p'
-graph = require 'graph'
+g = require 'graph'
 readdir = require 'readdir'
 md5 = require 'md5'
 
@@ -9,8 +9,8 @@ md5 = require 'md5'
 -- holds attached 9p connections to different hosts
 connections = {}
 -- holds graphs data for different players
-graphs = {}
-
+graph = g.open("mt-root")
+graph:node("mt-root")
 -- used to bind platform functions
 plt = {}
 -- include files 
@@ -81,11 +81,9 @@ dofile(path .. "/funcs/mvcp/get_sources.lua")
 dofile(path .. "/funcs/mvcp/get_destination.lua")
 dofile(path .. "/funcs/mvcp/get_changes.lua")
 dofile(path .. "/funcs/mvcp/map_changes_to_sources.lua")
-dofile(path .. "/funcs/mvcp/graph_changes.lua")
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
-dofile(path .. "/on_join/init_graph.lua")
 dofile(path .. "/on_join/init_conn.lua")
 
 -- events

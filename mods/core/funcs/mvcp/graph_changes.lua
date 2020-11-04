@@ -1,4 +1,4 @@
-graph_changes = function(changes, changes_path, addr, graph)
+graph_changes = function(changes, changes_path, addr)
     local plt_node = graph:findnode(hex(addr .. changes_path))
     local slots = plt_node.slots
     local prefix = changes_path == "/" and changes_path or changes_path .. "/"
@@ -13,14 +13,14 @@ graph_changes = function(changes, changes_path, addr, graph)
                 path = prefix .. name,
                 p = slot
             })
-            graph:edge(plt_node, file_node, plt_node.path .. "->" .. name)
+            graph:edge(plt_node, file_node)
             plt_node.listing[name] = value.stat
             table.remove(slots, index)
         else
             node.stat = value.stat
             local edge_node = node:nextinput(nil)
             edge_node:delete()
-            graph:edge(plt_node, node, plt_node.path .. "->" .. name)
+            graph:edge(plt_node, node)
             plt_node.listing[name] = value.stat or value
         end
     end
