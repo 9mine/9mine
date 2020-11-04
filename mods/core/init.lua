@@ -81,6 +81,7 @@ dofile(path .. "/funcs/mvcp/get_sources.lua")
 dofile(path .. "/funcs/mvcp/get_destination.lua")
 dofile(path .. "/funcs/mvcp/get_changes.lua")
 dofile(path .. "/funcs/mvcp/map_changes_to_sources.lua")
+dofile(path .. "/funcs/mvcp/graph_changes.lua")
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")
