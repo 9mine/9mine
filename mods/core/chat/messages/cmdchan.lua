@@ -1,6 +1,5 @@
 minetest.register_on_chat_message(function(player_name, message)
     if string.match(message, "^[%a%d]+") then
-        local graph = graphs[player_name]
         local cmd = string.match(message, "^[%a][%a%d/]+")
         local pcmd = tostring(core_conf:get("pcmd"))
         local lcmd = tostring(core_conf:get("lcmd"))
@@ -42,7 +41,7 @@ minetest.register_on_chat_message(function(player_name, message)
                         else
                             local parent_path = get_parent_path(response)
                             local seconds = list_path(addr, parent_path, player) + 0.5
-                            minetest.after(seconds, function(graph, addr, response, player)
+                            minetest.after(seconds, function(addr, response, player)
                                 local node = graph:findnode(hex(addr .. response))
                                 local pp = table.copy(node.p)
                                 pp.x = pp.x - 2
@@ -50,7 +49,7 @@ minetest.register_on_chat_message(function(player_name, message)
                                 pp.z = pp.z - 2
                                 player:set_pos(pp)
                                 set_look(player, node.p)
-                            end, graph, addr, response, player)
+                            end, addr, response, player)
 
                         end
                     end

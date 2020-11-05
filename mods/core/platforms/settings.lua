@@ -2,7 +2,6 @@ show_settings = function(pos, player)
     local meta = minetest.get_meta(pos)
     local addr = meta:get_string("addr")
     local path = meta:get_string("path")
-    local graph = graphs[player:get_player_name()] 
     local plt_node = graph:findnode(hex(addr .. path))
     local is_plt = plt_node and plt_node.plt
     if not is_plt then

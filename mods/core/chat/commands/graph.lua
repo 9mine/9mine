@@ -1,16 +1,9 @@
 minetest.register_chatcommand("graph", {
     func = function(player_name, params)
-        local graph = graphs[player_name]
         graph:layout("circo")
         minetest.chat_send_player(player_name, "\nLayout . . . \n")
         graph:layout("circo")
         minetest.chat_send_player(player_name, "\nRender . . . \n")
-        local time = os.date("*t")
-        local time_str = table.concat({
-            time.year, "-", time.month, "-", time.day, "-", " ", time.hour, ":",
-            time.min, ":", time.sec
-        }, "")
-
         local pfx = minetest.get_modpath("core")
         local name = os.date("%Y-%m-%d_%H-%M-%S") .. ".png"
         local full_name = pfx .. "/rendered_graphs/" .. name

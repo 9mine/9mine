@@ -1,7 +1,5 @@
-map_changes_to_sources = function(sources, changes, destination, addr, graph,
-                                  command)
-    local path, kv_changes = next(changes)
-    local path_node = graph:findnode(hex(addr .. path))
+map_changes_to_sources = function(sources, changes, addr, command)
+    local path = next(changes)
     path = path == "/" and path or path .. "/"
 
     for path, value in pairs(sources) do
