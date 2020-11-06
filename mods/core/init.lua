@@ -24,6 +24,11 @@ dofile(path .. "/entities/dir.lua")
 dofile(path .. "/entities/file.lua")
 dofile(path .. "/entities/console.lua")
 
+-- nodes
+dofile(path .. "/nodes/file.lua")
+dofile(path .. "/nodes/dir.lua")
+
+
 -- manage platforms
 dofile(path .. "/platforms/get_size.lua")
 dofile(path .. "/platforms/node.lua")
@@ -40,6 +45,7 @@ dofile(path .. "/tools/console.lua")
 dofile(path .. "/tools/read.lua")
 dofile(path .. "/tools/edit.lua")
 dofile(path .. "/tools/write.lua")
+dofile(path .. "/tools/copy.lua")
 
 -- forms
 dofile(path .. "/forms/send_warning.lua")
@@ -82,6 +88,7 @@ dofile(path .. "/funcs/mvcp/get_destination.lua")
 dofile(path .. "/funcs/mvcp/get_changes.lua")
 dofile(path .. "/funcs/mvcp/map_changes_to_sources.lua")
 dofile(path .. "/funcs/mvcp/graph_changes.lua")
+dofile(path .. "/funcs/mvcp/on_drop.lua")
 
 -- on player join
 dofile(path .. "/on_join/inventory.lua")

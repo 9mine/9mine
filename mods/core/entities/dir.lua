@@ -19,10 +19,20 @@ minetest.register_entity("core:dir", {
     on_punch = function(self, player, dtime, tool, dir)
         if tool.damage_groups.enter == 1 then
             list_directory(self.addr, self.path, player)
+            return
         end
 
         if tool.damage_groups.stats == 1 then
             -- show_stats(puncher, self.path)
+        end
+        if tool.damage_groups.copy == 1 then
+            local item = ItemStack("core:dir_node")
+            local item_meta = item:get_meta()
+            item_meta:set_string("name", self.object:get_nametag_attributes().text)
+            item_meta:set_string("addr", self.addr)
+            item_meta:set_string("path", self.path)
+            item_meta:set_string("description", self.addr .. ":" .. self.path)
+            player:get_inventory():add_item("main", item)
         end
     end,
 

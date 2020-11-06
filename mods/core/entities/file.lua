@@ -34,6 +34,7 @@ minetest.register_entity("core:file", {
                         "textarea[0.5,0.5;12.0,12.0;;;",
                         minetest.formspec_escape(content), "]"
                     }, ""))
+            return
         end
 
         if tool.damage_groups.edit == 1 then  
@@ -49,6 +50,7 @@ minetest.register_entity("core:file", {
 
             minetest.show_formspec(player_name,
                                    "core:edit", form)
+            return
         end
         if tool.damage_groups.write == 1 then
             local player_name = puncher:get_player_name()
@@ -63,6 +65,16 @@ minetest.register_entity("core:file", {
 
             minetest.show_formspec(player_name,
                                    "core:write", form)
+            return
+        end    
+        if tool.damage_groups.copy == 1 then
+            local item = ItemStack("core:file_node")
+            local item_meta = item:get_meta()
+            item_meta:set_string("name", self.object:get_nametag_attributes().text)
+            item_meta:set_string("addr", self.addr)
+            item_meta:set_string("path", self.path)
+            item_meta:set_string("description", self.addr .. ":" .. self.path)
+            puncher:get_inventory():add_item("main", item)
         end
     end,
 
