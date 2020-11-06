@@ -36,10 +36,7 @@ minetest.register_node("core:file_node", {
             nametag_color = "black"
         })
         e:set_acceleration({x = 0, y = -9.81, z = 0})
-        -- minetest.after(1, function(e, player)
-        --     e:set_properties({nametag = "Establishing connection"})
-        --     generate_subs(e, player)
-        -- end, e, dropper)
+        minetest.after(1, on_drop, e, addr, path, dropper:get_player_name(), name)
         return itemstack
     end
 })
