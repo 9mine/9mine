@@ -29,14 +29,12 @@ minetest.register_node("core:dir_node", {
         p.z = p.z + dir.z
         local e = minetest.add_entity(p, "core:dir")
         e:get_luaentity().addr = addr
-        e:get_luaentity().path = path
         e:set_properties({
             nametag = name,
             nametag_color = "black"
         })
         e:set_acceleration({x = 0, y = -9.81, z = 0})
-        -- minetest.after(1, function()
-        -- end)
+        minetest.after(1, on_drop, e, addr, path, dropper:get_player_name(), name, "cp -r")
         return itemstack
     end
 })

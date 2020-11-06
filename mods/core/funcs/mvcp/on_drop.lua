@@ -1,4 +1,4 @@
-on_drop = function(entity, addr, origin_path, player_name, name)
+on_drop = function(entity, addr, origin_path, player_name, name, command)
     local lcmd = tostring(core_conf:get("lcmd"))
     local node_pos = minetest.find_node_near(entity:get_pos(), 6, {"core:plt"})
     local meta = minetest.get_meta(node_pos)
@@ -6,9 +6,9 @@ on_drop = function(entity, addr, origin_path, player_name, name)
     local path = meta:get_string("path")
     local plt_node = graph:findnode(hex(addr .. path))
     path = path == "/" and path or path .. "/"
-
     local fullpath = path .. name
-    cmd_write(addr, path, player_name, "cp " .. origin_path .. " " .. fullpath, lcmd)
+    entity:get_luaentity().path = fullpath
+    cmd_write(addr, path, player_name, command .. " " .. origin_path .. " " .. fullpath, lcmd)
     if plt_node.listing[name] then 
         local file_node = graph:findnode(
             hex(addr .. path .. name))
