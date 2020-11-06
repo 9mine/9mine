@@ -24,6 +24,11 @@ dofile(path .. "/entities/dir.lua")
 dofile(path .. "/entities/file.lua")
 dofile(path .. "/entities/console.lua")
 
+-- nodes
+dofile(path .. "/nodes/file.lua")
+dofile(path .. "/nodes/dir.lua")
+
+
 -- manage platforms
 dofile(path .. "/platforms/get_size.lua")
 dofile(path .. "/platforms/node.lua")
