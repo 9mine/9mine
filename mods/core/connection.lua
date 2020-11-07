@@ -16,13 +16,14 @@ function connection:attach()
     if (err ~= nil) then
         print("Connection error to " .. self.addr .. ": " .. err)
         minetest.chat_send_all("Connection error to " .. self.addr .. ": " .. err)
-        return
+        return false
     end
     local attachment = np.attach(tcp, "root", "")
     self.attachment = attachment
     minetest.chat_send_all("Attached to " .. self.addr)
     print("Attached to " .. self.addr)
     connections[self.addr] = self
+    return true
 end
 
 function connection:reattach()

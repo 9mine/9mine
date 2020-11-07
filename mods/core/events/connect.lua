@@ -6,7 +6,9 @@ connect = function(player, fields)
     local conn = connections[attach_string]
     if not conn then
         conn = connection(attach_string)
-        conn:attach()
+        if not conn:attach() then
+            return
+        end
     elseif conn:is_alive() then
         minetest.chat_send_all("Already attached. Connection is alive")
     elseif conn.tcp then
@@ -22,6 +24,10 @@ connect = function(player, fields)
     else
         minetest.chat_send_all("cmdchan is available")
     end
+
+    local root_platform = platform(conn, "/", root_cmdchan)
+    local content = root_platform:readdir()
+    minetest.chat_send_all(dump(content))
 end
 
 split_connection_string = function(connection_string)

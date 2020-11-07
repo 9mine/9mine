@@ -13,7 +13,7 @@ require 'readdir'
 require 'md5'
 require 'connection'
 require 'cmdchan'
-
+require 'platform'
 np = require '9p'
 
 -- mod files 
