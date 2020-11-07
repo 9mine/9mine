@@ -15,6 +15,13 @@ connect = function(player, fields)
     else
         conn:attach()
     end
+    local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
+    local root_cmdchan = cmdchan(conn, cmdchan_path)
+    if not root_cmdchan:is_present() then
+        minetest.chat_send_all("cmdchan at path " .. cmdchan_path .. "is not available")
+    else
+        minetest.chat_send_all("cmdchan is available")
+    end
 end
 
 split_connection_string = function(connection_string)

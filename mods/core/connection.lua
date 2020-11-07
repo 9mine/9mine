@@ -1,7 +1,4 @@
-require "socket"
-require "class"
-
-class("connection")
+class 'connection'
 
 -- initialize connection object with basic connection information
 function connection:connection(attach_string)

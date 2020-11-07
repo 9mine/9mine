@@ -1,21 +1,17 @@
-minetest.register_on_player_receive_fields(
-    function(player, formname, fields)
-        if formname == "core:connect" then
-            connect(player, fields)
-        end
-        if formname == "core:spawn_attach" then
-            spawn_attach(player, fields)
-        end
-        if formname == "core:spawn_console" then
-            spawn_console(player, formname, fields)
-        end
-        if formname == "core:console" then
-            console(player, formname, fields)
-        end
-        if formname == "platform:settings" then
-            platform_settings(player, fields, formname)
-        end
-        if formname == "core:edit" or formname == "core:write" then
-            edit(player, fields)
-        end
-    end)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname == "core:connect" then
+        connect(player, fields)
+    end
+    if formname == "core:spawn_console" then
+        spawn_console(player, formname, fields)
+    end
+    if formname == "core:console" then
+        console(player, formname, fields)
+    end
+    if formname == "platform:settings" then
+        platform_settings(player, fields, formname)
+    end
+    if formname == "core:edit" or formname == "core:write" then
+        edit(player, fields)
+    end
+end)

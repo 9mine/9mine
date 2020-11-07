@@ -1,18 +1,23 @@
 local path = minetest.get_modpath("core")
--- custom modloader
 dofile(path .. "/modload.lua")
+
+core_conf = Settings(path .. "/mod.conf")
 
 -- global values
 connections = {}
 
+-- libraries 
+require "socket"
+require "class"
 require 'readdir'
 require 'md5'
 require 'connection'
+require 'cmdchan'
 
 np = require '9p'
-g = require 'graph'
 
-dofile(path .. "/on_join/inventory.lua")
-dofile(path .. "/tools/connect.lua")
-dofile(path .. "/events/events.lua")
-dofile(path .. "/events/connect.lua")
+-- mod files 
+require 'on_join.inventory'
+require 'tools.connect'
+require 'events.events'
+require 'events.connect'
