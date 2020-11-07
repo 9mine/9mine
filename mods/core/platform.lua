@@ -8,7 +8,7 @@ function platform:platform(conn, path, cmdchan)
 end
 
 function platform:readdir()
-    local result, content = pcall(readdir, self.attachment, self.path == "/" and "../" or self.path)
+    local result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
     if not result then
         if self.conn:is_alive() then
             minetest.chat_send_all("Connection is alive, but error reading content of directory: " .. content)
