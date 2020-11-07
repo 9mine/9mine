@@ -25,7 +25,7 @@ connect = function(player, fields)
         minetest.chat_send_all("cmdchan is available")
     end
 
-    local root_platform = platform(conn, "/", root_cmdchan)
+    local root_platform = platform(conn, attach_path, root_cmdchan)
     local content = root_platform:readdir()
     minetest.chat_send_all(dump(content))
 end
