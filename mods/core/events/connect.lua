@@ -31,9 +31,9 @@ connect = function(player, fields)
     local content = root_platform:readdir()
     root_platform:set_size()
     root_platform:draw(pos)
-    minetest.chat_send_all(dump(content))
-    minetest.after(3, platform.enlarge, root_platform)
-    minetest.after(6, platform.enlarge, root_platform)
+    for _, stat in pairs(content) do 
+        root_platform:spawn_stat(stat)
+    end
 end
 
 split_connection_string = function(connection_string)

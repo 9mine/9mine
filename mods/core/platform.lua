@@ -1,10 +1,15 @@
 class 'platform'
 
 function platform:platform(conn, path, cmdchan)
+    local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
+                                      core_conf:get("refresh_time"))
     self.conn = conn
     self.cmdchan = cmdchan
     self.path = path
     self.connection_string = conn.addr .. self.path
+    self.properties = {
+        refresh_time = refresh_time
+    }
 end
 
 function platform:readdir()
@@ -64,6 +69,24 @@ function platform:draw(root_point)
     table.shuffle(slots)
     self.slots = slots
     self.root_point = root_point
+end
+
+function platform:spawn_stat(stat)
+    local slot = self:get_slot()
+    local pos = table.copy(slot)
+    pos.y = pos.y + 7 + math.random(5)
+    local stat_entity = minetest.add_entity(pos, "core:stat")
+    stat_filter(stat_entity, stat)
+end
+
+function platform:get_slot()
+    local index, slot = next(self.slots)
+    if not slot then 
+        platform:enlarge()
+    end
+    index, slot = next(self.slots)
+    table.remove(self.slots, index)
+    return slot
 end
 
 function platform:enlarge(new_size)
