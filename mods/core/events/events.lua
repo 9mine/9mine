@@ -1,5 +1,8 @@
 minetest.register_on_player_receive_fields(
     function(player, formname, fields)
+        if formname == "core:connect" then
+            connect(player, fields)
+        end
         if formname == "core:spawn_attach" then
             spawn_attach(player, fields)
         end

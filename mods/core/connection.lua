@@ -3,8 +3,9 @@ require "class"
 
 class("connection")
 
-function connection:connection(connection_string)
-    local addr, prot, host, port = parse_connection_string(connection_string)
+-- initialize connection object with basic connection information
+function connection:connection(attach_string)
+    local addr, prot, host, port = parse_attach_string(attach_string)
     self.addr = addr
     self.prot = prot
     self.host = host
@@ -15,40 +16,42 @@ function connection:attach()
     local tcp = socket:tcp()
     self.tcp = tcp
     local _, err = tcp:connect(self.host, self.port, "*", 0)
-
     if (err ~= nil) then
         print("Connection error to " .. self.addr .. ": " .. err)
         minetest.chat_send_all("Connection error to " .. self.addr .. ": " .. err)
         return
     end
-    conn = np.attach(tcp, "root", "")
-    minetest.chat_send_all("Connected to " .. self.addr)
-    print("Connected to " .. self.addr)
-    connections[self.addr] = conn
+    local attachment = np.attach(tcp, "root", "")
+    self.attachment = attachment
+    minetest.chat_send_all("Attached to " .. self.addr)
+    print("Attached to " .. self.addr)
+    connections[self.addr] = self
 end
 
-function connection:reattach() 
+function connection:reattach()
     self.tcp:close()
     print("Disconnected from " .. self.addr)
     self:attach()
-end 
+end
 
--- parses string in form of '<protocol>!<hostname>!<port_number> <initial_path>(optional)'
-parse_connection_string = function(connection_string)
-    local t = {}
-    for s in string.gmatch(connection_string, "[^ ]+") do
-        table.insert(t, s)
+function connection:is_alive()
+    local conn = self.attachment
+    local f = conn:newfid()
+    local result = pcall(np.walk, conn, conn.rootfid, f, "../")
+    if result then
+        conn:clunk(f)
     end
-    local addr = t[1]
-    local th = {}
-    if not addr then
-        return
+    return result
+end
+
+-- parses string in form of '<protocol>!<hostname>!<port_number>'
+parse_attach_string = function(attach_string)
+    local info = {}
+    for token in string.gmatch(attach_string, "[^!]+") do
+        table.insert(info, token)
     end
-    for s in string.gmatch(addr, "[^!]+") do
-        table.insert(th, s)
-    end
-    local prot = th[1]
-    local host = th[2]
-    local port = tonumber(th[3])
-    return addr, prot, host, port
+    local prot = info[1]
+    local host = info[2]
+    local port = tonumber(info[3])
+    return attach_string, prot, host, port
 end

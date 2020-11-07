@@ -2,10 +2,9 @@ local path = minetest.get_modpath("core")
 -- custom modloader
 dofile(path .. "/modload.lua")
 
---global values
+-- global values
 connections = {}
 
-require 'socket'
 require 'readdir'
 require 'md5'
 require 'connection'
@@ -13,7 +12,7 @@ require 'connection'
 np = require '9p'
 g = require 'graph'
 
-
-local conn = connection("tcp!localhost!1917 /tmp")
-conn:attach()
-conn:reattach()
+dofile(path .. "/on_join/inventory.lua")
+dofile(path .. "/tools/connect.lua")
+dofile(path .. "/events/events.lua")
+dofile(path .. "/events/connect.lua")
