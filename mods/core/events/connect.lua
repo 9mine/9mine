@@ -28,12 +28,7 @@ connect = function(player, fields)
     local pos = player:get_pos()
 
     local root_platform = platform(conn, attach_path, root_cmdchan)
-    local content = root_platform:readdir()
-    root_platform:set_size()
-    root_platform:draw(pos)
-    for _, stat in pairs(content) do 
-        root_platform:spawn_stat(stat)
-    end
+    root_platform:spawn(pos)
 end
 
 split_connection_string = function(connection_string)

@@ -31,6 +31,7 @@ RUN luarocks-5.1 install lua-filesize
 RUN apk add graphviz graphviz-dev
 RUN luarocks-5.1 install luagraph
 RUN luarocks-5.1 install md5
+RUN luarocks-5.1 install luabitop
 
 FROM alpine:latest
 

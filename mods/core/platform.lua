@@ -79,14 +79,27 @@ function platform:spawn_stat(stat)
     stat_filter(stat_entity, stat)
 end
 
+function platform:spawn_content()
+    for _, stat in pairs(self.content) do
+        self:spawn_stat(stat)
+    end
+end
+
 function platform:get_slot()
     local index, slot = next(self.slots)
-    if not slot then 
+    if not slot then
         platform:enlarge()
     end
     index, slot = next(self.slots)
     table.remove(self.slots, index)
     return slot
+end
+
+function platform:spawn(root_point, size)
+    self:readdir()
+    self:set_size(size)
+    self:draw(root_point)
+    self:spawn_content()
 end
 
 function platform:enlarge(new_size)
