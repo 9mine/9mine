@@ -10,6 +10,7 @@ function platform:platform(conn, path, cmdchan)
     self.properties = {
         refresh_time = refresh_time
     }
+    self.stats = {}
 end
 
 function platform:readdir()
@@ -74,13 +75,16 @@ end
 function platform:spawn_stat(stat)
     local slot = self:get_slot()
     local pos = table.copy(slot)
+    stat:set_pos()
     pos.y = pos.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(pos, "core:stat")
-    stat_filter(stat_entity, stat)
+    self.stats[stat:get_qid()] = stat
+    stat:filter(stat_entity)
 end
 
 function platform:spawn_content()
-    for _, stat in pairs(self.content) do
+    for _, stat_value in pairs(self.content) do
+        local stat = stat(stat_value)
         self:spawn_stat(stat)
     end
 end

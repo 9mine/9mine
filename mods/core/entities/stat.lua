@@ -15,8 +15,10 @@ minetest.register_entity("core:stat", {
     path = "",
     addr = "",
     stat = "",
+    qid = "",
     on_punch = function(self, puncher, dtime, tool, dir)
         local player_name = puncher:get_player_name()
+        minetest.chat_send_all(self.qid)
         if tool.damage_groups.stats == 1 then
             -- show_stats(puncher, self.path)
         end
