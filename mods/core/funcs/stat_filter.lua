@@ -4,11 +4,8 @@ stat_filter = function(stat_entity, stat)
         texture = "core_dir.png"
     end
     stat_entity:get_luaentity().stat = stat
-    local lo = stat.qid.path_lo
-    local hi = stat.qid.path_hi
-    local qid_i64 = i64_ax(hi, lo)
-    local qid = i64_toStringNo0x(qid_i64)
-    stat_entity:get_luaentity().qid = qid
+    stat_entity:get_luaentity().qid = stat.qid.path_hex
+    minetest.chat_send_all(stat.qid.path_hex)
     stat_entity:set_properties({
         textures = {texture},
         nametag = stat.name

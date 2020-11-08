@@ -27,6 +27,7 @@ SUCH DAMAGE.
 ]]
 
 local data = require'data'
+require 'uint64'
 
 local np = {}
 

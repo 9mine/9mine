@@ -6,8 +6,6 @@ core_conf = Settings(path .. "/mod.conf")
 -- global values
 connections = {}
 
-require 'uint64'
-
 -- libraries 
 require "socket"
 require "class"
