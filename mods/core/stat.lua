@@ -13,7 +13,7 @@ function stat:get_qid()
 end
 
 function stat:set_pos(pos)
-    self.pos = pos
+    self.pos = table.copy(pos)
 end
 
 function stat:filter(stat_entity)

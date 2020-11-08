@@ -5,8 +5,8 @@ core_conf = Settings(path .. "/mod.conf")
 
 -- global values
 connections = {}
-
 -- libraries 
+require 'graph'
 require "socket"
 require "class"
 require 'readdir'

@@ -75,11 +75,37 @@ end
 function platform:spawn_stat(stat)
     local slot = self:get_slot()
     local pos = table.copy(slot)
-    stat:set_pos()
+    stat:set_pos(pos)
     pos.y = pos.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(pos, "core:stat")
-    self.stats[stat:get_qid()] = stat
+    local qid = stat:get_qid()
+    self.stats[qid] = stat
     stat:filter(stat_entity)
+end
+
+function platform:get_stat_entity(qid)
+    local pos = table.copy(self.stats[qid].pos)
+    pos.y = pos.y + 1
+    return minetest.get_objects_inside_radius(pos, 0.5)[1], pos
+end
+
+function platform:remove_stat(qid)
+    local stat_entity, pos = self:get_stat_entity(qid)
+    if stat_entity then
+        stat_entity:set_acceleration({
+            x = 0,
+            y = 9,
+            z = 0
+        })
+        minetest.after(2, function(self, e, pos, qid)
+            table.insert(self.slots, pos)
+            self.stats[qid] = nil
+            e:remove()
+        end, self, stat_entity, pos, qid)
+    else
+        minetest.chat_send_all("Removing stat entity with qid " .. qid .. " failed")
+    end
+
 end
 
 function platform:spawn_content()
