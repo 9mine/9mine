@@ -23,3 +23,11 @@ function common:get_platform_string(player)
     local meta = minetest.get_meta(node_pos)
     return meta:get_string("platform_string")
 end
+
+function common:qid_as_key(dir)
+    local new_dir = {}
+    for _, stat in pairs(dir) do
+        new_dir[stat.qid.path_hex] = stat
+    end
+    return new_dir
+end

@@ -17,11 +17,11 @@ end
 function platform:readdir()
     local result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
     if not result then
-        if self.conn.attachment:is_alive() then
+        if self.conn.attachment and self.conn.attachment:is_alive() then
             minetest.chat_send_all("Connection is alive, but error reading content of directory: " .. content)
             return
         else
-            if self.conn.attachment:reattach() then
+            if self.conn.attachment and self.conn.attachment:reattach() then
                 result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
                 if result then
                     content = content or {}
@@ -29,7 +29,7 @@ function platform:readdir()
             end
         end
     else
-        self.content = content or {}
+        content = content or {}
     end
     return content
 end
@@ -86,8 +86,7 @@ function platform:spawn_stat(stat)
     stat:set_path(self.path)
     pos.y = pos.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(pos, "core:stat")
-    local qid = stat:get_qid()
-    self.stats[qid] = stat
+    self:set_stat(stat)
     stat:filter(stat_entity)
 end
 
@@ -105,9 +104,9 @@ function platform:remove_stat(qid)
             y = 9,
             z = 0
         })
+        table.insert(self.slots, pos)
+        self:delete_stat(qid)
         minetest.after(2, function(self, e, pos, qid)
-            table.insert(self.slots, pos)
-            self.stats[qid] = nil
             e:remove()
         end, self, stat_entity, pos, qid)
     else
@@ -142,10 +141,11 @@ function platform:next_pos()
 end
 
 function platform:spawn(root_point, size)
-    self:readdir()
+    self:set_content(self:readdir())
     self:set_size(size)
     self:draw(root_point)
     self:spawn_content()
+    self:update()
 end
 
 function platform:spawn_child(path)
@@ -209,6 +209,34 @@ function platform:get_node()
     return self.node
 end
 
+function platform:get_content()
+    return self.content
+end
+
+function platform:set_content(content)
+    self.content = content
+end
+
+function platform:get_stats()
+    return self.stats
+end
+
+function platform:set_stats(stats)
+    self.stats = stats
+end
+
+function platform:get_stat(qid)
+    return self.stats[qid]
+end
+
+function platform:set_stat(stat)
+    self.stats[stat:get_qid()] = stat
+end
+
+function platform:delete_stat(qid)
+    self.stats[qid] = nil
+end
+
 function platform:get_refresh_time()
     return self.properties.refresh_time
 end
@@ -225,4 +253,25 @@ function platform:show_properties(player)
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. refresh_time .. "]",
                       "button_exit[7,4.8;2.5,0.7;save;save]",
                       "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
+end
+
+function platform:update()
+    local refresh_time = self:get_refresh_time()
+    if refresh_time ~= 0 then
+        local stats = self:get_stats()
+        local new_content = common:qid_as_key(self:readdir())
+        for qid, st in pairs(new_content) do
+            if not stats[qid] then
+                self:spawn_stat(stat(st))
+            end
+        end
+
+        for qid in pairs(stats) do
+            if not new_content[qid] then
+                self:remove_stat(qid)
+            end
+        end
+    end
+
+    minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
 end
