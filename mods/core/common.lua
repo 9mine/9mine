@@ -31,3 +31,17 @@ function common:qid_as_key(dir)
     end
     return new_dir
 end
+
+function common:path_to_table(path)
+    local i = 1
+    local paths = {}
+    while true do
+        i = path:find("/", i + 1)
+        if not i then
+            table.insert(paths, 1, path)
+            break
+        end
+        table.insert(paths, 1, path:sub(1, i - 1))
+    end
+    return paths
+end

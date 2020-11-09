@@ -1,5 +1,9 @@
-automount = function(player) 
-    local fields = { connection_string = os.getenv("INFERNO_ADDRESS") ~= "" and os.getenv("INFERNO_ADDRESS") or core_conf:get("inferno_address"), connect = true }
+automount = function(player)
+    local fields = {
+        connection_string = os.getenv("INFERNO_ADDRESS") ~= "" and os.getenv("INFERNO_ADDRESS") or
+            core_conf:get("inferno_address"),
+        connect = true
+    }
     connect(player, fields)
 end
 

@@ -14,6 +14,9 @@ minetest.register_on_chat_message(function(player_name, message)
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_all(result .. "\n")
+            if result:match("^/") then
+                result = result:gsub("\n", "")               
+            end
         end
         return true
     end
