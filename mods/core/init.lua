@@ -25,5 +25,5 @@ require 'nodes.platform'
 require 'entities.stat'
 require 'stat'
 require 'graphs.platforms'
-
+require 'chat.commands.graph'
 platforms = platforms(graph)

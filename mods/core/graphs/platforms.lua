@@ -20,9 +20,12 @@ end
 
 function platforms:add(platform, parent_platform)
     local platform_node = self.graph:node(platform.connection_string)
-    local host_node = self.graph:findnode(platform.conn.addr)
+
     if not parent_platform then
+        local host_node = self.graph:findnode(platform.conn.addr)
         self.graph:edge(host_node, platform_node)
+    else
+        self.graph:edge(parent_platform, platform_node)
     end
     return platform_node
 end
