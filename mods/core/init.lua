@@ -39,6 +39,7 @@ require 'tools.enter'
 -- chat
 require 'chat.cmdchan'
 require 'chat.graph'
+require 'chat.commands'
 
 platforms = platforms(graph)
 common = common()

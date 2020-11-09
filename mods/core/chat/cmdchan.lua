@@ -17,7 +17,7 @@ minetest.register_on_chat_message(function(player_name, message)
             minetest.chat_send_all(result .. "\n")
             if result:match("^/") then
                 result = result:gsub("\n", "")
-                platform:spawn_path(result, player)          
+                platform:spawn_path(result, player)
             end
         end
         return true
