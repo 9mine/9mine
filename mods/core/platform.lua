@@ -1,6 +1,6 @@
 class 'platform'
 
-function platform:platform(conn, path, cmdchan)
+function platform:platform(conn, path, cmdchan, parent_node)
     local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
                                       core_conf:get("refresh_time"))
     self.conn = conn
@@ -11,6 +11,7 @@ function platform:platform(conn, path, cmdchan)
         refresh_time = refresh_time
     }
     self.stats = {}
+    self.parent_node = parent_node
 end
 
 function platform:readdir()
@@ -72,6 +73,10 @@ function platform:draw(root_point)
     self.root_point = root_point
 end
 
+function platform:get_root_point()
+    return self.root_point
+end
+
 function platform:spawn_stat(stat)
     local slot = self:get_slot()
     local pos = table.copy(slot)
@@ -127,11 +132,27 @@ function platform:get_slot()
     return slot
 end
 
+function platform:next_pos() 
+    local pos = table.copy(self.root_point)
+    pos.y = pos.y + math.random(7, 12)
+    pos.x = pos.x + math.random(-15, 15)
+    pos.z = pos.z + math.random(-15, 15)
+    return pos
+end
+
 function platform:spawn(root_point, size)
     self:readdir()
     self:set_size(size)
     self:draw(root_point)
     self:spawn_content()
+end
+
+function platform:spawn_child(path)
+    local child_platform = platform(self.conn, path, self.cmdchan)
+    local pos = self:next_pos()
+    child_platform:spawn(pos)
+    child_platform:set_node(platforms:add(child_platform, self))
+    return child_platform
 end
 
 function platform:enlarge(new_size)

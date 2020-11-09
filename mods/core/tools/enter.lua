@@ -11,15 +11,9 @@ EnterTool = {
 }
 
 function EnterTool.enter(entity, player)
-    print(dump(entity))
     local parent_platform = platforms:get_platform(entity.connection_string)
-    local child_platform = platform(parent_platform.conn, entity.path, parent_platform.cmdchan)
-    local pos = table.copy(player:get_pos())
-    pos.y = pos.y + math.random(7, 12)
-    pos.x = pos.x + math.random(10)
-    pos.z = pos.z + math.random(10)
-    child_platform:spawn(pos)
-    minetest.chat_send_all("I'm received player with name: " .. player:get_player_name())
+    local child_platform = parent_platform:spawn_child(entity.path)
+    player:set_pos(child_platform:get_root_point())
 end
 
 minetest.register_tool("core:enter", EnterTool)

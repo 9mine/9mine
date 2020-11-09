@@ -7,7 +7,6 @@ function platforms:platforms(graph)
 end
 
 function platforms:get(connection_string)
-    print("this connection string is ", connection_string)
     if connection_string then
         return self.graph:findnode(connection_string)
     else
@@ -31,14 +30,13 @@ function platforms:add(platform, parent_platform)
         local host_node = self.graph:findnode(platform.conn.addr)
         self.graph:edge(host_node, platform_node)
     else
-        self.graph:edge(parent_platform, platform_node)
+        self.graph:edge(parent_platform:get_node(), platform_node)
     end
     return platform_node
 end
 
 function platforms:add_host(attach_string)
-    if not self.graph:findnode(attach_string) then
         local host_node = self.graph:node(attach_string)
         self.graph:edge(self.root_node, host_node)
-    end
+        return host_node
 end

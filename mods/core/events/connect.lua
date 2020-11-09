@@ -17,6 +17,7 @@ connect = function(player, fields)
     else
         conn:attach()
     end
+    
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(conn, cmdchan_path)
     if not root_cmdchan:is_present() then
@@ -26,10 +27,9 @@ connect = function(player, fields)
     end
 
     local pos = player:get_pos()
-
-    local root_platform = platform(conn, attach_path, root_cmdchan)
+    local host_node = platforms:add_host(attach_string)
+    local root_platform = platform(conn, attach_path, root_cmdchan, host_node)
     root_platform:spawn(pos)
-    platforms:add_host(attach_string)
     root_platform:set_node(platforms:add(root_platform))
 end
 
