@@ -176,3 +176,7 @@ function platform:enlarge(new_size)
     self.root_point = p1
     table.shuffle(slots)
 end
+
+function platform:set_node(node)
+    self.node = node
+end

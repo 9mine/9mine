@@ -29,6 +29,8 @@ connect = function(player, fields)
 
     local root_platform = platform(conn, attach_path, root_cmdchan)
     root_platform:spawn(pos)
+    platforms:add_host(attach_string)
+    root_platform:set_node(platforms:add(root_platform))
 end
 
 split_connection_string = function(connection_string)

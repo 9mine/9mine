@@ -24,3 +24,6 @@ require 'events.connect'
 require 'nodes.platform'
 require 'entities.stat'
 require 'stat'
+require 'graphs.platforms'
+
+platforms = platforms(graph)
