@@ -17,7 +17,7 @@ connect = function(player, fields)
     else
         conn:attach()
     end
-    
+
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(conn, cmdchan_path)
     if not root_cmdchan:is_present() then
@@ -31,6 +31,8 @@ connect = function(player, fields)
     local root_platform = platform(conn, attach_path, root_cmdchan, host_node)
     root_platform:spawn(pos)
     root_platform:set_node(platforms:add(root_platform))
+    local root_point = root_platform:get_root_point()
+    common:goto_platform(player, root_point)
 end
 
 split_connection_string = function(connection_string)

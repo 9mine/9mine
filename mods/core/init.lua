@@ -25,6 +25,7 @@ require 'chat.commands.graph'
 require 'platform'
 require 'stat'
 require 'graphs.platforms'
+require 'common'
 
 -- node/entities
 require 'entities.stat'
@@ -35,3 +36,4 @@ require 'tools.connect'
 require 'tools.enter'
 
 platforms = platforms(graph)
+common = common()

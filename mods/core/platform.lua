@@ -74,7 +74,7 @@ function platform:draw(root_point)
 end
 
 function platform:get_root_point()
-    return self.root_point
+    return table.copy(self.root_point)
 end
 
 function platform:spawn_stat(stat)
