@@ -82,6 +82,7 @@ function platform:spawn_stat(stat)
     local pos = table.copy(slot)
     stat:set_pos(pos)
     stat:set_connection_string(self.connection_string)
+    stat:set_addr(self.conn.addr)
     stat:set_path(self.path)
     pos.y = pos.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(pos, "core:stat")
@@ -132,7 +133,7 @@ function platform:get_slot()
     return slot
 end
 
-function platform:next_pos() 
+function platform:next_pos()
     local pos = table.copy(self.root_point)
     pos.y = pos.y + math.random(7, 12)
     pos.x = pos.x + math.random(-15, 15)

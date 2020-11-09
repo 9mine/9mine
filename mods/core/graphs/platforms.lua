@@ -16,7 +16,9 @@ end
 
 function platforms:get_platform(connection_string)
     local platform_node = self:get(connection_string)
-    return platform_node.object
+    if platform_node then
+        return platform_node.object
+    end
 end
 
 function platforms:get_root()
@@ -36,7 +38,7 @@ function platforms:add(platform, parent_platform)
 end
 
 function platforms:add_host(attach_string)
-        local host_node = self.graph:node(attach_string)
-        self.graph:edge(self.root_node, host_node)
-        return host_node
+    local host_node = self.graph:node(attach_string)
+    self.graph:edge(self.root_node, host_node)
+    return host_node
 end

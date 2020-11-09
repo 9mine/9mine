@@ -12,6 +12,7 @@ local StatEntity = {
         shaded = true
     },
     qid = "",
+    addr = "",
     connection_string = ""
 }
 

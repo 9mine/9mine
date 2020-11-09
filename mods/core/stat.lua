@@ -12,8 +12,16 @@ function stat:get_path()
     return self.path
 end
 
+function stat:set_addr(addr)
+    self.addr = addr
+end
+
 function stat:set_path(path)
     self.path = path == "/" and path .. self.stat.name or path .. "/" .. self.stat.name
+end
+
+function stat:get_addrpath()
+    return self.addr .. self.path
 end
 
 function stat:get_qid()
@@ -41,6 +49,7 @@ function stat:filter(stat_entity)
     lua_entity.stat = self.stat
     lua_entity.qid = self:get_qid()
     lua_entity.path = self:get_path()
+    lua_entity.addrpath = self:get_addrpath()
     lua_entity.connection_string = self:get_connection_string()
     stat_entity:set_properties({
         textures = {texture},
