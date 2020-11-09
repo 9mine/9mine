@@ -245,6 +245,14 @@ function platform:set_refresh_time(refresh_time)
     self.properties.refresh_time = refresh_time
 end
 
+function platform:get_cmdchan()
+    return self.cmdchan
+end
+
+function platform:get_path()
+    return self.path
+end
+
 function platform:show_properties(player)
     local refresh_time = self:get_refresh_time()
 

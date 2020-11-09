@@ -21,6 +21,10 @@ function platforms:get_platform(platform_string)
     end
 end
 
+function platforms:get_cmdchan(platform_string)
+    self:get_platform(platform_string):get_cmdchan()
+end
+
 function platforms:get_root()
     return self.root_node
 end

@@ -21,7 +21,6 @@ require 'automount'
 require 'events.events'
 require 'events.connect'
 require 'events.platform_properties'
-require 'chat.commands.graph'
 
 -- objects
 require 'platform'
@@ -36,6 +35,10 @@ require 'nodes.platform'
 -- tools
 require 'tools.connect'
 require 'tools.enter'
+
+-- chat
+require 'chat.cmdchan'
+require 'chat.graph'
 
 platforms = platforms(graph)
 common = common()
