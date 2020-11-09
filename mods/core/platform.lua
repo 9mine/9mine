@@ -6,7 +6,7 @@ function platform:platform(conn, path, cmdchan, parent_node)
     self.conn = conn
     self.cmdchan = cmdchan
     self.path = path
-    self.connection_string = conn.addr .. self.path
+    self.platform_string = conn.addr .. self.path
     self.properties = {
         refresh_time = refresh_time
     }
@@ -63,7 +63,7 @@ function platform:draw(root_point)
                     name = "core:platform"
                 })
                 local node = minetest.get_meta(p)
-                node:set_string("connection_string", self.connection_string)
+                node:set_string("platform_string", self.platform_string)
                 table.insert(slots, p)
             end
         end
@@ -81,7 +81,7 @@ function platform:spawn_stat(stat)
     local slot = self:get_slot()
     local pos = table.copy(slot)
     stat:set_pos(pos)
-    stat:set_connection_string(self.connection_string)
+    stat:set_platform_string(self.platform_string)
     stat:set_addr(self.conn.addr)
     stat:set_path(self.path)
     pos.y = pos.y + 7 + math.random(5)
@@ -190,7 +190,7 @@ function platform:enlarge(new_size)
                         name = "core:platform"
                     })
                     local node = minetest.get_meta(p)
-                    node:set_string("connection_string", self.connection_string)
+                    node:set_string("platform_string", self.platform_string)
                     table.insert(slots, p)
                 end
             end
@@ -207,4 +207,22 @@ end
 
 function platform:get_node()
     return self.node
+end
+
+function platform:get_refresh_time()
+    return self.properties.refresh_time
+end
+
+function platform:set_refresh_time(refresh_time)
+    self.properties.refresh_time = refresh_time
+end
+
+function platform:show_properties(player)
+    local refresh_time = self:get_refresh_time()
+
+    minetest.show_formspec(player:get_player_name(), "platform:properties",
+        table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
+                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. refresh_time .. "]",
+                      "button_exit[7,4.8;2.5,0.7;save;save]",
+                      "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
 end

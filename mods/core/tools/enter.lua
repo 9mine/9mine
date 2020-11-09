@@ -13,7 +13,7 @@ EnterTool = {
 function EnterTool.enter(entity, player)
     local child_platform = platforms:get_platform(entity.addrpath)
     if not child_platform then
-        local parent_platform = platforms:get_platform(entity.connection_string)
+        local parent_platform = platforms:get_platform(entity.platform_string)
         child_platform = parent_platform:spawn_child(entity.path)
     end
     common:goto_platform(player, child_platform:get_root_point())

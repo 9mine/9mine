@@ -32,12 +32,12 @@ function stat:set_pos(pos)
     self.pos = table.copy(pos)
 end
 
-function stat:set_connection_string(connection_string)
-    self.connection_string = connection_string
+function stat:set_platform_string(platform_string)
+    self.platform_string = platform_string
 end
 
-function stat:get_connection_string()
-    return self.connection_string
+function stat:get_platform_string()
+    return self.platform_string
 end
 
 function stat:filter(stat_entity)
@@ -50,7 +50,7 @@ function stat:filter(stat_entity)
     lua_entity.qid = self:get_qid()
     lua_entity.path = self:get_path()
     lua_entity.addrpath = self:get_addrpath()
-    lua_entity.connection_string = self:get_connection_string()
+    lua_entity.platform_string = self:get_platform_string()
     stat_entity:set_properties({
         textures = {texture},
         nametag = self.stat.name

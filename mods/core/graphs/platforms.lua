@@ -6,16 +6,16 @@ function platforms:platforms(graph)
     self.root_node = platforms_graph:node("platforms")
 end
 
-function platforms:get(connection_string)
-    if connection_string then
-        return self.graph:findnode(connection_string)
+function platforms:get(platform_string)
+    if platform_string then
+        return self.graph:findnode(platform_string)
     else
         return self.graph
     end
 end
 
-function platforms:get_platform(connection_string)
-    local platform_node = self:get(connection_string)
+function platforms:get_platform(platform_string)
+    local platform_node = self:get(platform_string)
     if platform_node then
         return platform_node.object
     end
@@ -26,7 +26,7 @@ function platforms:get_root()
 end
 
 function platforms:add(platform, parent_platform)
-    local platform_node = self.graph:node(platform.connection_string)
+    local platform_node = self.graph:node(platform.platform_string)
     platform_node.object = platform
     if not parent_platform then
         local host_node = self.graph:findnode(platform.conn.addr)

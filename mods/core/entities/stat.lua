@@ -13,7 +13,7 @@ local StatEntity = {
     },
     qid = "",
     addr = "",
-    connection_string = ""
+    platform_string = ""
 }
 
 function StatEntity:on_punch(puncher, dtime, tool, dir)

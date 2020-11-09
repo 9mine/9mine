@@ -20,6 +20,7 @@ np = require '9p'
 require 'automount'
 require 'events.events'
 require 'events.connect'
+require 'events.platform_properties'
 require 'chat.commands.graph'
 
 -- objects

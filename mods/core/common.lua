@@ -17,3 +17,9 @@ function common:goto_platform(player, pos)
     player:set_pos(pos)
     self:set_look(player, destination)
 end
+
+function common:get_platform_string(player)
+    local node_pos = minetest.find_node_near(player:get_pos(), 6, {"core:platform"})
+    local meta = minetest.get_meta(node_pos)
+    return meta:get_string("platform_string")
+end

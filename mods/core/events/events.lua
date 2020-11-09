@@ -8,8 +8,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname == "core:console" then
         console(player, formname, fields)
     end
-    if formname == "platform:settings" then
-        platform_settings(player, fields, formname)
+    if formname == "platform:properties" then
+        platform_properties(fields)
     end
     if formname == "core:edit" or formname == "core:write" then
         edit(player, fields)
