@@ -7,3 +7,8 @@ platform_properties = function(fields)
     minetest.chat_send_all("For " .. fields.platform_string .. " refresh time is: " .. fields.refresh_time)
 end
 
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname == "platform:properties" then
+        platform_properties(fields)
+    end
+end)

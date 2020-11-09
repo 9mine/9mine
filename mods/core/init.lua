@@ -18,9 +18,8 @@ np = require '9p'
 
 -- mod files 
 require 'automount'
-require 'events.events'
-require 'events.connect'
-require 'events.platform_properties'
+require 'events.core'
+require 'events.platform'
 
 -- objects
 require 'platform'

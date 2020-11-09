@@ -49,3 +49,9 @@ split_connection_string = function(connection_string)
     local attach_path = strings[2] ~= nil and strings[2]:match("^/.*$") or "/"
     return attach_string, attach_path
 end
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname == "core:connect" then
+        connect(player, fields)
+    end
+end)
