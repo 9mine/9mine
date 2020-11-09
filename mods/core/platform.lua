@@ -28,7 +28,7 @@ function platform:readdir()
             end
         end
     else
-        self.content = content
+        self.content = content or {}
     end
     return content
 end
@@ -76,6 +76,8 @@ function platform:spawn_stat(stat)
     local slot = self:get_slot()
     local pos = table.copy(slot)
     stat:set_pos(pos)
+    stat:set_connection_string(self.connection_string)
+    stat:set_path(self.path)
     pos.y = pos.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(pos, "core:stat")
     local qid = stat:get_qid()
@@ -179,4 +181,8 @@ end
 
 function platform:set_node(node)
     self.node = node
+end
+
+function platform:get_node()
+    return self.node
 end

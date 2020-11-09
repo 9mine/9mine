@@ -13,17 +13,25 @@ require 'readdir'
 require 'md5'
 require 'connection'
 require 'cmdchan'
-require 'platform'
+
 np = require '9p'
 
 -- mod files 
-require 'on_join.inventory'
-require 'tools.connect'
 require 'events.events'
 require 'events.connect'
-require 'nodes.platform'
-require 'entities.stat'
+require 'chat.commands.graph'
+
+-- objects
+require 'platform'
 require 'stat'
 require 'graphs.platforms'
-require 'chat.commands.graph'
+
+-- node/entities
+require 'entities.stat'
+require 'nodes.platform'
+
+-- tools
+require 'tools.connect'
+require 'tools.enter'
+
 platforms = platforms(graph)

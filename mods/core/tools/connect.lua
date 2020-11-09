@@ -17,3 +17,10 @@ minetest.register_tool("core:connect", {
                           "button_exit[7,1.8;2.5,0.9;connect;connect]"}, ""))
     end
 })
+
+minetest.register_on_joinplayer(function(player)
+    local inventory = player.get_inventory(player)
+    if not inventory:contains_item("main", "core:connect") then
+        inventory:add_item("main", "core:connect")
+    end
+end)

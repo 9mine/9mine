@@ -7,11 +7,17 @@ function platforms:platforms(graph)
 end
 
 function platforms:get(connection_string)
+    print("this connection string is ", connection_string)
     if connection_string then
         return self.graph:findnode(connection_string)
     else
         return self.graph
     end
+end
+
+function platforms:get_platform(connection_string)
+    local platform_node = self:get(connection_string)
+    return platform_node.object
 end
 
 function platforms:get_root()
@@ -20,7 +26,7 @@ end
 
 function platforms:add(platform, parent_platform)
     local platform_node = self.graph:node(platform.connection_string)
-
+    platform_node.object = platform
     if not parent_platform then
         local host_node = self.graph:findnode(platform.conn.addr)
         self.graph:edge(host_node, platform_node)

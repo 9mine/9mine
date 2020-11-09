@@ -1,6 +1,6 @@
 minetest.register_on_joinplayer(function(player)
     local inventory = player.get_inventory(player)
-    populate_inventory(inventory, "core:connect")
+    populate_inventory(inventory, "core:connect", "core:enter")
 end)
 
 populate_inventory = function(inventory, ...)
