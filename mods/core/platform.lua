@@ -136,8 +136,8 @@ end
 function platform:next_pos()
     local pos = table.copy(self.root_point)
     pos.y = pos.y + math.random(7, 12)
-    pos.x = pos.x + math.random(-15, 15)
-    pos.z = pos.z + math.random(-15, 15)
+    pos.x = pos.x + math.random(30) - 15
+    pos.z = pos.z + math.random(30) - 15
     return pos
 end
 

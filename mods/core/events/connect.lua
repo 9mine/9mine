@@ -25,13 +25,16 @@ connect = function(player, fields)
     else
         minetest.chat_send_all("cmdchan is available")
     end
-
-    local pos = player:get_pos()
-    local host_node = platforms:add_host(attach_string)
-    local root_platform = platform(conn, attach_path, root_cmdchan, host_node)
-    root_platform:spawn(pos)
-    root_platform:set_node(platforms:add(root_platform))
-    local root_point = root_platform:get_root_point()
+    local root_point
+    if platforms:get(attach_string .. attach_path) then
+        root_point = platforms:get_platform(attach_string .. attach_path):get_root_point()
+    else
+        local host_node = platforms:add_host(attach_string)
+        local root_platform = platform(conn, attach_path, root_cmdchan, host_node)
+        root_platform:spawn(vector.round(player:get_pos()))
+        root_platform:set_node(platforms:add(root_platform))
+        root_point = root_platform:get_root_point()
+    end
     common:goto_platform(player, root_point)
 end
 

@@ -17,6 +17,7 @@ require 'cmdchan'
 np = require '9p'
 
 -- mod files 
+require 'automount'
 require 'events.events'
 require 'events.connect'
 require 'chat.commands.graph'
