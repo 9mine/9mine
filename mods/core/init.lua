@@ -19,6 +19,7 @@ np = require '9p'
 -- mod files 
 require 'automount'
 require 'events.core'
+require 'events.stat'
 require 'events.platform'
 
 -- objects
@@ -36,6 +37,8 @@ require 'nodes.platform'
 require 'tools.connect'
 require 'tools.enter'
 require 'tools.read'
+require 'tools.write'
+require 'tools.edit'
 
 -- chat
 require 'chat.cmdchan'

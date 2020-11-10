@@ -22,31 +22,17 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
         -- show_stats(puncher, self.path)
     end
     if tool.damage_groups.enter == 1 then
-        EnterTool.enter(self, puncher)
+        EnterTool.enter(self, puncher, player_name)
     end
     if tool.damage_groups.read == 1 then
-        ReadTool.read(self, puncher)
+        ReadTool.read(self, puncher, player_name)
     end
 
     if tool.damage_groups.edit == 1 then
-        local content = file_read(self.addr, self.path, player_name)
-        local formspec = {"formspec_version[3]", "size[13,13,false]", "field[0,0;0,0;addr;;" .. self.addr .. "]",
-                          "field[0,0;0,0;file_path;;" .. self.path .. "]", "textarea[0.5,0.5;12.0,10.6;content;;",
-                          minetest.formspec_escape(content), "]", "button_exit[10,11.6;2.5,0.9;edit;edit]"}
-        local form = table.concat(formspec, "")
-
-        minetest.show_formspec(player_name, "core:edit", form)
-        return
+        EditTool.edit(self, puncher, player_name)
     end
     if tool.damage_groups.write == 1 then
-        local player_name = puncher:get_player_name()
-        local formspec = {"formspec_version[3]", "size[13,13,false]", "field[0,0;0,0;addr;;" .. self.addr .. "]",
-                          "field[0,0;0,0;file_path;;" .. self.path .. "]", "textarea[0.5,0.5;12.0,10.6;content;;]",
-                          "button_exit[10,11.6;2.5,0.9;write;write]"}
-        local form = table.concat(formspec, "")
-
-        minetest.show_formspec(player_name, "core:write", form)
-        return
+        WriteTool.write(self, player_name)
     end
     if tool.damage_groups.copy == 1 then
         local item = ItemStack("core:file_node")

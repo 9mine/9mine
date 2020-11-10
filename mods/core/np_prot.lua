@@ -37,26 +37,14 @@ function np_prot.file_create(conn, path, file_name)
     conn:clunk(g)
 end
 
-function np_prot.file_write_w_st(conn, path, content)
+function np_prot.file_write(conn, path, content)
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, path)
     conn:open(f, 1)
     local buf = data.new(content)
     conn:write(f, 0, buf)
-    conn:clunk(f)
-    conn:walk(conn.rootfid, f, path)
-    conn:open(f, 1)
     local st = conn:stat(f)
     st.length = #buf
     conn:wstat(f, st)
-    conn:clunk(f)
-end
-
-function np_prot.file_write_wo_st(conn, path, content)
-    local f = conn:newfid()
-    conn:walk(conn.rootfid, f, path)
-    conn:open(f, 1)
-    local buf = data.new(content)
-    conn:write(f, 0, buf)
     conn:clunk(f)
 end

@@ -10,14 +10,18 @@ ReadTool = {
     }
 }
 
-function ReadTool.read(entity, player)
+function ReadTool.read(entity, player, player_name)
     local attachment = platforms:get_platform(common.get_platform_string(player)):get_attachment()
-    local content = np_prot.file_read(attachment, entity.path)
-
-    minetest.show_formspec(player:get_player_name(), "core:file_content",
-        table.concat({"formspec_version[3]", "size[13,13,false]", "textarea[0.5,0.5;12.0,12.0;;;",
-                      minetest.formspec_escape(content), "]"}, ""))
-    return
+    local response, content = pcall(np_prot.file_read, attachment, entity.path)
+    if not response then
+        minetest.chat_send_player(player:get_player_name(), content)
+        return
+    else
+        minetest.show_formspec(player:get_player_name(), "core:file_content",
+            table.concat({"formspec_version[3]", "size[13,13,false]", "textarea[0.5,0.5;12.0,12.0;;;",
+                          minetest.formspec_escape(content), "]"}, ""))
+        return
+    end
 end
 
 minetest.register_tool("core:read", ReadTool)
