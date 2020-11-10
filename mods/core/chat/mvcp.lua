@@ -13,6 +13,10 @@ function mvcp:parse_params(chat_string)
     for w in chat_string:gmatch("[^ ]+") do
         if w:match("^%-") then
             table.insert(params, w)
+        elseif w:match("^%.$") then
+            w = self.path
+            destination = w
+            table.insert(sources, w)
         else
             w = w:match("^%./") and w:gsub("^%./", self.path == "/" and self.path or self.path .. "/") or w
             if not w:match("^/") then
@@ -34,7 +38,7 @@ function mvcp:parse_params(chat_string)
     self.sources = sources
     self.params = params
 
-    return sources, destination, params
+    return self.sources, self.destination, self.params
 end
 
 function mvcp:is_destination_platform()
@@ -75,7 +79,7 @@ function mvcp:get_changes()
     for qid, st in pairs(new_content) do
         if not stats[qid] then
             changes[qid] = st
-        elseif stats[qid].stat.version ~= st.version then
+        elseif stats[qid].stat.version ~= st.version or stats[qid].stat.name ~= st.name then
             changes[qid] = st
         end
     end
@@ -85,14 +89,14 @@ end
 local move = function(player_name, params)
     local platform = platforms:get_platform(common:get_platform_string(minetest.get_player_by_name(player_name)))
     local mvcp = mvcp(platform)
-    local sources, destination, _ = mvcp:parse_params(params)
-    minetest.chat_send_all(mvcp:is_destination_platform() and "yes" or "no")
+    mvcp:parse_params(params)
     local cmdchan = platform:get_cmdchan()
     local path = platform:get_path()
     if not mvcp:set_destination_platform() then
-        return true, "No Destination Platform Found"
+        minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
+        return true, "No Destination Platform Found. MV handled by platform refresh"
     else
-        cmdchan:execute("mv " .. params, path)
+        minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
         mvcp:get_changes()
     end
     -- get_sources(sources, addr)
