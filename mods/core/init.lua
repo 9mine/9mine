@@ -35,6 +35,7 @@ require 'nodes.platform'
 -- tools
 require 'tools.connect'
 require 'tools.enter'
+require 'tools.read'
 
 -- chat
 require 'chat.cmdchan'

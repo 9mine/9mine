@@ -25,12 +25,7 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
         EnterTool.enter(self, puncher)
     end
     if tool.damage_groups.read == 1 then
-        local content = file_read(self.addr, self.path, player_name)
-
-        minetest.show_formspec(player_name, "core:file_content",
-            table.concat({"formspec_version[3]", "size[13,13,false]", "textarea[0.5,0.5;12.0,12.0;;;",
-                          minetest.formspec_escape(content), "]"}, ""))
-        return
+        ReadTool.read(self, puncher)
     end
 
     if tool.damage_groups.edit == 1 then
