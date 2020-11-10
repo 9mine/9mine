@@ -26,7 +26,7 @@ require 'nodes.file'
 
 -- objects
 require 'platform'
-require 'stat'
+require 'directory_entry'
 require 'graphs.platforms'
 require 'common'
 require 'np_prot'

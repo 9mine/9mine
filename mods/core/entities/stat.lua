@@ -11,8 +11,13 @@ local StatEntity = {
         static_save = true,
         shaded = true
     },
+    texture = "",
+    pos = "",
+    stat = "",
     qid = "",
     addr = "",
+    path = "",
+    entry_string = "",
     platform_string = ""
 }
 
@@ -35,16 +40,22 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
         WriteTool.write(self, player_name)
     end
     if tool.damage_groups.copy == 1 then
-       CopyTool.copy(self, puncher)
+        CopyTool.copy(self, puncher)
     end
 end
 
 function StatEntity:get_staticdata()
     local attributes = self.object:get_nametag_attributes()
     local data = {
-        attr = attributes,
+        texture = self.texture,
+        pos = self.pos,
+        stat = self.stat,
+        qid = self.qid,
+        addr = self.addr,
         path = self.path,
-        addr = self.addr
+        entry_string = self.entry_string,
+        platform_string = self.platform_string,
+        attr = attributes
     }
     return minetest.serialize(data)
 end
@@ -53,8 +64,16 @@ function StatEntity:on_activate(staticdata, dtime_s)
     if staticdata ~= "" and staticdata ~= nil then
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)
-        self.path = data.path
+        self.pos = data.pos
+        self.stat = data.stat
+        self.qid = data.qid
         self.addr = data.addr
+        self.path = data.path
+        self.entry_string = data.entry_string
+        self.platform_string = data.platform_string
+        self.object:set_properties({
+            textures = {data.texture}
+        })
     end
 end
 

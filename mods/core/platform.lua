@@ -183,7 +183,6 @@ function platform:enlarge(new_size)
     local slots = self.slots
     local old_size = self.size
     local size = new_size or old_size * 2
-
     local size_diff = (size - old_size)
     local size = size_diff % 2 == 1 and size - 1 or size
 

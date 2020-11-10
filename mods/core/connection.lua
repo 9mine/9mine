@@ -3,6 +3,7 @@ class 'connection'
 -- initialize connection object with basic connection information
 function connection:connection(attach_string)
     local addr, prot, host, port = parse_attach_string(attach_string)
+    self.attachment = nil
     self.addr = addr
     self.prot = prot
     self.host = host
