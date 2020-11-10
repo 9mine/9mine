@@ -128,7 +128,9 @@ end
 -- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
     for _, stat in pairs(content) do
-        self.directory_entries[stat.qid.path_hex] = self:spawn_stat(stat)
+        local directory_entry = self:spawn_stat(stat)
+        self.directory_entries[stat.qid.path_hex] = directory_entry
+        platforms:add_directory_entry(self, directory_entry)
     end
 end
 
@@ -190,9 +192,9 @@ end
 -- spawn one one platform directory as a separate platform
 function platform:spawn_child(path)
     local child_platform = platform(self.conn, path, self.cmdchan)
+    child_platform.node = (platforms:add(child_platform, self))
     local pos = self:next_pos()
     child_platform:spawn(pos)
-    child_platform.node = (platforms:add(child_platform, self))
     return child_platform
 end
 
@@ -260,12 +262,17 @@ function platform:update()
         local new_content = common.qid_as_key(self:readdir())
         for qid, st in pairs(new_content) do
             if not stats[qid] then
-                self:spawn_stat(st)
+                local directory_entry = self:spawn_stat(st)
+                platforms:add_directory_entry(self, directory_entry)
+                self.directory_entries[qid] = directory_entry
+                
             end
         end
         for qid in pairs(stats) do
             if not new_content[qid] then
-                self:remove_stat(qid)
+                local directory_entry_node = self.directory_entries[qid].node
+                directory_entry_node:delete()
+                self.directory_entries[qid] = nil
             end
         end
     end
@@ -293,7 +300,6 @@ end
 function platform:get_addr()
     return self.conn.addr
 end
-
 
 function platform:get_path()
     return self.path

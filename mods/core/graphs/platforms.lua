@@ -41,6 +41,14 @@ function platforms:add(platform, parent_platform)
     return platform_node
 end
 
+function platforms:add_directory_entry(platform, directory_entry)
+    local platform_node = platform:get_node()
+    local directory_entry_node = self.graph:node(directory_entry:get_graph_entry_string())
+    directory_entry_node.object = directory_entry
+    directory_entry.node = directory_entry_node
+    self.graph:edge(platform_node, directory_entry_node)
+end
+
 function platforms:add_host(attach_string)
     local host_node = self.graph:node(attach_string)
     self.graph:edge(self.root_node, host_node)

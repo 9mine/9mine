@@ -94,3 +94,7 @@ function common.flight_correction(entity, dst_p, stat)
     entity:set_velocity(fast_dir)
     minetest.after(0.3, common.flight_correction, entity, dst_p)
 end
+
+function common.hex(value)
+    return md5.sumhexa(value):sub(1, 16)
+end

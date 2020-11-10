@@ -35,6 +35,9 @@ end
 function directory_entry:get_entry_string()
     return self.entry_string
 end
+function directory_entry:get_graph_entry_string()
+    return self.entry_string .. self.stat.qid.path_hex
+end
 
 -- Additional getters
 -- return qid as hex string

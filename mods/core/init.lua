@@ -10,7 +10,7 @@ require 'graph'
 require "socket"
 require "class"
 require 'readdir'
-require 'md5'
+md5 = require 'md5'
 require 'connection'
 require 'cmdchan'
 

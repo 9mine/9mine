@@ -1,4 +1,5 @@
 class 'mvcp'
+
 function mvcp:mvcp(platform)
     self.platform = platform
     self.addr = platform:get_addr()
