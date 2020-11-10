@@ -21,6 +21,8 @@ require 'automount'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+require 'nodes.dir'
+require 'nodes.file'
 
 -- objects
 require 'platform'
@@ -39,6 +41,7 @@ require 'tools.enter'
 require 'tools.read'
 require 'tools.write'
 require 'tools.edit'
+require 'tools.copy'
 
 -- chat
 require 'chat.cmdchan'

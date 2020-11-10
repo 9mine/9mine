@@ -35,13 +35,7 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
         WriteTool.write(self, player_name)
     end
     if tool.damage_groups.copy == 1 then
-        local item = ItemStack("core:file_node")
-        local item_meta = item:get_meta()
-        item_meta:set_string("name", self.object:get_nametag_attributes().text)
-        item_meta:set_string("addr", self.addr)
-        item_meta:set_string("path", self.path)
-        item_meta:set_string("description", self.addr .. ":" .. self.path)
-        puncher:get_inventory():add_item("main", item)
+       CopyTool.copy(self, puncher)
     end
 end
 

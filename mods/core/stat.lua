@@ -55,6 +55,7 @@ function stat:filter(stat_entity)
     end
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.stat = self.stat
+    lua_entity.texture = texture
     lua_entity.qid = self:get_qid()
     lua_entity.path = self:get_path()
     lua_entity.addrpath = self:get_addrpath()
