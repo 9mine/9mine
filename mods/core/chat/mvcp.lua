@@ -3,6 +3,7 @@ function mvcp:mvcp(platform)
     self.platform = platform
     self.addr = platform:get_addr()
     self.path = platform:get_path()
+    self.attachment = platform:get_attachment()
 end
 
 function mvcp:parse_params(chat_string)
@@ -42,10 +43,16 @@ end
 
 function mvcp:set_destination_platform()
     local destination = platforms:get_platform(self.addr .. self.destination)
-    -- if not destination then
-    --     local parent_path = self:get_parent_path()
-    --     destination = platforms:get_platform(self.addr .. parent_path)
-    -- end
+    if not destination then
+        local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
+        if not result then
+            local parent_path = self:get_parent_path()
+            destination = platforms:get_platform(self.addr .. parent_path)
+        elseif response.qid.type ~= 128 then
+            local parent_path = self:get_parent_path()
+            destination = platforms:get_platform(self.addr .. parent_path)
+        end
+    end
     self.destination_platform = destination
     return destination
 end
@@ -68,7 +75,7 @@ function mvcp:get_changes()
     for qid, st in pairs(new_content) do
         if not stats[qid] then
             changes[qid] = st
-        elseif stats[qid].stat.version ~= st.version then 
+        elseif stats[qid].stat.version ~= st.version then
             changes[qid] = st
         end
     end

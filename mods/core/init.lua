@@ -26,6 +26,7 @@ require 'platform'
 require 'stat'
 require 'graphs.platforms'
 require 'common'
+require 'np_prot'
 
 -- node/entities
 require 'entities.stat'
@@ -43,3 +44,4 @@ require 'chat.mvcp'
 
 platforms = platforms(graph)
 common = common()
+np_prot = np_prot()
