@@ -1,6 +1,6 @@
 class 'platform'
-
-function platform:platform(conn, path, cmdchan)
+-- platform object. Represents directory content. Holds reference to connection information
+function platform:platform(conn, path, cmdchan, parent_node)
     local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
                                       core_conf:get("refresh_time"))
     self.conn = conn
@@ -12,8 +12,13 @@ function platform:platform(conn, path, cmdchan)
     self.properties = {
         refresh_time = refresh_time
     }
+    -- parent node in graph. During spawn edge made between current platform and parent platform
+    -- or host node, if platform inself is root platform
+    self.node = parent_node
 end
 
+-- methods
+-- reads content of directory using path, set during platform initialization
 function platform:readdir()
     local result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
     if not result then
@@ -34,11 +39,13 @@ function platform:readdir()
     return content
 end
 
+-- computes acceptable size for platform to hold content of directory freely
 function platform:compute_size(content)
     local dir_size = math.ceil(math.sqrt((#content / 15) * 100))
     return dir_size < 3 and 3 or dir_size
 end
 
+-- sets platform nodes on area specified
 function platform:draw(root_point, size)
     local slots = {}
     local p1 = root_point
@@ -69,24 +76,29 @@ function platform:draw(root_point, size)
     self.root_point = root_point
 end
 
+-- returns copy of platform root (corner) node position
 function platform:get_root_point()
     return table.copy(self.root_point)
 end
 
+-- takes stat record (from readdir) and spawn entity with given properties
 function platform:spawn_stat(stat)
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
+
     directory_entry:set_pos(slot)
-    directory_entry:set_addr(self.conn.addr)
+    directory_entry:set_addr(self.addr)
     directory_entry:set_path(self.path)
     directory_entry:set_entry_string()
     directory_entry:set_platform_string(self.platform_string)
+
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
     directory_entry:filter(stat_entity)
     return directory_entry
 end
 
+-- provided with qid, return referece for corresponding entity
 function platform:get_entity_by_qid(qid)
     local old_pos = self.directory_entries[qid].pos
     local pos = table.copy(old_pos)
@@ -94,6 +106,7 @@ function platform:get_entity_by_qid(qid)
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
 end
 
+-- provided with qid, removes corresponding entity
 function platform:remove_entity(qid)
     local stat_entity, pos = self:get_entity(qid)
     if stat_entity then
@@ -112,12 +125,15 @@ function platform:remove_entity(qid)
     end
 end
 
+-- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
     for _, stat in pairs(content) do
         self.directory_entries[stat.qid.path_hex] = self:spawn_stat(stat)
     end
 end
 
+-- returns next free slot. If no free slots, than doubles platform
+-- and returns free slots from there
 function platform:get_slot()
     local index, slot = next(self.slots)
     if not slot then
@@ -128,6 +144,7 @@ function platform:get_slot()
     return slot
 end
 
+-- calculates position for child directory
 function platform:next_pos()
     local pos = table.copy(self.root_point)
     pos.y = pos.y + math.random(7, 12)
@@ -136,13 +153,17 @@ function platform:next_pos()
     return pos
 end
 
-function platform:spawn(root_point, size)
+-- read directory and spawn platform with directory content 
+function platform:spawn(root_point)
     local content = self:readdir()
     local size = self:compute_size(content)
     self:draw(root_point, size)
-    self:spawn_content(self:readdir())
+    self:spawn_content(content)
     self:update()
 end
+
+-- receives table with paths to spawn platform after platform
+-- until there is path in paths 
 function platform:spawn_path_step(paths, player)
     local next = table.remove(paths)
     if not next then
@@ -159,19 +180,23 @@ function platform:spawn_path_step(paths, player)
     end
 end
 
+-- convert path to a list of paths to be spawn 
+-- one after another 
 function platform:spawn_path(path, player)
     local paths = common.path_to_table(path)
     return self:spawn_path_step(paths, player)
 end
 
+-- spawn one one platform directory as a separate platform
 function platform:spawn_child(path)
     local child_platform = platform(self.conn, path, self.cmdchan)
     local pos = self:next_pos()
     child_platform:spawn(pos)
-    child_platform:set_node(platforms:add(child_platform, self))
+    child_platform.node = (platforms:add(child_platform, self))
     return child_platform
 end
 
+-- double the size of the platform. This make available free slots 
 function platform:enlarge()
     local root = self.root_point
     local slots = self.slots
@@ -216,46 +241,8 @@ function platform:enlarge()
     table.shuffle(slots)
 end
 
-function platform:set_node(node)
-    self.node = node
-end
-
-function platform:get_node()
-    return self.node
-end
-
-function platform:get_content()
-    return self.content
-end
-
-function platform:set_content(content)
-    self.content = content
-end
-
-function platform:get_refresh_time()
-    return self.properties.refresh_time
-end
-
-function platform:set_refresh_time(refresh_time)
-    self.properties.refresh_time = refresh_time
-end
-
-function platform:get_cmdchan()
-    return self.cmdchan
-end
-
-function platform:get_path()
-    return self.path
-end
-
-function platform:get_addr()
-    return self.conn.addr
-end
-
-function platform:get_attachment()
-    return self.conn.attachment
-end
-
+-- when platform node punched, formspec show with table properties
+-- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
         table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
@@ -264,6 +251,8 @@ function platform:show_properties(player)
                       "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
 end
 
+-- reads directory content and spawn new entities if needed
+-- and deletes entities, that are not present in new directory content  
 function platform:update()
     local refresh_time = self:get_refresh_time()
     if refresh_time ~= 0 then
@@ -274,13 +263,48 @@ function platform:update()
                 self:spawn_stat(st)
             end
         end
-
         for qid in pairs(stats) do
             if not new_content[qid] then
                 self:remove_stat(qid)
             end
         end
     end
-
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
 end
+
+-- Getters
+
+function platform:get_node()
+    return self.node
+end
+
+function platform:get_refresh_time()
+    return self.properties.refresh_time
+end
+
+function platform:get_attachment()
+    return self.conn.attachment
+end
+
+function platform:get_cmdchan()
+    return self.cmdchan
+end
+
+function platform:get_addr()
+    return self.conn.addr
+end
+
+
+function platform:get_path()
+    return self.path
+end
+
+-- Setters
+function platform:set_node(node)
+    self.node = node
+end
+
+function platform:set_refresh_time(refresh_time)
+    self.properties.refresh_time = refresh_time
+end
+
