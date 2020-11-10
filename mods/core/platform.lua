@@ -275,6 +275,9 @@ function platform:get_path()
     return self.path
 end
 
+function platform:get_addr()
+    return self.conn.addr
+end
 function platform:show_properties(player)
     local refresh_time = self:get_refresh_time()
 

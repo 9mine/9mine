@@ -1,7 +1,7 @@
 on_drop = function(entity, addr, origin_path, player_name, name, command)
     local lcmd = tostring(core_conf:get("lcmd"))
     local node_pos = minetest.find_node_near(entity:get_pos(), 1, {"core:plt"})
-    if not node_pos then 
+    if not node_pos then
         minetest.chat_send_player(player_name, "No platform found")
         entity:remove()
         return
@@ -47,7 +47,7 @@ on_drop = function(entity, addr, origin_path, player_name, name, command)
             file_node:delete()
         end
     end
-    
+
     local st = stat_read(addr, fullpath, player_name)
     plt_node.listing[name] = st
     entity:get_luaentity().stat = st
