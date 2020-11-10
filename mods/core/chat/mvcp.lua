@@ -75,7 +75,7 @@ end
 function mvcp:get_changes()
     local changes = {}
     local stats = self.destination_platform:get_stats()
-    local new_content = common:qid_as_key(self.destination_platform:readdir())
+    local new_content = common.qid_as_key(self.destination_platform:readdir())
     for qid, st in pairs(new_content) do
         if not stats[qid] then
             changes[qid] = st
@@ -83,11 +83,28 @@ function mvcp:get_changes()
             changes[qid] = st
         end
     end
+    self.destination_stats = stats
+    self.changes = changes
     print(dump(changes))
 end
 
+function mvcp:map_changes()
+    local destionation_platform = self.destination_platform
+    local changes = self.changes
+    local stats = self.destination_stats
+    for qid, change in pairs(changes) do 
+        if stats[qid] then 
+            local stat = destionation_platform:get_stat(qid)
+            local stat_entity = destionation_platform:get_stat_entity(qid)
+            stat:set_stat(change)
+            common.flight(stat_entity, stat)
+        end
+    end
+
+end
+
 local move = function(player_name, params)
-    local platform = platforms:get_platform(common:get_platform_string(minetest.get_player_by_name(player_name)))
+    local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
     local mvcp = mvcp(platform)
     mvcp:parse_params(params)
     local cmdchan = platform:get_cmdchan()
@@ -98,6 +115,7 @@ local move = function(player_name, params)
     else
         minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
         mvcp:get_changes()
+        mvcp:map_changes()
     end
     -- get_sources(sources, addr)
     -- get_destination(destination, addr)

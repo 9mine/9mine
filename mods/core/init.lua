@@ -43,5 +43,4 @@ require 'chat.commands'
 require 'chat.mvcp'
 
 platforms = platforms(graph)
-common = common()
 np_prot = np_prot()

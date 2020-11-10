@@ -1,7 +1,7 @@
 minetest.register_chatcommand("cd", {
     func = function(player_name, path_from_chat)
         local player = minetest.get_player_by_name(player_name)
-        local platform = platforms:get_platform(common:get_platform_string(player))
+        local platform = platforms:get_platform(common.get_platform_string(player))
         local path = platform:get_path()
         minetest.chat_send_all("PLATFORM PATH IS: " .. path)
         if not path_from_chat:match("^/") then

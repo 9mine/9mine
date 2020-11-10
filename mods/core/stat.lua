@@ -32,6 +32,14 @@ function stat:set_pos(pos)
     self.pos = table.copy(pos)
 end
 
+function stat:get_pos()
+    return table.copy(self.pos)
+end
+
+function stat:set_stat(stat)
+    self.stat = stat
+end
+
 function stat:set_platform_string(platform_string)
     self.platform_string = platform_string
 end

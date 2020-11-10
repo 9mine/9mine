@@ -16,7 +16,7 @@ function EnterTool.enter(entity, player)
         local parent_platform = platforms:get_platform(entity.platform_string)
         child_platform = parent_platform:spawn_child(entity.path)
     end
-    common:goto_platform(player, child_platform:get_root_point())
+    common.goto_platform(player, child_platform:get_root_point())
 end
 
 minetest.register_tool("core:enter", EnterTool)

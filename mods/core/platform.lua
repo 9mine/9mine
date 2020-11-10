@@ -155,17 +155,17 @@ function platform:spawn_path_step(paths, player)
     end
     if not platforms:get_platform(self.conn.addr .. next) then
         local child_platform = self:spawn_child(next)
-        common:goto_platform(player, child_platform:get_root_point())
+        common.goto_platform(player, child_platform:get_root_point())
         minetest.after(1.5, platform.spawn_path_step, child_platform, paths, player)
     else
         local child_platform = platforms:get_platform(self.conn.addr .. next)
-        common:goto_platform(player, child_platform:get_root_point())
+        common.goto_platform(player, child_platform:get_root_point())
         minetest.after(0.5, platform.spawn_path_step, child_platform, paths, player)
     end
 end
 
 function platform:spawn_path(path, player)
-    local paths = common:path_to_table(path)
+    local paths = common.path_to_table(path)
     return self:spawn_path_step(paths, player)
 
 end
@@ -296,7 +296,7 @@ function platform:update()
     local refresh_time = self:get_refresh_time()
     if refresh_time ~= 0 then
         local stats = self:get_stats()
-        local new_content = common:qid_as_key(self:readdir())
+        local new_content = common.qid_as_key(self:readdir())
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 self:spawn_stat(stat(st))
