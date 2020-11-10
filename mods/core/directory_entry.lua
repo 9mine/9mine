@@ -23,6 +23,9 @@ end
 function directory_entry:get_addr()
     return self.addr
 end
+function directory_entry:get_path()
+    return self.path
+end
 function directory_entry:get_pos()
     return self.pos
 end
@@ -43,7 +46,7 @@ end
 function directory_entry:set_stat(stat)
     self.stat = table.copy(stat)
 end
-function directory_entry:get_addr(addr)
+function directory_entry:set_addr(addr)
     self.addr = addr
 end
 function directory_entry:set_pos(pos)
@@ -56,11 +59,11 @@ function directory_entry:set_platform_string(platform_string)
     self.platform_string = platform_string
 end
 function directory_entry:set_entry_string()
-    return self.entry_string
+    self.entry_string = self.addr .. self.path
 end
 
 -- methods
-function stat:filter(stat_entity)
+function directory_entry:filter(stat_entity)
     local texture = "core_file.png"
     if self.stat.qid.type == 128 then
         texture = "core_dir.png"

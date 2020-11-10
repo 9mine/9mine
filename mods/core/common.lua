@@ -50,8 +50,8 @@ function common.send_warning(player_name, warning)
                       "button_exit[7,1.0;2.5,0.7;close;close]"}, ""))
 end
 
-function common.flight(entity, stat)
-    local to = stat:get_pos()
+function common.flight(entity, directory_entry)
+    local to = directory_entry:get_pos()
     local from = entity:get_pos()
     local dir = vector.direction(from, to)
     local fast_dir = vector.multiply(dir, 20)
@@ -62,7 +62,7 @@ function common.flight(entity, stat)
         z = 0
     })
     entity:set_velocity(fast_dir)
-    minetest.after(0.5, common.flight_correction, entity, to, stat)
+    minetest.after(0.5, common.flight_correction, entity, to, directory_entry)
 end
 
 -- correct flying path during mv/cp commands
