@@ -11,7 +11,6 @@ ReadTool = {
 }
 
 function ReadTool.read(entity, player, player_name)
-    print(dump(entity.entry_string))
     local directory_entry = platforms:get_entry(entity.entry_string)
     local attachment = platforms:get_platform(common.get_platform_string(player)):get_attachment()
     local response, content = pcall(np_prot.file_read, attachment, directory_entry.path)

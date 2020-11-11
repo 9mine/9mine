@@ -114,10 +114,7 @@ function mvcp.inplace(destination_platform, changes)
             local stat_entity = destination_platform:get_entity_by_qid(qid)
             directory_entry:set_stat(change)
             destination_platform:configure_entry(directory_entry)
-            local node = directory_entry.node
-            if not node.object then
-                node:delete()
-            end
+            directory_entry:delete_node()
             platforms:add_directory_entry(destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
         end
@@ -142,23 +139,16 @@ function mvcp.reduce(sources)
     return reduced_sources
 end
 
-function mvcp.from_one_source(changes_removed, changes_new, source_platform, destination_platform)
+function mvcp.from_platform(changes_removed, changes_new, source_platform, destination_platform)
     for qid, change in pairs(changes_new) do
         if changes_removed[change.name] then
-            local entry_string
-            if source_platform.platform_string:match("/$") then
-                entry_string = source_platform.platform_string .. change.name
-            else
-                entry_string = source_platform.platform_string .. "/" .. change.name
-            end
+            local path = source_platform.platform_string
+            local entry_string = path:match("/$") and path .. change.name or path .. "/" .. change.name
             local directory_entry = platforms:get_entry(entry_string)
-            local node = platforms:get(entry_string)
-            if not node.object then
-                node:delete()
-            end
+            directory_entry:delete_node()
             local stat_entity = source_platform:get_entity_by_pos(directory_entry.pos)
-            local slot = (destination_platform:get_slot())
-            directory_entry:set_pos(slot)
+            directory_entry:set_pos(destination_platform:get_slot())
+            directory_entry:set_stat(change)
             destination_platform:configure_entry(directory_entry)
             destination_platform.directory_entries[change.qid.path_hex] = directory_entry
             platforms:add_directory_entry(destination_platform, directory_entry)
@@ -180,35 +170,18 @@ local move = function(player_name, params)
     else
         minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
         local destination_new = mvcp.get_changes(destination_platform)
-        if #mvcp.sources == 1 then
-            local index, source = next(mvcp.sources)
-            local parent_source, parent_platform
+        local parent_platform
+        for index, source in pairs(mvcp.reduce(mvcp.sources)) do
             if source == "*" then
                 parent_platform = platform
             else
-                parent_source = mvcp.get_parent_path(source)
-                parent_platform = platforms:get_platform(platform:get_addr() .. parent_source)
+                parent_platform = platforms:get_platform(platform:get_addr() .. source)
             end
             if parent_platform == destination_platform then
                 mvcp.inplace(platform, destination_new)
             else
                 local new, removed = mvcp.get_changes(parent_platform)
-                mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
-            end
-        else
-            for index, source in pairs(mvcp.reduce(mvcp.sources)) do
-                local parent_platform
-                if source == "*" then
-                    parent_platform = platform
-                else
-                    parent_platform = platforms:get_platform(platform:get_addr() .. source)
-                end
-                if parent_platform == destination_platform then
-                    mvcp.inplace(platform, destination_new)
-                else
-                    local new, removed = mvcp.get_changes(parent_platform)
-                    mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
-                end
+                mvcp.from_platform(removed, destination_new, parent_platform, destination_platform)
             end
         end
     end

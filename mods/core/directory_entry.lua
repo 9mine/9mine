@@ -93,3 +93,9 @@ function directory_entry:filter(stat_entity)
     })
 end
 
+function directory_entry:delete_node()
+    if not self.node.object then
+        self.node:delete()
+        self.node = nil
+    end
+end

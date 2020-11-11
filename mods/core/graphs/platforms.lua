@@ -28,6 +28,14 @@ function platforms:get_entry(entry_string)
     end
 end
 
+function platforms:delete_entry_node(entry_string)
+    local node = self.graph:findnode(entry_string)
+    if not node.object then
+        node:delete()
+    end
+end
+
+
 function platforms:get_cmdchan(platform_string)
     self:get_platform(platform_string):get_cmdchan()
 end

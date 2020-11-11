@@ -88,6 +88,7 @@ function common.flight_correction(entity, to, directory_entry)
             z = to.z
         }
         entity:set_pos(final_dst)
+        directory_entry:filter(entity)
         return
     end
     local dir = vector.direction(current_pos, to)
