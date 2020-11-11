@@ -265,7 +265,7 @@ function platform:update()
                 local directory_entry = self:spawn_stat(st)
                 platforms:add_directory_entry(self, directory_entry)
                 self.directory_entries[qid] = directory_entry
-                
+
             end
         end
         for qid in pairs(stats) do

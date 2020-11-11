@@ -21,6 +21,13 @@ function platforms:get_platform(platform_string)
     end
 end
 
+function platforms:get_entry(entry_string)
+    local node = self:get(entry_string)
+    if node then
+        return node.entry
+    end
+end
+
 function platforms:get_cmdchan(platform_string)
     self:get_platform(platform_string):get_cmdchan()
 end
@@ -43,10 +50,10 @@ end
 
 function platforms:add_directory_entry(platform, directory_entry)
     local platform_node = platform:get_node()
-    local directory_entry_node = self.graph:node(directory_entry:get_graph_entry_string())
-    directory_entry_node.object = directory_entry
-    directory_entry.node = directory_entry_node
-    self.graph:edge(platform_node, directory_entry_node)
+    local entry_node = self.graph:node(directory_entry:get_entry_string())
+    entry_node.entry = directory_entry
+    directory_entry.node = entry_node
+    self.graph:edge(platform_node, entry_node)
 end
 
 function platforms:add_host(attach_string)

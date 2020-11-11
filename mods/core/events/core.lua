@@ -30,8 +30,8 @@ connect = function(player, fields)
         root_platform:spawn_path(attach_path, player)
     else
         local root_platform = platform(conn, "/", root_cmdchan, host_node)
-        root_platform:spawn(vector.round(player:get_pos()))
         root_platform:set_node(platforms:add(root_platform))
+        root_platform:spawn(vector.round(player:get_pos()))
         if attach_path ~= "/" then
             root_platform:spawn_path(attach_path, player)
         end
