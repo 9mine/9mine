@@ -51,9 +51,14 @@ end
 -- one level up on fs structure
 function mv:set_destination_platform()
     local destination = platforms:get_platform(self.addr .. self.destination)
+
     if not destination then
         local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
-        if not result or response.qid.type ~= 128 then
+        if #self.sources == 1 and platforms:get_entry(self.addr .. self.sources[1]).stat.qid.type ~= 128 and response.qid.type == 128 then
+        elseif not result or response.qid.type ~= 128 then
+            local parent_path = mv.get_parent_path(self.destination)
+            destination = platforms:get_platform(self.addr .. parent_path)
+        elseif #self.sources == 1 and response and response.qid.type == 128 then
             local parent_path = mv.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
         end
@@ -123,6 +128,8 @@ function mv:inplace(changes)
             common.flight(stat_entity, directory_entry)
         end
     end
+    self.destination_platform.properties.external_handler = false
+
 end
 
 -- If multiple sources for mv provided, reduces to 1 sources with same platform

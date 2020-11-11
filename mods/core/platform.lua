@@ -280,8 +280,8 @@ function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
         table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. self.properties.refresh_time .. "]",
-                      "field[0.5,2;9,0.7;external_handler;External Handler;" .. tostring(self.properties.external_handler) .. "]",
-                      "button_exit[7,4.8;2.5,0.7;save;save]",
+                      "field[0.5,2;9,0.7;external_handler;External Handler;" ..
+            tostring(self.properties.external_handler) .. "]", "button_exit[7,4.8;2.5,0.7;save;save]",
                       "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
 end
 
@@ -304,7 +304,7 @@ function platform:update()
             if not new_content[qid] then
                 local directory_entry_node = self.directory_entries[qid].node
                 directory_entry_node:delete()
-                self.directory_entries[qid] = nil
+                self:remove_entity(qid)
             end
         end
     end
