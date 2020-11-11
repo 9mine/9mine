@@ -177,9 +177,9 @@ end
 -- calculates position for child directory
 function platform:next_pos()
     local pos = table.copy(self.root_point)
-    pos.y = pos.y + math.random(7, 12)
-    pos.x = pos.x + math.random(30) - 15
-    pos.z = pos.z + math.random(30) - 15
+    pos.y = pos.y + math.random(10, 16)
+    pos.x = pos.x + math.random(60) - 15
+    pos.z = pos.z + math.random(60) - 15
     return pos
 end
 
@@ -191,8 +191,12 @@ function platform:spawn(root_point)
     end
     local size = self:compute_size(content)
     self:draw(root_point, size)
-    self:spawn_content(content)
-    self:update()
+    minetest.after(0.1, function(plt, content)
+        platform.spawn_content(plt, content)
+        platform.update(plt)
+    end, self, content)
+    -- self:spawn_content(content)
+    -- self:update()
 end
 
 -- receives table with paths to spawn platform after platform
