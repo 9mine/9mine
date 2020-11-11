@@ -84,7 +84,7 @@ function mv:get_changes(platform)
     local stats = platform.directory_entries
     local content_new = common.qid_as_key(platform:readdir())
     for qid, st in pairs(content_new) do
-        if (not stats[qid]) or (stats[qid].stat.version ~= st.version or stats[qid].stat.name ~= st.name) then
+        if (not stats[qid]) or (stats[qid].stat.qid.version ~= st.qid.version or stats[qid].stat.name ~= st.name) then
             changes_new[qid] = st
         end
     end
@@ -101,7 +101,18 @@ end
 -- if file was renamed on same platform, than no new slot will be used 
 function mv:inplace(changes)
     for qid, change in pairs(changes) do
-        if self.destination_platform.directory_entries[qid] then
+        if common.table_length(changes) == 1 and #self.sources == 1 then
+            local index, path = next(self.sources)
+            local directory_entry = platforms:get_entry(self.platform.addr .. path)
+            local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
+            local destination_directory_entry = platforms:get_entry(self.platform.addr .. self.destination)
+            self.destination_platform:remove_entity(destination_directory_entry.stat.qid.path_hex)
+            directory_entry:delete_node():set_pos(destination_directory_entry:get_pos()):set_stat(change)
+            self.destination_platform:configure_entry(directory_entry)
+            self.destination_platform.directory_entries[change.qid.path_hex] = directory_entry
+            platforms:add_directory_entry(self.destination_platform, directory_entry)
+            common.flight(stat_entity, directory_entry)
+        elseif self.destination_platform.directory_entries[qid] then
             local directory_entry = self.destination_platform.directory_entries[qid]
             local stat_entity = self.destination_platform:get_entity_by_qid(qid)
             directory_entry:set_stat(change):delete_node()

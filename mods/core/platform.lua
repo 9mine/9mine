@@ -132,7 +132,7 @@ end
 
 -- provided with qid, removes corresponding entity
 function platform:remove_entity(qid)
-    local stat_entity, pos = self:get_entity(qid)
+    local stat_entity, pos = self:get_entity_by_qid(qid)
     if stat_entity then
         stat_entity:set_acceleration({
             x = 0,
