@@ -75,9 +75,9 @@ end
 
 -- correct flying path during mv/cp commands
 function common.flight_correction(entity, dst_p, stat)
-    entity:set_properties({
-        nametag = stat.stat.name
-    })
+    -- entity:set_properties({
+    --     nametag = stat.stat.name
+    -- })
     local current_pos = entity:get_pos()
     local distance = vector.distance(current_pos, dst_p)
     if distance < 3 then

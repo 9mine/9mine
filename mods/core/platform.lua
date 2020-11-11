@@ -110,6 +110,20 @@ function platform:get_entity_by_qid(qid)
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
 end
 
+function platform:get_entity_by_name(name)
+    local entry_string
+    if self.platform_string:match("/$") then
+        entry_string = self.platform_string .. name
+    else
+        entry_string = self.platform_string .. "/" .. name
+    end
+    local directory_entry = platforms:get_entry(entry_string)
+    local old_pos = directory_entry.pos
+    local pos = table.copy(old_pos)
+    pos.y = pos.y + 1
+    return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
+end
+
 -- provided with qid, removes corresponding entity
 function platform:remove_entity(qid)
     local stat_entity, pos = self:get_entity(qid)
@@ -147,7 +161,7 @@ function platform:get_slot()
     end
     index, slot = next(self.slots)
     table.remove(self.slots, index)
-    return slot
+    return table.copy(slot)
 end
 
 -- calculates position for child directory
@@ -165,7 +179,7 @@ function platform:spawn(root_point)
     local size = self:compute_size(content)
     self:draw(root_point, size)
     self:spawn_content(content)
-    self:update()
+    -- self:update()
 end
 
 -- receives table with paths to spawn platform after platform
