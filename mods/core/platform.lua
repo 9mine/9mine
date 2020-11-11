@@ -10,11 +10,14 @@ function platform:platform(conn, path, cmdchan, parent_node)
     self.platform_string = conn.addr .. self.path
     self.directory_entries = {}
     self.properties = {
+        external_handler = false,
         refresh_time = refresh_time
     }
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
     self.node = parent_node
+    -- flag indicating that platform update will be mabe by some other function 
+    -- than platform:update()
 end
 
 -- methods
@@ -183,11 +186,13 @@ end
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point)
     local content = self:readdir()
-    if not content then return nil end
+    if not content then
+        return nil
+    end
     local size = self:compute_size(content)
     self:draw(root_point, size)
     self:spawn_content(content)
-    -- self:update()
+    self:update()
 end
 
 -- receives table with paths to spawn platform after platform
@@ -275,6 +280,7 @@ function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
         table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. self.properties.refresh_time .. "]",
+                      "field[0.5,2;9,0.7;external_handler;External Handler;" .. tostring(self.properties.external_handler) .. "]",
                       "button_exit[7,4.8;2.5,0.7;save;save]",
                       "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
 end
@@ -283,7 +289,7 @@ end
 -- and deletes entities, that are not present in new directory content  
 function platform:update()
     local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 then
+    if refresh_time ~= 0 and (not self.properties.external_handler) then
         local stats = self.directory_entries
         local new_content = common.qid_as_key(self:readdir())
         for qid, st in pairs(new_content) do

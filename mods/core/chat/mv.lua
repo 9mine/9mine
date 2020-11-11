@@ -78,6 +78,7 @@ end
 -- return changes which occures on provided platform after execution on cmdchan command 
 function mv:get_changes(platform)
     local platform = platform
+    platform.properties.external_handler = true
     local changes_new = {}
     local changes_removed = {}
 
@@ -164,6 +165,8 @@ function mv:from_platform(changes_removed, changes_new)
             self.destination_platform.directory_entries[change.qid.path_hex] = directory_entry
             platforms:add_directory_entry(self.destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
+            self.platform.properties.external_handler = false
+            self.destination_platform.properties.external_handler = false
         end
     end
 end
