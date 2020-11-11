@@ -28,6 +28,14 @@ function common.qid_as_key(dir)
     return new_dir
 end
 
+function common.name_as_key(dir)
+    local new_dir = {}
+    for _, stat in pairs(dir) do
+        new_dir[stat.name] = stat
+    end
+    return new_dir
+end
+
 function common.path_to_table(path)
     local i = 1
     local paths = {}

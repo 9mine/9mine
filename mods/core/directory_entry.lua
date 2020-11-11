@@ -10,6 +10,8 @@ function directory_entry:directory_entry(stat)
     self.path = nil
     -- position of corresponding entity in for of {x, y, z}
     self.pos = nil
+    -- platform path in for of /parent/platform/path
+    self.platform_path = nil
     -- address and path of parent directory in for of prot!host!port/path
     self.platform_string = nil
     -- address and path of entry itself in form of prot!host!port/path/file.name
@@ -28,6 +30,9 @@ function directory_entry:get_path()
 end
 function directory_entry:get_pos()
     return self.pos
+end
+function directory_entry:get_platform_path()
+    return self.platform_path
 end
 function directory_entry:get_platform_string()
     return self.platform_string
@@ -58,6 +63,9 @@ end
 function directory_entry:set_path(platform_path)
     self.path = platform_path == "/" and platform_path .. self.stat.name or platform_path .. "/" .. self.stat.name
 end
+function directory_entry:set_platform_path(platform_path)
+    self.platform_path = platform_path
+end
 function directory_entry:set_platform_string(platform_string)
     self.platform_string = platform_string
 end
@@ -73,13 +81,7 @@ function directory_entry:filter(stat_entity)
     end
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.texture = texture
-    lua_entity.pos = self:get_pos()
-    lua_entity.stat = self:get_stat()
-    lua_entity.qid = self:get_qid()
-    lua_entity.addr = self:get_addr()
-    lua_entity.path = self:get_path()
     lua_entity.entry_string = self:get_entry_string()
-    lua_entity.platform_string = self:get_platform_string()
     stat_entity:set_properties({
         textures = {texture},
         nametag = self.stat.name

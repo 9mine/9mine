@@ -81,17 +81,21 @@ function platform:get_root_point()
     return table.copy(self.root_point)
 end
 
+function platform:configure_entry(directory_entry)
+    directory_entry:set_addr(self.addr)
+    directory_entry:set_path(self.path)
+    directory_entry:set_platform_path(self.path)
+    directory_entry:set_entry_string()
+    directory_entry:set_platform_string(self.platform_string)
+end
+
 -- takes stat record (from readdir) and spawn entity with given properties
 function platform:spawn_stat(stat)
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
 
     directory_entry:set_pos(slot)
-    directory_entry:set_addr(self.addr)
-    directory_entry:set_path(self.path)
-    directory_entry:set_entry_string()
-    directory_entry:set_platform_string(self.platform_string)
-
+    self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
     directory_entry:filter(stat_entity)

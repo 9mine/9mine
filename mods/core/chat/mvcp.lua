@@ -73,11 +73,24 @@ function mvcp:get_parent_path()
     return parent:match('.*[^/]')
 end
 
+function mvcp:get_sources()
+    for source_path in pairs(self.sources) do
+        local directory_entry_node = platforms:get_directory_entry(addr .. source_path)
+        if directory_entry_node and directory_entry_node.entry then
+            sources[directory_entry_node.stat.name] = node
+        else
+            sources[directory_entry_node.stat.name] = nil
+        end
+    end
+end
+
 function mvcp:get_changes()
     local changes = {}
-    local stats = self.destination_platform:get_stats()
-    local new_content = common.qid_as_key(self.destination_platform:readdir())
-    for qid, st in pairs(new_content) do
+    local stats = self.destination_platform.directory_entries
+    local new_content = self.destination_platform:readdir()
+    local new_content_qid = common.qid_as_key(new_content)
+    local new_content_name = common.name_as_key(new_content)
+    for qid, st in pairs(new_content_qid) do
         if not stats[qid] then
             changes[qid] = st
         elseif stats[qid].stat.version ~= st.version or stats[qid].stat.name ~= st.name then
@@ -93,12 +106,14 @@ function mvcp:map_changes()
     local destionation_platform = self.destination_platform
     local changes = self.changes
     local stats = self.destination_stats
-    for qid, change in pairs(changes) do 
-        if stats[qid] then 
-            local stat = destionation_platform:get_stat(qid)
-            local stat_entity = destionation_platform:get_stat_entity(qid)
-            stat:set_stat(change)
-            common.flight(stat_entity, stat)
+    for qid, change in pairs(changes) do
+        if stats[qid] then
+            local directory_entry = destionation_platform.directory_entries[qid]
+            local stat_entity = destionation_platform:get_entity_by_qid(qid)
+            directory_entry:set_stat(change)
+            destionation_platform:configure_entry(directory_entry)
+            print(dump(directory_entry))
+            common.flight(stat_entity, directory_entry)
         end
     end
 

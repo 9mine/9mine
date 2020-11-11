@@ -15,9 +15,7 @@ function CopyTool.copy(entity, player)
     local item = ItemStack(type)
     local item_meta = item:get_meta()
     item_meta:set_string("name", entity.object:get_nametag_attributes().text)
-    item_meta:set_string("addr", entity.addr)
-    item_meta:set_string("path", entity.path)
-    item_meta:set_string("platform_string", entity.platform_string)
+    item_meta:set_string("entity_string", entity.entry_string)
     player:get_inventory():add_item("main", item)
 end
 
