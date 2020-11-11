@@ -101,7 +101,8 @@ end
 -- if file was renamed on same platform, than no new slot will be used 
 function mv:inplace(changes)
     for qid, change in pairs(changes) do
-        if common.table_length(changes) == 1 and #self.sources == 1 then
+        if common.table_length(changes) == 1 and #self.sources == 1 and
+            platforms:get_entry(self.platform.addr .. self.destination) then
             local index, path = next(self.sources)
             local directory_entry = platforms:get_entry(self.platform.addr .. path)
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
