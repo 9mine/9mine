@@ -4,10 +4,8 @@ minetest.register_on_chat_message(function(player_name, message)
     local cmdchan = platform:get_cmdchan()
     local path = platform:get_path()
     local commands = core_conf:get("pcmd")
-
     local command = message:match("[^ ]+")
     if commands:match(command) then
-
         if message:match("| minetest$") then
             message = message:gsub("| minetest", "")
             local result = cmdchan:execute(message, path)

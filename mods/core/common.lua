@@ -107,3 +107,10 @@ end
 function common.hex(value)
     return md5.sumhexa(value):sub(1, 16)
 end
+
+function common.table_length(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+  end
+  

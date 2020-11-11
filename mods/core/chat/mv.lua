@@ -1,6 +1,6 @@
-class 'mvcp'
+class 'mv'
 
-function mvcp:mvcp(platform, params)
+function mv:mv(platform, params)
     self.params = params
     self.platform = platform
     self.addr = platform:get_addr()
@@ -11,7 +11,7 @@ end
 
 -- Takes as input chat message, and sets and returns absolute path 
 -- for sources and destination 
-function mvcp:parse_params()
+function mv:parse_params()
     local destination = {}
     local sources = {}
     for w in self.params:gmatch("[^ ]+") do
@@ -43,18 +43,18 @@ function mvcp:parse_params()
     return self
 end
 
-function mvcp:is_destination_platform()
+function mv:is_destination_platform()
     return platforms:get_platform(self.addr .. self.destination)
 end
 
 -- analyzes destination path to decide if needed to go 
 -- one level up on fs structure
-function mvcp:set_destination_platform()
+function mv:set_destination_platform()
     local destination = platforms:get_platform(self.addr .. self.destination)
     if not destination then
         local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
         if not result or response.qid.type ~= 128 then
-            local parent_path = mvcp.get_parent_path(self.destination)
+            local parent_path = mv.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
         end
     end
@@ -64,7 +64,7 @@ end
 
 -- provided with path string, returns path on level up 
 -- on fs structure
-function mvcp.get_parent_path(path)
+function mv.get_parent_path(path)
     if path == "/" then
         return "/"
     end
@@ -76,7 +76,7 @@ function mvcp.get_parent_path(path)
 end
 
 -- return changes which occures on provided platform after execution on cmdchan command 
-function mvcp:get_changes(platform)
+function mv:get_changes(platform)
     local platform = platform
     local changes_new = {}
     local changes_removed = {}
@@ -99,7 +99,7 @@ function mvcp:get_changes(platform)
 end
 
 -- if file was renamed on same platform, than no new slot will be used 
-function mvcp:inplace(changes)
+function mv:inplace(changes)
     for qid, change in pairs(changes) do
         if self.destination_platform.directory_entries[qid] then
             local directory_entry = self.destination_platform.directory_entries[qid]
@@ -113,14 +113,14 @@ function mvcp:inplace(changes)
 end
 
 -- If multiple sources for mv provided, reduces to 1 sources with same platform
-function mvcp:reduce()
+function mv:reduce()
     local reduced_sources = {}
     local temp = {}
     for index, source in pairs(self.sources) do
         if source == "*" then
             table.insert(reduced_sources, source)
         else
-            local parent_source = mvcp.get_parent_path(source)
+            local parent_source = mv.get_parent_path(source)
             if not temp[parent_source] then
                 temp[parent_source] = 1
                 table.insert(reduced_sources, parent_source)
@@ -133,12 +133,19 @@ end
 -- provided with files that disappeared from source directory 
 -- and files that appeared in destination directory
 -- and based on name triggers files flight 
-function mvcp:from_platform(changes_removed, changes_new)
+function mv:from_platform(changes_removed, changes_new)
     for qid, change in pairs(changes_new) do
-        if changes_removed[change.name] then
-            local path = self.platform.platform_string
-            local entry_string = path:match("/$") and path .. change.name or path .. "/" .. change.name
-            local directory_entry = platforms:get_entry(entry_string)
+        if changes_removed[change.name] or (common.table_length(changes_new) == 1 and #self.sources == 1) then
+            local directory_entry
+            if common.table_length(changes_new) == 1 and #self.sources == 1 then
+                local index, path = next(self.sources)
+                directory_entry = platforms:get_entry(self.platform.addr .. path)
+
+            elseif changes_removed[change.name] then
+                local path = self.platform.platform_string
+                local entry_string = path:match("/$") and path .. change.name or path .. "/" .. change.name
+                directory_entry = platforms:get_entry(entry_string)
+            end
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
             directory_entry:delete_node():set_pos(self.destination_platform:get_slot()):set_stat(change)
             self.destination_platform:configure_entry(directory_entry)
@@ -151,24 +158,24 @@ end
 
 local move = function(player_name, params)
     local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
-    local mvcp = mvcp(platform, params):parse_params()
+    local mv = mv(platform, params):parse_params()
     local cmdchan = platform:get_cmdchan()
     minetest.chat_send_all(cmdchan:execute("mv " .. params, platform:get_path()))
-    if not mvcp:set_destination_platform() then
+    if not mv:set_destination_platform() then
         return true, "mv will be handled by platform refresh"
     end
-    local changes_new = mvcp:get_changes(mvcp.destination_platform)
-    for index, source in pairs(mvcp:reduce()) do
+    local changes_new = mv:get_changes(mv.destination_platform)
+    for index, source in pairs(mv:reduce()) do
         if source == "*" then
-            mvcp.platform = platform
+            mv.platform = platform
         else
-            mvcp.platform = platforms:get_platform(platform:get_addr() .. source)
+            mv.platform = platforms:get_platform(platform:get_addr() .. source)
         end
-        if mvcp.platform == mvcp.destination_platform then
-            mvcp:inplace(changes_new)
+        if mv.platform == mv.destination_platform then
+            mv:inplace(changes_new)
         else
-            local _, changes_removed = mvcp:get_changes(mvcp.platform)
-            mvcp:from_platform(changes_removed, changes_new)
+            local _, changes_removed = mv:get_changes(mv.platform)
+            mv:from_platform(changes_removed, changes_new)
         end
     end
 end
