@@ -12,6 +12,9 @@ EnterTool = {
 
 function EnterTool.enter(entity, player)
     local directory_entry = platforms:get_entry(entity.entry_string)
+    if directory_entry.stat.qid.type ~= 128 then
+        return
+    end
     local child_platform = platforms:get_platform(directory_entry.entry_string)
     if not child_platform then
         local parent_platform = platforms:get_platform(directory_entry.platform_string)

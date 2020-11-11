@@ -16,6 +16,8 @@ function directory_entry:directory_entry(stat)
     self.platform_string = nil
     -- address and path of entry itself in form of prot!host!port/path/file.name
     self.entry_string = nil
+    -- reference to the node, which holds reference to the current entry (self)
+    self.node = nil
 end
 
 -- Getters
@@ -53,24 +55,31 @@ end
 -- Setters
 function directory_entry:set_stat(stat)
     self.stat = table.copy(stat)
+    return self
 end
 function directory_entry:set_addr(addr)
     self.addr = addr
+    return self
 end
 function directory_entry:set_pos(pos)
     self.pos = table.copy(pos)
+    return self
 end
 function directory_entry:set_path(platform_path)
     self.path = platform_path == "/" and platform_path .. self.stat.name or platform_path .. "/" .. self.stat.name
+    return self
 end
 function directory_entry:set_platform_path(platform_path)
     self.platform_path = platform_path
+    return self
 end
 function directory_entry:set_platform_string(platform_string)
     self.platform_string = platform_string
+    return self
 end
 function directory_entry:set_entry_string()
     self.entry_string = self.addr .. self.path
+    return self
 end
 
 -- methods
@@ -91,6 +100,7 @@ function directory_entry:filter(stat_entity)
         y = -9.81,
         z = 0
     })
+    return self
 end
 
 function directory_entry:delete_node()
@@ -98,4 +108,5 @@ function directory_entry:delete_node()
         self.node:delete()
         self.node = nil
     end
+    return self
 end

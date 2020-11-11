@@ -22,11 +22,11 @@ end
 function platform:readdir()
     local result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
     if not result then
-        if self.conn.attachment and self.conn.attachment:is_alive() then
+        if self.conn:is_alive() then
             minetest.chat_send_all("Connection is alive, but error reading content of directory: " .. content)
             return
         else
-            if self.conn.attachment and self.conn.attachment:reattach() then
+            if self.conn:reattach() then
                 result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
                 if result then
                     content = content or {}
@@ -182,6 +182,7 @@ end
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point)
     local content = self:readdir()
+    if not content then return nil end
     local size = self:compute_size(content)
     self:draw(root_point, size)
     self:spawn_content(content)
