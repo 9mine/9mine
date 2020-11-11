@@ -114,13 +114,37 @@ function mvcp.inplace(destination_platform, changes)
     for qid, change in pairs(changes) do
         if destination_platform.directory_entries[qid] then
             local directory_entry = destination_platform.directory_entries[qid]
+            print(dump(directory_entry.node))
             local stat_entity = destination_platform:get_entity_by_qid(qid)
             directory_entry:set_stat(change)
             destination_platform:configure_entry(directory_entry)
             print(dump(directory_entry))
+            local node = directory_entry.node
+            if not node.object then
+                node:delete()
+            end
+            platforms:add_directory_entry(destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
         end
     end
+end
+
+-- If multiple sources for mv provided, reduces to 1 sources with same platform
+function mvcp.reduce(sources)
+    local reduced_sources = {}
+    local temp = {}
+    for index, source in pairs(sources) do
+        if source == "*" then
+            table.insert(reduced_sources, source)
+        else
+            local parent_source = mvcp.get_parent_path(source)
+            if not temp[parent_source] then
+                temp[parent_source] = 1
+                table.insert(reduced_sources, parent_source)
+            end
+        end
+    end
+    return reduced_sources
 end
 
 function mvcp.from_one_source(changes_removed, changes_new, source_platform, destination_platform)
@@ -179,6 +203,26 @@ local move = function(player_name, params)
                 minetest.chat_send_all("Not same. Getting changes from sources")
                 local new, removed = mvcp.get_changes(parent_platform)
                 mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
+            end
+        else
+            local reduced_sources = mvcp.reduce(mvcp.sources)
+            print(dump(reduced_sources))
+            for index, source in pairs(reduced_sources) do
+                local parent_platform
+                if source == "*" then
+                    parent_platform = platform
+                else
+                    parent_platform = platforms:get_platform(platform:get_addr() .. source)
+                end
+                if parent_platform == destination_platform then
+                    minetest.chat_send_all("Same platform. Handle inplace (renaming)")
+                    mvcp.inplace(platform, destination_new)
+                else
+                    minetest.chat_send_all("Not same. Getting changes from sources")
+                    local new, removed = mvcp.get_changes(parent_platform)
+                    mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
+                end
+
             end
         end
     end

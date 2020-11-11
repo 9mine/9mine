@@ -9,6 +9,5 @@ copy_entity = function(file, path, stat)
     e:get_luaentity().path = path
     e:get_luaentity().addr = file:get_luaentity().addr
     e:get_luaentity().stat = stat
-
     return e
 end
