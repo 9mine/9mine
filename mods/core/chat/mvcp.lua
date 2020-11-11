@@ -14,6 +14,8 @@ function mvcp:parse_params(chat_string)
     for w in chat_string:gmatch("[^ ]+") do
         if w:match("^%-") then
             table.insert(params, w)
+        elseif w:match("^%*$") then
+            table.insert(sources, w)
         elseif w:match("^%.$") then
             w = self.path
             destination = w
@@ -115,6 +117,7 @@ function mvcp.inplace(destination_platform, changes)
             local stat_entity = destination_platform:get_entity_by_qid(qid)
             directory_entry:set_stat(change)
             destination_platform:configure_entry(directory_entry)
+            print(dump(directory_entry))
             common.flight(stat_entity, directory_entry)
         end
     end
@@ -130,11 +133,17 @@ function mvcp.from_one_source(changes_removed, changes_new, source_platform, des
                 entry_string = source_platform.platform_string .. "/" .. change.name
             end
             local directory_entry = platforms:get_entry(entry_string)
-            local stat_entity = source_platform:get_entity_by_name(change.name)
+            local node = platforms:get(entry_string)
+            if not node.object then
+                node:delete()
+            end
+            local stat_entity = source_platform:get_entity_by_pos(directory_entry.pos)
             local slot = (destination_platform:get_slot())
             directory_entry:set_pos(slot)
             destination_platform:configure_entry(directory_entry)
             destination_platform.directory_entries[change.qid.path_hex] = directory_entry
+            platforms:add_directory_entry(destination_platform, directory_entry)
+            print(dump(directory_entry))
             common.flight(stat_entity, directory_entry)
         end
     end
@@ -156,32 +165,23 @@ local move = function(player_name, params)
         if #mvcp.sources == 1 then
             minetest.chat_send_all("One source. Checking if same with destination")
             local index, source = next(mvcp.sources)
-            local parent_source = mvcp.get_parent_path(source)
-            local parent_platform = platforms:get_platform(platform:get_addr() .. parent_source)
+            local parent_source, parent_platform
+            if source == "*" then
+                parent_platform = platform
+            else
+                parent_source = mvcp.get_parent_path(source)
+                parent_platform = platforms:get_platform(platform:get_addr() .. parent_source)
+            end
             if parent_platform == destination_platform then
                 minetest.chat_send_all("Same platform. Handle inplace (renaming)")
-
-                mvcp.inplace(platform, new)
+                mvcp.inplace(platform, destination_new)
             else
                 minetest.chat_send_all("Not same. Getting changes from sources")
                 local new, removed = mvcp.get_changes(parent_platform)
                 mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
             end
         end
-
     end
-    -- get_sources(sources, addr)
-    -- get_destination(destination, addr)
-    -- cmd_write(addr, path, player_name, "mv " .. params, lcmd)
-    -- local changes, changes_path = get_changes(destination, addr, player_name)
-    -- if changes then
-    --     graph_changes(changes, changes_path, addr)
-    -- end
-    -- local result, response = pcall(map_changes_to_sources, sources, changes, addr)
-    -- if not result then
-    --     send_warning(player_name, response)
-    -- end
-
 end
 
 minetest.register_chatcommand("mv", {

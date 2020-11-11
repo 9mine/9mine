@@ -74,23 +74,23 @@ function common.flight(entity, directory_entry)
 end
 
 -- correct flying path during mv/cp commands
-function common.flight_correction(entity, dst_p, stat)
-    -- entity:set_properties({
-    --     nametag = stat.stat.name
-    -- })
+function common.flight_correction(entity, to, directory_entry)
+    entity:set_properties({
+        nametag = directory_entry.stat.name
+    })
     local current_pos = entity:get_pos()
-    local distance = vector.distance(current_pos, dst_p)
+    local distance = vector.distance(current_pos, to)
     if distance < 3 then
         entity:set_velocity(vector.new())
         local final_dst = {
-            x = dst_p.x,
-            y = dst_p.y + 2,
-            z = dst_p.z
+            x = to.x,
+            y = to.y + 2,
+            z = to.z
         }
         entity:set_pos(final_dst)
         return
     end
-    local dir = vector.direction(current_pos, dst_p)
+    local dir = vector.direction(current_pos, to)
     local speed = distance > 5 and 20 or 8
     local fast_dir = vector.multiply(dir, speed)
     fast_dir.y = fast_dir.y + 9
@@ -100,7 +100,7 @@ function common.flight_correction(entity, dst_p, stat)
         z = 0
     })
     entity:set_velocity(fast_dir)
-    minetest.after(0.3, common.flight_correction, entity, dst_p)
+    minetest.after(0.3, common.flight_correction, entity, to, directory_entry)
 end
 
 function common.hex(value)

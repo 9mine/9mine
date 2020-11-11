@@ -124,6 +124,12 @@ function platform:get_entity_by_name(name)
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
 end
 
+function platform:get_entity_by_pos(old_pos)
+    local pos = table.copy(old_pos)
+    pos.y = pos.y + 1
+    return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
+end
+
 -- provided with qid, removes corresponding entity
 function platform:remove_entity(qid)
     local stat_entity, pos = self:get_entity(qid)
