@@ -34,7 +34,10 @@ connect = function(player, fields)
         root_platform:spawn(vector.round(player:get_pos()))
         if attach_path ~= "/" then
             root_platform:spawn_path(attach_path, player)
+        else
+            common.goto_platform(player, root_platform:get_root_point())
         end
+       
     end
 
 end
