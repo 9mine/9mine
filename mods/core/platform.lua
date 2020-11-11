@@ -74,6 +74,7 @@ function platform:draw(root_point, size)
     table.shuffle(slots)
     self.slots = slots
     self.root_point = root_point
+    self.size = size
 end
 
 -- returns copy of platform root (corner) node position
@@ -163,7 +164,7 @@ end
 function platform:get_slot()
     local index, slot = next(self.slots)
     if not slot then
-        platform:enlarge()
+        self:enlarge()
     end
     index, slot = next(self.slots)
     table.remove(self.slots, index)
