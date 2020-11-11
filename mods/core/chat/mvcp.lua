@@ -52,10 +52,7 @@ function mvcp:get_destination_platform()
     local destination = platforms:get_platform(self.addr .. self.destination)
     if not destination then
         local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
-        if not result then
-            local parent_path = mvcp.get_parent_path(self.destination)
-            destination = platforms:get_platform(self.addr .. parent_path)
-        elseif response.qid.type ~= 128 then
+        if not result or response.qid.type ~= 128 then
             local parent_path = mvcp.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
         end
@@ -114,11 +111,9 @@ function mvcp.inplace(destination_platform, changes)
     for qid, change in pairs(changes) do
         if destination_platform.directory_entries[qid] then
             local directory_entry = destination_platform.directory_entries[qid]
-            print(dump(directory_entry.node))
             local stat_entity = destination_platform:get_entity_by_qid(qid)
             directory_entry:set_stat(change)
             destination_platform:configure_entry(directory_entry)
-            print(dump(directory_entry))
             local node = directory_entry.node
             if not node.object then
                 node:delete()
@@ -167,7 +162,6 @@ function mvcp.from_one_source(changes_removed, changes_new, source_platform, des
             destination_platform:configure_entry(directory_entry)
             destination_platform.directory_entries[change.qid.path_hex] = directory_entry
             platforms:add_directory_entry(destination_platform, directory_entry)
-            print(dump(directory_entry))
             common.flight(stat_entity, directory_entry)
         end
     end
@@ -182,12 +176,11 @@ local move = function(player_name, params)
     local destination_platform = mvcp:get_destination_platform()
     if not destination_platform then
         minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
-        return true, "No Destination Platform Found. MV handled by platform refresh"
+        return true, "mv will be handled by platform refresh"
     else
         minetest.chat_send_all(cmdchan:execute("mv " .. params, path))
         local destination_new = mvcp.get_changes(destination_platform)
         if #mvcp.sources == 1 then
-            minetest.chat_send_all("One source. Checking if same with destination")
             local index, source = next(mvcp.sources)
             local parent_source, parent_platform
             if source == "*" then
@@ -197,17 +190,13 @@ local move = function(player_name, params)
                 parent_platform = platforms:get_platform(platform:get_addr() .. parent_source)
             end
             if parent_platform == destination_platform then
-                minetest.chat_send_all("Same platform. Handle inplace (renaming)")
                 mvcp.inplace(platform, destination_new)
             else
-                minetest.chat_send_all("Not same. Getting changes from sources")
                 local new, removed = mvcp.get_changes(parent_platform)
                 mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
             end
         else
-            local reduced_sources = mvcp.reduce(mvcp.sources)
-            print(dump(reduced_sources))
-            for index, source in pairs(reduced_sources) do
+            for index, source in pairs(mvcp.reduce(mvcp.sources)) do
                 local parent_platform
                 if source == "*" then
                     parent_platform = platform
@@ -215,14 +204,11 @@ local move = function(player_name, params)
                     parent_platform = platforms:get_platform(platform:get_addr() .. source)
                 end
                 if parent_platform == destination_platform then
-                    minetest.chat_send_all("Same platform. Handle inplace (renaming)")
                     mvcp.inplace(platform, destination_new)
                 else
-                    minetest.chat_send_all("Not same. Getting changes from sources")
                     local new, removed = mvcp.get_changes(parent_platform)
                     mvcp.from_one_source(removed, destination_new, parent_platform, destination_platform)
                 end
-
             end
         end
     end
