@@ -46,10 +46,6 @@ function mvcp:parse_params()
     return self
 end
 
-function mvcp:is_destination_platform()
-    return platforms:get_platform(self.addr .. self.destination)
-end
-
 -- analyzes destination path to decide if needed to go 
 -- one level up on fs structure
 function mvcp:get_destination_platform()
@@ -59,7 +55,8 @@ function mvcp:get_destination_platform()
         source_entry = platforms:get_entry(self.addr .. self.sources[1])
     end
     -- check if destination entry is spawned
-    local result, stat = pcall(np_prot.stat_read, self.attachment, self.destination)
+    local result, stat =
+        pcall(np_prot.stat_read, self.attachment, self.destination == "/" and "../" or self.destination)
 
     -- decide if destination itself should be tracked for changes or 
     -- parent directory of destination
@@ -71,6 +68,25 @@ function mvcp:get_destination_platform()
         end
     end
     return self.destination_platform
+end
+
+-- If multiple sources for mvcp provided, reduces to 1 sources with same platform
+function mvcp:reduce()
+    local reduced_sources = {}
+    local temp = {}
+    for index, source in pairs(self.sources) do
+        if source == "*" then
+            table.insert(reduced_sources, self.path)
+        else
+            local parent_source = mvcp.get_parent_path(source)
+            if not temp[parent_source] then
+                temp[parent_source] = 1
+                table.insert(reduced_sources, parent_source)
+            end
+        end
+    end
+    self.reduced_sources = reduced_sources
+    return reduced_sources
 end
 
 -- provided with path string, returns path on level up 
@@ -89,28 +105,20 @@ end
 -- return changes which occures on provided platform after execution on cmdchan command 
 function mvcp:get_changes(platform)
     local platform = platform
+    -- set external_handler flag on platform where changes will be read
     platform.properties.external_handler = true
-    local changes_new = {}
-    local changes_removed = {}
-
+    local changes = {}
     local stats = platform.directory_entries
     local content_new = common.qid_as_key(platform:readdir())
     for qid, st in pairs(content_new) do
         if (not stats[qid]) or (stats[qid].stat.qid.version ~= st.qid.version or stats[qid].stat.name ~= st.name) then
-            changes_new[qid] = st
+            changes[qid] = st
         end
     end
-
-    for qid, stat in pairs(stats) do
-        if not content_new[qid] then
-            changes_removed[stat.stat.name] = stat
-        end
-    end
-
-    return changes_new, changes_removed
+    return changes
 end
 
-function mvcp:copy(stat_entity)
+function mvcp.copy(stat_entity)
     local pos = stat_entity:get_pos()
     local entity = minetest.add_entity(pos, "core:stat")
     return entity
@@ -148,25 +156,6 @@ function mvcp:inplace(changes)
             common.flight(stat_entity, directory_entry)
         end
     end
-end
-
--- If multiple sources for mvcp provided, reduces to 1 sources with same platform
-function mvcp:reduce()
-    local reduced_sources = {}
-    local temp = {}
-    for index, source in pairs(self.sources) do
-        if source == "*" then
-            table.insert(reduced_sources, source)
-        else
-            local parent_source = mvcp.get_parent_path(source)
-            if not temp[parent_source] then
-                temp[parent_source] = 1
-                table.insert(reduced_sources, parent_source)
-            end
-        end
-    end
-    self.reduced_sources = reduced_sources
-    return reduced_sources
 end
 
 function mvcp:get_change_origin(qid, change)
@@ -228,10 +217,85 @@ function mvcp:from_platform(changes_removed, changes_new)
                 directory_entry:delete_node()
             end
             directory_entry:set_pos(self.destination_platform:get_slot()):set_stat(change)
+
             self.destination_platform:configure_entry(directory_entry)
             self.destination_platform.directory_entries[qid] = directory_entry
             platforms:add_directory_entry(self.destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
+        end
+    end
+end
+
+-- check if files represented by path1 and path2 have same type 
+-- (both directories or both files)
+function mvcp:is_same_type(path1, path2)
+    local result1, stat1
+    if self.command == "mv" then
+        stat1 = platforms:get_entry(self.addr .. path1).stat
+        if stat1 then
+            result1 = true
+        end
+    else
+        result1, stat1 = pcall(np_prot.stat_read, self.attachment, path1 == "/" and "../" or path1)
+    end
+    local result2, stat2 = pcall(np_prot.stat_read, self.attachment, path2 == "/" and "../" or path2)
+    if result1 and result2 then
+        return (stat1.qid.type == 128) == (stat2.qid.type == 128), stat1, stat2
+    end
+end
+
+function mvcp:map_changes(changes)
+    for qid, change in pairs(changes) do
+        local source_name = change.name
+        local destination_name = change.name
+        local pos
+
+        -- if source and destination have same type, than user their names
+        if #self.sources == 1 and not self.globbed and not self.recursive then
+            local is_same, stat1, stat2 = self:is_same_type(self.sources[1], self.destination, self.command)
+            if is_same then
+                source_name = stat1.name
+                destination_name = stat2.name
+            end
+        end
+
+        -- get source and destination entries (if exists)
+        local source_entry = self.platform:get_entry_by_name(source_name)
+        local destination_entry = self.destination_platform:get_entry_by_name(source_name)
+
+        -- if both source and destination entries exists
+        -- replace destination entry with source entry
+        if source_entry then
+            -- remove destination entry entity
+            local directory_entry = source_entry:copy()
+            -- delete entry record from source platform
+            self.platform:delete_entry(source_entry)
+
+            local entity = self.platform:get_entity_by_pos(directory_entry.pos)
+
+            -- if destination entry exists, use their position and remove entity 
+            -- else get new free slot from platform
+            if destination_entry then
+                pos = destination_entry.pos
+                -- remove destination entity with corresponding recond in
+                -- platform directory_entries table
+                self.destination_platform:remove_entity(destination_entry:get_qid())
+            else
+                pos = self.destination_platform:get_slot()
+            end
+
+            -- if cp command, duplicate entity
+            if self.command == "cp" then 
+                entity = mvcp.copy(entity)
+            end
+
+            directory_entry:set_pos(pos):set_stat(change)
+
+            -- configure and set source entry to the destination platform
+            self.destination_platform:inject_entry(directory_entry)
+
+            -- animate 
+            common.flight(entity, directory_entry)
         end
     end
 end
@@ -241,32 +305,34 @@ local move = function(player_name, command, params)
         local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
         local mvcp = mvcp(platform, command, params):parse_params()
         local cmdchan = platform:get_cmdchan()
+
+        -- execute mv/cp command and send output (if any) to the minetest console 
         minetest.chat_send_all(cmdchan:execute(command .. " " .. params, platform:get_path()))
+        -- if not destination platform was chosen, leave handling for platform refresh
         if not mvcp:get_destination_platform() then
             return true, "mvcp will be handled by platform refresh"
         end
-        local changes_new = mvcp:get_changes(mvcp.destination_platform)
-        for index, source in pairs(mvcp:reduce()) do
-            if source == "*" then
-                mvcp.platform = platform
-            else
-                mvcp.platform = platforms:get_platform(platform:get_addr() .. source)
-            end
-            if mvcp.platform == mvcp.destination_platform then
-                mvcp:inplace(changes_new)
-            else
-                local _, changes_removed = mvcp:get_changes(mvcp.platform)
-                mvcp:from_platform(changes_removed, changes_new)
-            end
+
+        -- get stats of files, that was changed after mv/cp command execution
+        -- either new QID is present, or if existing file name was changed
+        -- or vile version is different
+        local changes = mvcp:get_changes(mvcp.destination_platform)
+
+        -- reduce sources which are on same platform
+        mvcp:reduce()
+        minetest.chat_send_all(dump(mvcp.reduced_sources))
+        for index, source in pairs(mvcp.reduced_sources) do
+            mvcp.platform = platforms:get_platform(mvcp.addr .. source)
+            mvcp:map_changes(changes)
         end
-        platform.properties.external_handler = false
+
+        -- set external_handler flag to false for all sources and destination platforms
         for _, source in pairs(mvcp.reduced_sources) do
-            if source ~= "*" then
-                platforms:get_platform(platform:get_addr() .. source).external_handler = false
-            end
+            platforms:get_platform(platform:get_addr() .. source).external_handler = false
         end
         mvcp.destination_platform.properties.external_handler = false
-        return true, "mvcpcp command"
+
+        return true
     end
 end
 

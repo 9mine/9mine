@@ -140,6 +140,17 @@ function platform:get_entity_by_pos(old_pos)
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
 end
 
+function platform:get_entry_by_name(name)
+    local entry_string
+    if self.platform_string:match("/$") then
+        entry_string = self.platform_string .. name
+    else
+        entry_string = self.platform_string .. "/" .. name
+    end
+    local directory_entry = platforms:get_entry(entry_string)
+    return directory_entry
+end
+
 -- provided with qid, removes corresponding entity
 function platform:remove_entity(qid)
     local stat_entity, pos = self:get_entity_by_qid(qid)
@@ -202,7 +213,7 @@ function platform:spawn(root_point)
         platform.update(plt)
     end, self, content)
     -- self:spawn_content(content)
-    --self:update()
+    -- self:update()
 end
 
 -- receives table with paths to spawn platform after platform
@@ -321,12 +332,21 @@ function platform:update()
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
 end
 
+function platform:delete_entry(entry)
+    self.directory_entries[entry.stat.qid.path_hex] = nil
+end
+
 function platform:delete_entry_by_qid(qid)
     self.directory_entries[qid] = nil
 end
 
 function platform:add_entry(entry)
     self.directory_entries[entry.stat.qid.path_hex] = entry
+end
+
+function platform:inject_entry(entry)
+    self:configure_entry(entry)
+    self:add_entry(entry)
 end
 
 -- Getters
