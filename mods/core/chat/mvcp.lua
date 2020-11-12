@@ -1,6 +1,7 @@
-class 'mv'
+class 'mvcp'
 
-function mv:mv(platform, params)
+function mvcp:mvcp(platform, command, params)
+    self.command = command
     self.params = params
     self.platform = platform
     self.addr = platform:get_addr()
@@ -11,11 +12,13 @@ end
 
 -- Takes as input chat message, and sets and returns absolute path 
 -- for sources and destination 
-function mv:parse_params()
+function mvcp:parse_params()
     local destination = {}
     local sources = {}
+    local dashparam = {}
     for w in self.params:gmatch("[^ ]+") do
         if w:match("^%-") then
+            table.insert(dashparam, w)
         elseif w:match("^%*$") then
             table.insert(sources, w)
         elseif w:match("^%.$") then
@@ -40,16 +43,17 @@ function mv:parse_params()
     end
     self.destination = destination
     self.sources = sources
+    self.dashparam = dashparam
     return self
 end
 
-function mv:is_destination_platform()
+function mvcp:is_destination_platform()
     return platforms:get_platform(self.addr .. self.destination)
 end
 
 -- analyzes destination path to decide if needed to go 
 -- one level up on fs structure
-function mv:set_destination_platform()
+function mvcp:set_destination_platform()
     local destination = platforms:get_platform(self.addr .. self.destination)
 
     if not destination then
@@ -57,10 +61,10 @@ function mv:set_destination_platform()
         if #self.sources == 1 and platforms:get_entry(self.addr .. self.sources[1]).stat.qid.type ~= 128 and
             response.qid.type == 128 then
         elseif not result or response.qid.type ~= 128 then
-            local parent_path = mv.get_parent_path(self.destination)
+            local parent_path = mvcp.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
         elseif #self.sources == 1 and response and response.qid.type == 128 then
-            local parent_path = mv.get_parent_path(self.destination)
+            local parent_path = mvcp.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
         end
     end
@@ -70,7 +74,7 @@ end
 
 -- provided with path string, returns path on level up 
 -- on fs structure
-function mv.get_parent_path(path)
+function mvcp.get_parent_path(path)
     if path == "/" then
         return "/"
     end
@@ -82,7 +86,7 @@ function mv.get_parent_path(path)
 end
 
 -- return changes which occures on provided platform after execution on cmdchan command 
-function mv:get_changes(platform)
+function mvcp:get_changes(platform)
     local platform = platform
     platform.properties.external_handler = true
     local changes_new = {}
@@ -105,16 +109,26 @@ function mv:get_changes(platform)
     return changes_new, changes_removed
 end
 
+function mvcp:copy(stat_entity)
+    local pos = stat_entity:get_pos()
+    local entity = minetest.add_entity(pos, "core:stat")
+    return entity
+end
+
 -- if file was renamed on same platform, than no new slot will be used 
-function mv:inplace(changes)
+function mvcp:inplace(changes)
     for qid, change in pairs(changes) do
         if common.table_length(changes) == 1 and #self.sources == 1 and
             platforms:get_entry(self.platform.addr .. self.destination) then
             local index, path = next(self.sources)
             local directory_entry = platforms:get_entry(self.platform.addr .. path)
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
-            table.insert(self.platform.slots, directory_entry.pos)
-            self.platform.directory_entries[directory_entry:get_qid()] = nil
+            if self.command == "cp" then
+                stat_entity = self:copy(stat_entity)
+            else
+                table.insert(self.platform.slots, directory_entry.pos)
+                self.platform.directory_entries[directory_entry:get_qid()] = nil
+            end
             local destination_directory_entry = platforms:get_entry(self.platform.addr .. self.destination)
             self.destination_platform:remove_entity(destination_directory_entry.stat.qid.path_hex)
             directory_entry:delete_node():set_pos(destination_directory_entry:get_pos()):set_stat(change)
@@ -133,15 +147,15 @@ function mv:inplace(changes)
     end
 end
 
--- If multiple sources for mv provided, reduces to 1 sources with same platform
-function mv:reduce()
+-- If multiple sources for mvcp provided, reduces to 1 sources with same platform
+function mvcp:reduce()
     local reduced_sources = {}
     local temp = {}
     for index, source in pairs(self.sources) do
         if source == "*" then
             table.insert(reduced_sources, source)
         else
-            local parent_source = mv.get_parent_path(source)
+            local parent_source = mvcp.get_parent_path(source)
             if not temp[parent_source] then
                 temp[parent_source] = 1
                 table.insert(reduced_sources, parent_source)
@@ -155,7 +169,7 @@ end
 -- provided with files that disappeared from source directory 
 -- and files that appeared in destination directory
 -- and based on name triggers files flight 
-function mv:from_platform(changes_removed, changes_new)
+function mvcp:from_platform(changes_removed, changes_new)
     for qid, change in pairs(changes_new) do
         if changes_removed[change.name] or (common.table_length(changes_new) == 1 and #self.sources == 1) then
             local directory_entry
@@ -169,9 +183,15 @@ function mv:from_platform(changes_removed, changes_new)
                 directory_entry = platforms:get_entry(entry_string)
             end
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
-            self.platform.directory_entries[directory_entry:get_qid()] = nil
-            table.insert(self.platform.slots, directory_entry.pos)
-            directory_entry:delete_node():set_pos(self.destination_platform:get_slot()):set_stat(change)
+            if self.command == "cp" then
+                stat_entity = self:copy(stat_entity)
+                directory_entry = directory_entry:copy()
+            elseif self.command == "mv" then
+                self.platform.directory_entries[directory_entry:get_qid()] = nil
+                table.insert(self.platform.slots, directory_entry.pos)
+                directory_entry:delete_node()
+            end
+            directory_entry:set_pos(self.destination_platform:get_slot()):set_stat(change)
             self.destination_platform:configure_entry(directory_entry)
             self.destination_platform.directory_entries[qid] = directory_entry
             platforms:add_directory_entry(self.destination_platform, directory_entry)
@@ -180,37 +200,38 @@ function mv:from_platform(changes_removed, changes_new)
     end
 end
 
-local move = function(player_name, params)
-    local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
-    local mv = mv(platform, params):parse_params()
-    local cmdchan = platform:get_cmdchan()
-    minetest.chat_send_all(cmdchan:execute("mv " .. params, platform:get_path()))
-    if not mv:set_destination_platform() then
-        return true, "mv will be handled by platform refresh"
-    end
-    local changes_new = mv:get_changes(mv.destination_platform)
-    for index, source in pairs(mv:reduce()) do
-        if source == "*" then
-            mv.platform = platform
-        else
-            mv.platform = platforms:get_platform(platform:get_addr() .. source)
+local move = function(player_name, command, params)
+    if command == "mv" or command == "cp" then
+        local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
+        local mvcp = mvcp(platform, command, params):parse_params()
+        local cmdchan = platform:get_cmdchan()
+        minetest.chat_send_all(cmdchan:execute(command .. " " .. params, platform:get_path()))
+        if not mvcp:set_destination_platform() then
+            return true, "mvcp will be handled by platform refresh"
         end
-        if mv.platform == mv.destination_platform then
-            mv:inplace(changes_new)
-        else
-            local _, changes_removed = mv:get_changes(mv.platform)
-            mv:from_platform(changes_removed, changes_new)
+        local changes_new = mvcp:get_changes(mvcp.destination_platform)
+        for index, source in pairs(mvcp:reduce()) do
+            if source == "*" then
+                mvcp.platform = platform
+            else
+                mvcp.platform = platforms:get_platform(platform:get_addr() .. source)
+            end
+            if mvcp.platform == mvcp.destination_platform then
+                mvcp:inplace(changes_new)
+            else
+                local _, changes_removed = mvcp:get_changes(mvcp.platform)
+                mvcp:from_platform(changes_removed, changes_new)
+            end
         end
-    end
-    platform.properties.external_handler = false
-    for _, source in pairs(mv.reduced_sources) do
-        if source ~= "*" then
-            platforms:get_platform(platform:get_addr() .. source).external_handler = false
+        platform.properties.external_handler = false
+        for _, source in pairs(mvcp.reduced_sources) do
+            if source ~= "*" then
+                platforms:get_platform(platform:get_addr() .. source).external_handler = false
+            end
         end
+        mvcp.destination_platform.properties.external_handler = false
+        return true, "mvcpcp command"
     end
-    mv.destination_platform.properties.external_handler = false
 end
 
-minetest.register_chatcommand("mv", {
-    func = move
-})
+minetest.register_on_chatcommand(move)

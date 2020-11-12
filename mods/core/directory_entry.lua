@@ -110,3 +110,17 @@ function directory_entry:delete_node()
     end
     return self
 end
+
+-- return new copy of current directory_entry
+function directory_entry:copy()
+    local new_directory_entry = directory_entry(self.stat)
+    new_directory_entry.stat = self.stat
+    new_directory_entry.addr = self.addr
+    new_directory_entry.path = self.path
+    new_directory_entry.pos = self.pos
+    new_directory_entry.platform_path = self.platform_path
+    new_directory_entry.platform_string = self.platform_string
+    new_directory_entry.entry_string = self.entry_string
+    new_directory_entry.node = self.node
+    return new_directory_entry
+end

@@ -151,7 +151,7 @@ function platform:remove_entity(qid)
         })
         table.insert(self.slots, pos)
         self.directory_entries[qid] = nil
-        minetest.after(2, function(stat_entity)
+        minetest.after(1.5, function(stat_entity)
             stat_entity:remove()
         end, stat_entity)
     else

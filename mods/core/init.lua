@@ -47,7 +47,7 @@ require 'tools.copy'
 require 'chat.cmdchan'
 require 'chat.graph'
 require 'chat.commands'
-require 'chat.mv'
+require 'chat.mvcp'
 
 platforms = platforms(graph)
 np_prot = np_prot()
