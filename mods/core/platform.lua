@@ -321,6 +321,14 @@ function platform:update()
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
 end
 
+function platform:delete_entry_by_qid(qid)
+    self.directory_entries[qid] = nil
+end
+
+function platform:add_entry(entry)
+    self.directory_entries[entry.stat.qid.path_hex] = entry
+end
+
 -- Getters
 
 function platform:get_node()

@@ -125,13 +125,15 @@ function mvcp:inplace(changes)
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
             if self.command == "cp" then
                 stat_entity = self:copy(stat_entity)
+                directory_entry:delete_node()
             else
                 table.insert(self.platform.slots, directory_entry.pos)
                 self.platform.directory_entries[directory_entry:get_qid()] = nil
+                directory_entry = directory_entry:copy()
             end
             local destination_directory_entry = platforms:get_entry(self.platform.addr .. self.destination)
             self.destination_platform:remove_entity(destination_directory_entry.stat.qid.path_hex)
-            directory_entry:delete_node():set_pos(destination_directory_entry:get_pos()):set_stat(change)
+            directory_entry:set_pos(destination_directory_entry:get_pos()):set_stat(change)
             self.destination_platform:configure_entry(directory_entry)
             self.destination_platform.directory_entries[change.qid.path_hex] = directory_entry
             platforms:add_directory_entry(self.destination_platform, directory_entry)
@@ -143,6 +145,8 @@ function mvcp:inplace(changes)
             self.destination_platform:configure_entry(directory_entry)
             platforms:add_directory_entry(self.destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
+        else
+            minetest.chat_send_all("Here should me inplace replace")
         end
     end
 end
@@ -166,10 +170,43 @@ function mvcp:reduce()
     return reduced_sources
 end
 
+function mvcp:get_change_origin(qid, change)
+    local destination_entry = platforms:get_entry(self.addr .. self.destination)
+    if destination_entry and destination_entry.stat.qid.type ~= 128 then
+        if #self.sources == 1 then
+            local source_entry = platforms:get_entry(self.addr .. self.sources[1])
+            return source_entry, destination_entry
+        end
+    end
+end
+
 -- provided with files that disappeared from source directory 
 -- and files that appeared in destination directory
 -- and based on name triggers files flight 
 function mvcp:from_platform(changes_removed, changes_new)
+    local source_entry, destination_entry = self:get_change_origin()
+    if source_entry then
+        local stat_entity = self.platform:get_entity_by_pos(source_entry.pos)
+        if self.command == "cp" then
+            stat_entity = self:copy(stat_entity)
+            source_entry = source_entry:copy()
+        elseif self.command == "mv" then
+            self.platform:delete_entry_by_qid(source_entry:get_qid())
+            table.insert(self.platform.slots, source_entry.pos)
+            source_entry:delete_node()
+        end
+        if destination_entry then
+            self.destination_platform:remove_entity(destination_entry:get_qid())
+            local stat = np_prot.stat_read(self.attachment, self.destination)
+            source_entry:set_pos(destination_entry:get_pos()):set_stat(stat)
+            self.destination_platform:configure_entry(source_entry)
+            self.destination_platform:add_entry(source_entry)
+            platforms:add_directory_entry(self.destination_platform, source_entry)
+            common.flight(stat_entity, source_entry)
+        end
+        return
+    end
+
     for qid, change in pairs(changes_new) do
         if changes_removed[change.name] or (common.table_length(changes_new) == 1 and #self.sources == 1) then
             local directory_entry
