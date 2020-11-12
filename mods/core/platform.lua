@@ -10,14 +10,20 @@ function platform:platform(conn, path, cmdchan, parent_node)
     self.platform_string = conn.addr .. self.path
     self.directory_entries = {}
     self.properties = {
+        -- flag indicating that platform update will be mabe by some other function 
+        -- than platform:update()
         external_handler = false,
+        -- period of time, on which readdir() occurs for current platform and if 
+        -- new entries are there, they will be spawn and if some of present entities 
+        -- are no more in new readdir() they will removed
         refresh_time = refresh_time
     }
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
     self.node = parent_node
-    -- flag indicating that platform update will be mabe by some other function 
-    -- than platform:update()
+    -- position if form of {x, y, z}, location of node core:platform, on top of which can be spawned
+    -- new directory entry
+    self.slots = nil
 end
 
 -- methods
@@ -191,12 +197,12 @@ function platform:spawn(root_point)
     end
     local size = self:compute_size(content)
     self:draw(root_point, size)
-    minetest.after(0.1, function(plt, content)
+    minetest.after(0.2, function(plt, content)
         platform.spawn_content(plt, content)
         platform.update(plt)
     end, self, content)
     -- self:spawn_content(content)
-    -- self:update()
+    --self:update()
 end
 
 -- receives table with paths to spawn platform after platform

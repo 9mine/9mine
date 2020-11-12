@@ -54,7 +54,8 @@ function mv:set_destination_platform()
 
     if not destination then
         local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
-        if #self.sources == 1 and platforms:get_entry(self.addr .. self.sources[1]).stat.qid.type ~= 128 and response.qid.type == 128 then
+        if #self.sources == 1 and platforms:get_entry(self.addr .. self.sources[1]).stat.qid.type ~= 128 and
+            response.qid.type == 128 then
         elseif not result or response.qid.type ~= 128 then
             local parent_path = mv.get_parent_path(self.destination)
             destination = platforms:get_platform(self.addr .. parent_path)
@@ -112,6 +113,8 @@ function mv:inplace(changes)
             local index, path = next(self.sources)
             local directory_entry = platforms:get_entry(self.platform.addr .. path)
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
+            table.insert(self.platform.slots, directory_entry.pos)
+            self.platform.directory_entries[directory_entry:get_qid()] = nil
             local destination_directory_entry = platforms:get_entry(self.platform.addr .. self.destination)
             self.destination_platform:remove_entity(destination_directory_entry.stat.qid.path_hex)
             directory_entry:delete_node():set_pos(destination_directory_entry:get_pos()):set_stat(change)
@@ -128,8 +131,6 @@ function mv:inplace(changes)
             common.flight(stat_entity, directory_entry)
         end
     end
-    self.destination_platform.properties.external_handler = false
-
 end
 
 -- If multiple sources for mv provided, reduces to 1 sources with same platform
@@ -147,6 +148,7 @@ function mv:reduce()
             end
         end
     end
+    self.reduced_sources = reduced_sources
     return reduced_sources
 end
 
@@ -167,13 +169,13 @@ function mv:from_platform(changes_removed, changes_new)
                 directory_entry = platforms:get_entry(entry_string)
             end
             local stat_entity = self.platform:get_entity_by_pos(directory_entry.pos)
+            self.platform.directory_entries[directory_entry:get_qid()] = nil
+            table.insert(self.platform.slots, directory_entry.pos)
             directory_entry:delete_node():set_pos(self.destination_platform:get_slot()):set_stat(change)
             self.destination_platform:configure_entry(directory_entry)
-            self.destination_platform.directory_entries[change.qid.path_hex] = directory_entry
+            self.destination_platform.directory_entries[qid] = directory_entry
             platforms:add_directory_entry(self.destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
-            self.platform.properties.external_handler = false
-            self.destination_platform.properties.external_handler = false
         end
     end
 end
@@ -200,6 +202,13 @@ local move = function(player_name, params)
             mv:from_platform(changes_removed, changes_new)
         end
     end
+    platform.properties.external_handler = false
+    for _, source in pairs(mv.reduced_sources) do
+        if source ~= "*" then
+            platforms:get_platform(platform:get_addr() .. source).external_handler = false
+        end
+    end
+    mv.destination_platform.properties.external_handler = false
 end
 
 minetest.register_chatcommand("mv", {
