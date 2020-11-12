@@ -15,11 +15,11 @@ end
 function mvcp:parse_params()
     local destination = {}
     local sources = {}
-    local dashparam = {}
     for w in self.params:gmatch("[^ ]+") do
         if w:match("^%-") then
-            table.insert(dashparam, w)
+            self.recursive = true
         elseif w:match("^%*$") then
+            self.globbed = true
             table.insert(sources, w)
         elseif w:match("^%.$") then
             w = self.path
@@ -43,7 +43,6 @@ function mvcp:parse_params()
     end
     self.destination = destination
     self.sources = sources
-    self.dashparam = dashparam
     return self
 end
 
@@ -53,22 +52,24 @@ end
 
 -- analyzes destination path to decide if needed to go 
 -- one level up on fs structure
-function mvcp:set_destination_platform()
-    local destination = platforms:get_platform(self.addr .. self.destination)
+function mvcp:get_destination_platform()
+    -- check if srouce only one 
+    local source_entry
+    if #self.sources == 1 and not self.globbed and not self.recursive then
+        source_entry = platforms:get_entry(self.addr .. self.sources[1])
+    end
+    -- check if destination entry is spawned
+    local result, stat = pcall(np_prot.stat_read, self.attachment, self.destination)
 
-    if not destination then
-        local result, response = pcall(np_prot.stat_read, self.attachment, self.destination)
-        if #self.sources == 1 and platforms:get_entry(self.addr .. self.sources[1]).stat.qid.type ~= 128 and
-            response.qid.type == 128 then
-        elseif not result or response.qid.type ~= 128 then
-            local parent_path = mvcp.get_parent_path(self.destination)
-            destination = platforms:get_platform(self.addr .. parent_path)
-        elseif #self.sources == 1 and response and response.qid.type == 128 then
-            local parent_path = mvcp.get_parent_path(self.destination)
-            destination = platforms:get_platform(self.addr .. parent_path)
+    -- decide if destination itself should be tracked for changes or 
+    -- parent directory of destination
+    if result then
+        if stat.qid.type ~= 128 or (source_entry and source_entry.stat.qid.type == 128) then
+            self.destination_platform = platforms:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
+        else
+            self.destination_platform = platforms:get_platform(self.addr .. self.destination)
         end
     end
-    self.destination_platform = destination
     return self.destination_platform
 end
 
@@ -145,8 +146,6 @@ function mvcp:inplace(changes)
             self.destination_platform:configure_entry(directory_entry)
             platforms:add_directory_entry(self.destination_platform, directory_entry)
             common.flight(stat_entity, directory_entry)
-        else
-            minetest.chat_send_all("Here should me inplace replace")
         end
     end
 end
@@ -243,7 +242,7 @@ local move = function(player_name, command, params)
         local mvcp = mvcp(platform, command, params):parse_params()
         local cmdchan = platform:get_cmdchan()
         minetest.chat_send_all(cmdchan:execute(command .. " " .. params, platform:get_path()))
-        if not mvcp:set_destination_platform() then
+        if not mvcp:get_destination_platform() then
             return true, "mvcp will be handled by platform refresh"
         end
         local changes_new = mvcp:get_changes(mvcp.destination_platform)
