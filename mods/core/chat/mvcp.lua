@@ -17,6 +17,8 @@ function mvcp:get_destination_platform()
     if result then
         if stat.qid.type ~= 128 or (source_entry and source_entry.stat.qid.type == 128) then
             self.destination_platform = platforms:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
+        elseif self.recursive and not platforms:get_entry(self.addr .. self.destination) then
+            self.destination_platform = platforms:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
         else
             self.destination_platform = platforms:get_platform(self.addr .. self.destination)
         end
@@ -26,18 +28,24 @@ end
 
 -- traverse changed files and find corresponding source entry
 function mvcp:map_changes(changes)
-    local flag
-    for qid, change in pairs(changes) do
-        if flag then
-            minetest.chat_send_all("BREAK WAS CALLED")
-            break
+    -- if rename was intended, delete all other changes 
+    -- that occured not by mv/cp command 
+    if self.destination ~= self.destination_platform.path then
+        local destination_name = self.destination:match("[^/]%w+$")
+        for qid, change in pairs(changes) do
+            if change.name ~= destination_name then
+                changes[qid] = nil
+                break
+            end
         end
+    end
+
+    for qid, change in pairs(changes) do
         local source_entry, destination_entry, pos
         -- if destination path and destination platform path different 
         -- means destination file name was named directly 
         if self.destination ~= self.destination_platform.path then
-            minetest.chat_send_all("RENAMING . . .")
-            flag = true
+            minetest.chat_send_all("Exact name found. Renaming . . .")
             source_entry = platforms:get_entry(self.addr .. self.sources[1])
             destination_entry = platforms:get_entry(self.addr .. self.destination)
         else
@@ -62,6 +70,7 @@ function mvcp:map_changes(changes)
                 pos = destination_entry:get_pos()
                 -- remove destination entity with corresponding recond in
                 -- platform directory_entries table
+                minetest.chat_send_all(dump(destination_entry))
                 self.destination_platform:remove_entity(destination_entry:get_qid())
             else
                 pos = self.destination_platform:get_slot()
@@ -131,6 +140,7 @@ function mvcp:parse_params()
     for w in self.params:gmatch("[^ ]+") do
         if w:match("^%-") then
             self.recursive = true
+            print("RECURSIVE was set")
         elseif w:match("^%*$") then
             self.globbed = true
             table.insert(sources, w)
@@ -216,6 +226,7 @@ end
 function mvcp:mvcp(platform, command, params)
     self.command = command
     self.params = params
+    self.recursive = false
     self.platform = platform
     self.addr = platform:get_addr()
     self.path = platform:get_path()
