@@ -29,8 +29,16 @@ require 'automount'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+
+-- nodes
 require 'nodes.dir'
 require 'nodes.file'
+require 'nodes.fileserver'
+require 'nodes.kubeconfig'
+require 'nodes.kubernetes'
+
+-- crafts
+require 'crafts.kubernetes'
 
 -- objects
 require 'platform'
