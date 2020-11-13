@@ -3,7 +3,7 @@ class 'directory_entry'
 -- object which encapsulates readdir entry
 function directory_entry:directory_entry(stat)
     -- stat record from readdir 
-    self.stat = stat
+    self.stat = table.copy(stat)
     -- attachment string, in form of prot!host!port
     self.addr = nil
     -- full path, starting with /, including entry name 

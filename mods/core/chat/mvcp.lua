@@ -60,6 +60,7 @@ function mvcp:map_changes(changes)
             -- delete entry record from source platform
             if self.command == "mv" then
                 self.platform:delete_entry(source_entry)
+                source_entry:delete_node()
             end
 
             local entity = self.platform:get_entity_by_pos(directory_entry.pos)
@@ -70,7 +71,6 @@ function mvcp:map_changes(changes)
                 pos = destination_entry:get_pos()
                 -- remove destination entity with corresponding recond in
                 -- platform directory_entries table
-                minetest.chat_send_all(dump(destination_entry))
                 self.destination_platform:remove_entity(destination_entry:get_qid())
             else
                 pos = self.destination_platform:get_slot()
