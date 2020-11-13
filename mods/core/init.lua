@@ -23,6 +23,7 @@ require 'tools.read'
 require 'tools.write'
 require 'tools.edit'
 require 'tools.copy'
+require 'tools.registry'
 
 -- mod files 
 require 'automount'
