@@ -26,28 +26,45 @@ end
 
 -- traverse changed files and find corresponding source entry
 function mvcp:map_changes(changes)
+    local flag
     for qid, change in pairs(changes) do
-        -- if both source and destination entries exists
-        -- replace destination entry with source entry
+        if flag then
+            minetest.chat_send_all("BREAK WAS CALLED")
+            break
+        end
+        local source_entry, destination_entry, pos
+        -- if destination path and destination platform path different 
+        -- means destination file name was named directly 
+        if self.destination ~= self.destination_platform.path then
+            minetest.chat_send_all("RENAMING . . .")
+            flag = true
+            source_entry = platforms:get_entry(self.addr .. self.sources[1])
+            destination_entry = platforms:get_entry(self.addr .. self.destination)
+        else
+            minetest.chat_send_all("No exact name provided, map by original entries name")
+            source_entry = self.platform:get_entry_by_name(change.name)
+            destination_entry = self.destination_platform:get_entry_by_name(change.name)
+        end
+
         if source_entry then
             -- remove destination entry entity
             local directory_entry = source_entry:copy()
             -- delete entry record from source platform
-            self.platform:delete_entry(source_entry)
+            if self.command == "mv" then
+                self.platform:delete_entry(source_entry)
+            end
 
             local entity = self.platform:get_entity_by_pos(directory_entry.pos)
 
             -- if destination entry exists, use their position and remove entity 
             -- else get new free slot from platform
             if destination_entry then
-                pos = destination_entry.pos
+                pos = destination_entry:get_pos()
                 -- remove destination entity with corresponding recond in
                 -- platform directory_entries table
-                table.insert(self.destination_platform.slots, pos)
                 self.destination_platform:remove_entity(destination_entry:get_qid())
             else
                 pos = self.destination_platform:get_slot()
-                self.destination_platform:delete_entry(source_entry)
             end
 
             -- if cp command, duplicate entity
@@ -77,9 +94,10 @@ local move = function(player_name, command, params)
 
         -- execute mv/cp command and send output (if any) to the minetest console 
         minetest.chat_send_all(cmdchan:execute(command .. " " .. params, platform:get_path()))
+
         -- if not destination platform was chosen, leave handling for platform refresh
         if not mvcp:get_destination_platform() then
-            return true, "mvcp will be handled by platform refresh"
+            return true
         end
 
         -- get stats of files, that was changed after mv/cp command execution
@@ -98,6 +116,7 @@ local move = function(player_name, command, params)
         for _, source in pairs(mvcp.reduced_sources) do
             platforms:get_platform(platform:get_addr() .. source).external_handler = false
         end
+
         mvcp.destination_platform.properties.external_handler = false
 
         return true

@@ -31,7 +31,7 @@ function directory_entry:get_path()
     return self.path
 end
 function directory_entry:get_pos()
-    return self.pos
+    return table.copy(self.pos)
 end
 function directory_entry:get_platform_path()
     return self.platform_path
