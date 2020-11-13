@@ -27,6 +27,7 @@ SUCH DAMAGE.
 ]]
 
 local data = require'data'
+require 'uint64'
 
 local np = {}
 
@@ -194,8 +195,7 @@ local function getqid(from)
   qid.type    = p.type
   qid.version = p.version
   qid.path = p.path
-  qid.path_lo = p.path_lo
-  qid.path_hi = p.path_hi
+  qid.path_hex = i64_toStringNo0x(i64_ax(p.path_hi, p.path_lo))
   return qid
 end
 
