@@ -16,6 +16,14 @@ require 'cmdchan'
 
 np = require '9p'
 
+-- tools
+require 'tools.connect'
+require 'tools.enter'
+require 'tools.read'
+require 'tools.write'
+require 'tools.edit'
+require 'tools.copy'
+
 -- mod files 
 require 'automount'
 require 'events.core'
@@ -34,14 +42,6 @@ require 'np_prot'
 -- node/entities
 require 'entities.stat'
 require 'nodes.platform'
-
--- tools
-require 'tools.connect'
-require 'tools.enter'
-require 'tools.read'
-require 'tools.write'
-require 'tools.edit'
-require 'tools.copy'
 
 -- chat
 require 'chat.cmdchan'

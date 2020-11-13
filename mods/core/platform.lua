@@ -384,3 +384,7 @@ function platform:set_refresh_time(refresh_time)
     self.properties.refresh_time = refresh_time
 end
 
+function platform:set_external_handler_flag(flag)
+    self.properties.external_handler = flag
+end
+
