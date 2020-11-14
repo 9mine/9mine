@@ -8,6 +8,13 @@ function RegistryTool.handle_form(player, fields)
     if fields.button_search or fields.key_enter_field == "search" then
         local form = RegistryTool.get_form(fields.registries_string, fields.search)
         minetest.show_formspec(player:get_player_name(), "core:registry", form)
+    elseif fields.button_add and fields.service ~= "" then 
+        local item = ItemStack("core:service_node")
+        local item_meta = item:get_meta()
+        item_meta:set_string("service", fields.service)
+        item_meta:set_string("description", fields.service)
+        player:get_inventory():add_item("main", item)
+        common.show_info(player:get_player_name(), "Service " .. fields.service .. " was added to your inventory.")
     end
     minetest.chat_send_all(dump(fields))
 end
@@ -53,7 +60,7 @@ function RegistryTool.get_form(registries_string, search)
                          "field[0,0;0,0;registries_string;;" .. minetest.formspec_escape(registries_string) .. "]",
                          "field[0.5,1;9,1;search;;]", "field_close_on_enter[search;false]",
                          "button[10.5,1;4,1;button_search;search]",
-                         "dropdown[0.5,2.5;14,1;registry;" .. new_registries_string .. ";1;]",
+                         "dropdown[0.5,2.5;14,1;service;" .. new_registries_string .. ";1;]",
                          "button_exit[12,6.5;2.5,1;button_add;add]"}, "")
 end
 
