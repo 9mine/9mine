@@ -51,8 +51,9 @@ function Kubernetes.mount(entity, player)
         kubernetes:set_string("service", entity:get_luaentity().service)
         kubernetes:set_string("description", entity:get_luaentity().service)
         local inventory = player.get_inventory(player)
-        inventory:add_item("main", kubernetes)
+        inventory:add_item("main", item)
         entity:remove()
+        return
     end
     minetest.chat_send_all(platform_string)
 
