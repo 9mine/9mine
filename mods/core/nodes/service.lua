@@ -14,10 +14,3 @@ ServiceNode = {
 
 
 minetest.register_node("core:service_node", ServiceNode)
-
-minetest.register_on_joinplayer(function(player)
-    local inventory = player.get_inventory(player)
-    if not inventory:contains_item("main", "core:service_node") then
-        inventory:add_item("main", "core:service_node")
-    end
-end)

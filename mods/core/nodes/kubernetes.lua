@@ -55,10 +55,12 @@ function Kubernetes.mount(entity, player)
         entity:remove()
     end
     minetest.chat_send_all(platform_string)
+
     local cmdchan = platforms:get_cmdchan(platform_string)
     local platform = platforms:get_platform(platform_string)
-    platform:set_external_handler_flag(true)
     local platform_path = platform:get_path()
+
+    platform:set_external_handler_flag(true)
     minetest.chat_send_all(cmdchan:execute("mount -A " .. entity:get_luaentity().service .. " " .. platform_path, "/"))
     entity:set_acceleration({
         x = 0,
