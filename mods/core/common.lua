@@ -117,9 +117,20 @@ function common.table_length(T)
 end
 
 function common.show_info(player_name, info)
-    --minetest.chat_send_player(player_name, warning)
+    -- minetest.chat_send_player(player_name, warning)
     minetest.show_formspec(player_name, "core:info",
         table.concat({"formspec_version[3]", "size[10,2,false]",
                       "label[0.5,0.5;" .. minetest.formspec_escape(info) .. "]",
                       "button_exit[7,1.0;2.5,0.7;close;close]"}, ""))
+end
+
+-- finds core:platform nearby (in radius of 1) and reads it's platform_string from metadata
+function common.get_platform_string_near(entity, player)
+    local node_pos = minetest.find_node_near(entity:get_pos(), 1, {"core:platform"})
+    if not node_pos then
+        minetest.chat_send_player(player:get_player_name(), "No platform found")
+        return
+    end
+    local meta = minetest.get_meta(node_pos)
+    return meta:get_string("platform_string")
 end

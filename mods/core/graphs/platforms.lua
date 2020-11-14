@@ -37,7 +37,7 @@ end
 
 
 function platforms:get_cmdchan(platform_string)
-    self:get_platform(platform_string):get_cmdchan()
+    return self:get_platform(platform_string):get_cmdchan()
 end
 
 function platforms:get_root()
