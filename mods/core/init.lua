@@ -32,6 +32,7 @@ require 'events.stat'
 require 'events.platform'
 require 'nodes.dir'
 require 'nodes.file'
+require 'nodes.service'
 
 -- objects
 require 'platform'
