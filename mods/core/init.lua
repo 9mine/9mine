@@ -34,16 +34,13 @@ require 'events.platform'
 -- nodes
 require 'nodes.dir'
 require 'nodes.file'
-<<<<<<< HEAD
 require 'nodes.service'
-=======
 require 'nodes.fileserver'
 require 'nodes.kubeconfig'
 require 'nodes.kubernetes'
 
 -- crafts
 require 'crafts.kubernetes'
->>>>>>> feature-craft_items
 
 -- objects
 require 'platform'
