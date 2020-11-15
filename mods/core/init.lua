@@ -24,6 +24,7 @@ require 'tools.write'
 require 'tools.edit'
 require 'tools.copy'
 require 'tools.registry'
+require 'tools.remove'
 
 -- mod files 
 require 'automount'
