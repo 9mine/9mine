@@ -21,6 +21,7 @@ function common.get_platform_string(player)
 end
 
 function common.qid_as_key(dir)
+    if not dir then return end
     local new_dir = {}
     for _, stat in pairs(dir) do
         new_dir[stat.qid.path_hex] = stat
