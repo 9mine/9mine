@@ -88,12 +88,14 @@ end
 
 function platform:wipe_top()
     for qid, entry in pairs(self.directory_entries) do 
+        platforms:delete_entry_node(entry:get_entry_string())
         self:remove_entity(qid)
     end
 end
 
 function platform:wipe()
     self:wipe_top()
+    platforms:delete_node(self.platform_string)
     local root_point = self.root_point
     local size = self.size
     local slots = {}
