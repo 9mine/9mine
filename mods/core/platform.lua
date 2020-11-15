@@ -86,7 +86,14 @@ function platform:draw(root_point, size)
     self.size = size
 end
 
+function platform:wipe_top()
+    for qid, entry in pairs(self.directory_entries) do 
+        self:remove_entity(qid)
+    end
+end
+
 function platform:wipe()
+    self:wipe_top()
     local root_point = self.root_point
     local size = self.size
     local slots = {}
