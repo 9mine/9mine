@@ -86,6 +86,41 @@ function platform:draw(root_point, size)
     self.size = size
 end
 
+function platform:wipe_top()
+    for qid, entry in pairs(self.directory_entries) do 
+        platforms:delete_entry_node(entry:get_entry_string())
+        self:remove_entity(qid)
+    end
+end
+
+function platform:wipe()
+    self:wipe_top()
+    platforms:delete_node(self.platform_string)
+    local root_point = self.root_point
+    local size = self.size
+    local slots = {}
+    local p1 = root_point
+    local p2 = {
+        x = p1.x + size,
+        y = p1.y,
+        z = p1.z + size
+    }
+    for z = p1.z, p2.z do
+        for y = p1.y, p2.y do
+            for x = p1.x, p2.x do
+                local p = {
+                    x = x,
+                    y = y,
+                    z = z
+                }
+                minetest.add_node(p, {
+                    name = "air"
+                })
+            end
+        end
+    end
+end
+
 -- returns copy of platform root (corner) node position
 function platform:get_root_point()
     return table.copy(self.root_point)
@@ -182,11 +217,10 @@ end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
 function platform:get_slot()
-    local index, slot = next(self.slots)
-    if not slot then
+    if common.table_length(self.slots) / (self.size ^ 2) < 0.50 then
         self:enlarge()
     end
-    index, slot = next(self.slots)
+    local index, slot = next(self.slots)
     table.remove(self.slots, index)
     return table.copy(slot)
 end
@@ -313,6 +347,10 @@ function platform:update()
     if refresh_time ~= 0 and (not self.properties.external_handler) then
         local stats = self.directory_entries
         local new_content = common.qid_as_key(self:readdir())
+        if not new_content then
+            self:wipe()
+            return
+        end
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 local directory_entry = self:spawn_stat(st)

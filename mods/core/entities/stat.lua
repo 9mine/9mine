@@ -36,6 +36,9 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
     if tool.damage_groups.copy == 1 then
         CopyTool.copy(self, puncher)
     end
+    if tool.damage_groups.remove == 1 then
+        RemoveTool.remove(self, puncher)
+    end
 end
 
 function StatEntity:get_staticdata()

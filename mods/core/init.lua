@@ -23,14 +23,25 @@ require 'tools.read'
 require 'tools.write'
 require 'tools.edit'
 require 'tools.copy'
+require 'tools.registry'
+require 'tools.remove'
 
 -- mod files 
 require 'automount'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+
+-- nodes
 require 'nodes.dir'
 require 'nodes.file'
+require 'nodes.service'
+require 'nodes.fileserver'
+require 'nodes.kubeconfig'
+require 'nodes.kubernetes'
+
+-- crafts
+require 'crafts.kubernetes'
 
 -- objects
 require 'platform'

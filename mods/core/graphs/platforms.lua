@@ -28,16 +28,29 @@ function platforms:get_entry(entry_string)
     end
 end
 
-function platforms:delete_entry_node(entry_string)
-    local node = self.graph:findnode(entry_string)
-    if not node.object then
+function platforms:delete_node(platform_string)
+    local node = self.graph:findnode(platform_string)
+    if node and not node.entry then
         node:delete()
+    else
+        if node then
+            node.object = nil
+        end
+
     end
 end
 
+function platforms:delete_entry_node(entry_string)
+    local node = self.graph:findnode(entry_string)
+    if node and not node.object then
+        node:delete()
+    else
+        node.entry = nil
+    end
+end
 
 function platforms:get_cmdchan(platform_string)
-    self:get_platform(platform_string):get_cmdchan()
+    return self:get_platform(platform_string):get_cmdchan()
 end
 
 function platforms:get_root()
