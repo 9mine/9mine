@@ -8,7 +8,7 @@ function RegistryTool.handle_form(player, fields)
     if fields.button_search or fields.key_enter_field == "search" then
         local form = RegistryTool.get_form(fields.registries_string, fields.search)
         minetest.show_formspec(player:get_player_name(), "core:registry", form)
-    elseif fields.button_add and fields.service ~= "" then 
+    elseif fields.button_add and fields.service ~= "" then
         local item = ItemStack("core:service_node")
         local item_meta = item:get_meta()
         item_meta:set_string("service", fields.service)
@@ -24,14 +24,15 @@ function RegistryTool.get_registries_string(player)
     local attachment = platforms:get_platform(common.get_platform_string(player)):get_attachment()
     local registry_path = os.getenv("REGISTRY_PATH") ~= "" and os.getenv("REGISTRY_PATH") or
                               core_conf:get("registry_path")
-    local result, content = pcall(readdir, attachment, registry_path)
+    local index_path = registry_path == "/" and registry_path .. "index" or registry_path .. "/" .. "index"
+    local response, services = pcall(np_prot.file_read, attachment, index_path)
     local registries_string
-    if result then
-        for key, entry in pairs(content) do
+    if response then
+        for service in services:gmatch("[^\n]+") do
             if registries_string then
-                registries_string = registries_string .. "," .. entry.name
+                registries_string = registries_string .. "," .. service:match("[^ ]+")
             else
-                registries_string = entry.name
+                registries_string = service:match("[^ ]+")
             end
         end
     end
