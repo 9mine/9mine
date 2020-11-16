@@ -17,8 +17,8 @@ local StatEntity = {
 
 function StatEntity:on_punch(puncher, dtime, tool, dir)
     local player_name = puncher:get_player_name()
-    if tool.damage_groups.stats == 1 then
-        -- show_stats(puncher, self.path)
+    if tool.damage_groups.stat == 1 then
+        StatTool.show_stat(self, puncher, player_name)
     end
     if tool.damage_groups.enter == 1 then
         EnterTool.enter(self, puncher, player_name)
