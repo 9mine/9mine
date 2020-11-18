@@ -14,6 +14,7 @@ md5 = require 'md5'
 require 'connection'
 require 'cmdchan'
 
+filesize = require 'filesize'
 np = require '9p'
 
 -- tools
@@ -25,6 +26,7 @@ require 'tools.edit'
 require 'tools.copy'
 require 'tools.registry'
 require 'tools.remove'
+require 'tools.stat'
 
 -- mod files 
 require 'automount'
@@ -62,3 +64,5 @@ require 'chat.mvcp'
 
 platforms = platforms(graph)
 np_prot = np_prot()
+
+current_hud = {}
