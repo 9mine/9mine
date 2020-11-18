@@ -20,7 +20,9 @@ function EnterTool.enter(entity, player)
         local parent_platform = platforms:get_platform(directory_entry.platform_string)
         child_platform = parent_platform:spawn_child(directory_entry.path)
     end
-    common.goto_platform(player, child_platform:get_root_point())
+    if child_platform then
+        common.goto_platform(player, child_platform:get_root_point())
+    end
 end
 
 minetest.register_tool("core:enter", EnterTool)
