@@ -56,6 +56,7 @@ function StatEntity:on_activate(staticdata, dtime_s)
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)
         self.entry_string = data.entry_string
+        self.texture = data.texture
         self.object:set_properties({
             textures = {data.texture}
         })
