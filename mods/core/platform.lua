@@ -87,7 +87,7 @@ function platform:draw(root_point, size)
 end
 
 function platform:wipe_top()
-    for qid, entry in pairs(self.directory_entries) do 
+    for qid, entry in pairs(self.directory_entries) do
         platforms:delete_entry_node(entry:get_entry_string())
         self:remove_entity(qid)
     end
@@ -123,6 +123,10 @@ end
 
 -- returns copy of platform root (corner) node position
 function platform:get_root_point()
+    if not self.root_point then
+        minetest.chat_send_all("No root point found for platform.")
+        return
+    end
     return table.copy(self.root_point)
 end
 
