@@ -87,6 +87,7 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
     p.y = p.y + dir.y
     p.z = p.z + dir.z
     local stat_entity = minetest.add_entity(p, "core:stat")
+    stat_entity:get_luaentity().texture = texture
     stat_entity:get_luaentity().entry_string = entry_string
     stat_entity:set_properties({
         textures = {texture},
