@@ -3,19 +3,13 @@ minetest.register_craft({
     recipe = {{"core:service_node", "core:kubeconfig"}}
 })
 
-minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv)
-    if itemstack:get_name() == "core:kubernetes" and old_craft_grid[1]:get_name() == "core:service_node" and
-        old_craft_grid[2]:get_name() == "core:kubeconfig" then
-        local inventory = player.get_inventory(player)
-        inventory:add_item("main", old_craft_grid[2])
-        -- get info from craft items
-        local item_meta = old_craft_grid[1]:get_meta()
-        local service = item_meta:get_string("service")
+minetest.register_craft({
+    output = "core:service_node",
+    recipe = {{"core:service_node", "core:file_node"}}
+})
 
-        -- configure kubernetes
-        local kubernetes = itemstack:get_meta()
-        kubernetes:set_string("service", service)
-        kubernetes:set_string("description", service)
-        minetest.chat_send_all("Handler for kubernetes recipe " .. service)
+minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv)
+    for index, f in pairs(crafts) do
+        f(itemstack, player, old_craft_grid, craft_inv)
     end
 end)

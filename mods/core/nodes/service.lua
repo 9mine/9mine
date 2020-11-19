@@ -62,26 +62,37 @@ function ServiceNode.mount(entity, player)
     local platform_path = platform:get_path()
 
     platform:set_external_handler_flag(true)
-    minetest.chat_send_all(cmdchan:execute("mount -A " .. entity:get_luaentity().service .. " " .. platform_path, "/"))
+    minetest.chat_send_all(cmdchan:execute("mount -c -A " .. entity:get_luaentity().service .. " " .. platform_path, "/"))
     entity:set_acceleration({
         x = 0,
         y = 9,
         z = 0
     })
-    minetest.after(1.5, function(entity)
+    minetest.after(1.5, function(entity, player, platform_path)
+        local item = ItemStack("core:service_node")
+        local service = item:get_meta()
+        service:set_string("service", entity:get_luaentity().service)
+        service:set_string("path", platform_path)
+        service:set_string("description", entity:get_luaentity().service .. platform_path)
+        local inventory = player.get_inventory(player)
+        inventory:add_item("main", item)
         entity:remove()
-    end, entity)
-    minetest.after(3, function(conn, platform_path)
-        local include_file_path = platform_path == "/" and platform_path .. ".include.lua" or platform_path .. "/" .. ".include.lua"
+
+    end, entity, player, platform_path)
+    minetest.after(3, function(platform, conn, platform_path)
+        local include_file_path = platform_path == "/" and platform_path .. ".include.lua" or platform_path .. "/" ..
+                                      ".include.lua"
         local result, include_string = pcall(np_prot.file_read, conn, include_file_path)
         if result then
+            include_string = include_string:gsub("REPLACE_ME", platform_path)
             loadstring(include_string)()
             minetest.chat_send_all(".include.lua loaded")
         else
             minetest.chat_send_all("no .include.lua was found")
         end
-    end, platform:get_attachment(), platform_path)
-    platform:set_external_handler_flag(false)
+        platform:set_external_handler_flag(false)
+    end, platform, platform:get_attachment(), platform_path)
+
 end
 
 minetest.register_node("core:service_node", ServiceNode)

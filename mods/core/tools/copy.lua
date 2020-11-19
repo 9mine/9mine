@@ -110,6 +110,7 @@ function CopyTool.copy(entity, player)
     local item_meta = item:get_meta()
     item_meta:set_string("name", entity.object:get_nametag_attributes().text)
     item_meta:set_string("texture", entity.texture)
+    item_meta:set_string("path", directory_entry.path)
     item_meta:set_string("entry_string", entity.entry_string)
     player:get_inventory():add_item("main", item)
 end

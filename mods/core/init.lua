@@ -68,3 +68,5 @@ np_prot = np_prot()
 
 current_hud = {}
 functions = {}
+filters = {}
+crafts = {}
