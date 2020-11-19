@@ -6,6 +6,10 @@ function common.set_look(player, destination)
 end
 
 function common.goto_platform(player, pos)
+    if not pos then 
+        minetest.chat_send_player(player:get_player_name(), "No position provided for goto_platform")
+        return 
+    end 
     local destination = table.copy(pos)
     pos.x = pos.x - 2
     pos.y = pos.y + 1

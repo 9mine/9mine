@@ -10,7 +10,7 @@ EnterTool = {
     }
 }
 
-function EnterTool.enter(entity, player)
+function EnterTool.enter(entity, player, player_name)
     local directory_entry = platforms:get_entry(entity.entry_string)
     if directory_entry.stat.qid.type ~= 128 then
         return
@@ -20,7 +20,11 @@ function EnterTool.enter(entity, player)
         local parent_platform = platforms:get_platform(directory_entry.platform_string)
         child_platform = parent_platform:spawn_child(directory_entry.path)
     end
-    common.goto_platform(player, child_platform:get_root_point())
+    if child_platform then
+        common.goto_platform(player, child_platform:get_root_point())
+    else 
+        minetest.chat_send_player(player_name, "Error spawning platform")
+    end
 end
 
 minetest.register_tool("core:enter", EnterTool)
