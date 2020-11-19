@@ -46,7 +46,7 @@ ServiceNode = {
 function ServiceNode.mount(entity, player)
     local platform_string = common.get_platform_string_near(entity, player)
     if not platform_string then
-        local item = ItemStack("core:service")
+        local item = ItemStack("core:service_node")
         local service = item:get_meta()
         service:set_string("service", entity:get_luaentity().service)
         service:set_string("description", entity:get_luaentity().service)
@@ -71,7 +71,30 @@ function ServiceNode.mount(entity, player)
     minetest.after(1.5, function(entity)
         entity:remove()
     end, entity)
+    minetest.after(3, function(conn, platform_path)
+        local include_file_path = platform_path == "/" and platform_path .. ".include.lua" or platform_path .. "/" .. ".include.lua"
+        local result, include_string = pcall(np_prot.file_read, conn, include_file_path)
+        if result then
+            loadstring(include_string)()
+            minetest.chat_send_all(".include.lua loaded")
+        else
+            minetest.chat_send_all("no .include.lua was found")
+        end
+    end, platform:get_attachment(), platform_path)
     platform:set_external_handler_flag(false)
 end
 
 minetest.register_node("core:service_node", ServiceNode)
+
+minetest.register_on_joinplayer(function(player)
+    local inventory = player.get_inventory(player)
+    if not inventory:contains_item("main", "core:service_node") then
+        local item = ItemStack("core:service_node")
+        local service = item:get_meta()
+        service:set_string("service", "tcp!localhost!2100")
+        service:set_string("description", "tcp!localhost!2100")
+        local inventory = player.get_inventory(player)
+        inventory:add_item("main", item)
+    end
+end)
+

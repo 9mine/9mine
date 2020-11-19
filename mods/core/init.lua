@@ -57,6 +57,7 @@ require 'entities.stat'
 require 'nodes.platform'
 
 -- chat
+require 'chat.ffi'
 require 'chat.cmdchan'
 require 'chat.graph'
 require 'chat.commands'
@@ -66,3 +67,4 @@ platforms = platforms(graph)
 np_prot = np_prot()
 
 current_hud = {}
+functions = {}
