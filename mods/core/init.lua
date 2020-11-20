@@ -38,12 +38,9 @@ require 'events.platform'
 require 'nodes.dir'
 require 'nodes.file'
 require 'nodes.service'
-require 'nodes.fileserver'
-require 'nodes.kubeconfig'
-require 'nodes.kubernetes'
 
 -- crafts
-require 'crafts.kubernetes'
+require 'crafts.service'
 
 -- objects
 require 'platform'

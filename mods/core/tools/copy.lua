@@ -112,6 +112,7 @@ function CopyTool.copy(entity, player)
     item_meta:set_string("texture", entity.texture)
     item_meta:set_string("path", directory_entry.path)
     item_meta:set_string("entry_string", entity.entry_string)
+    item_meta:set_string("description", entity.entry_string)
     player:get_inventory():add_item("main", item)
 end
 

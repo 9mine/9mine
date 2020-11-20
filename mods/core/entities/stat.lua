@@ -58,6 +58,7 @@ function StatEntity:on_activate(staticdata, dtime_s)
         self.object:set_nametag_attributes(data.attr)
         self.entry_string = data.entry_string
         self.texture = data.texture
+        self.visual = data.visual
         if data.visual == "cube" then
             self.object:set_properties({
                 textures = {data.texture, data.texture, data.texture, data.texture, data.texture, data.texture}

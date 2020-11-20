@@ -1,9 +1,4 @@
 minetest.register_craft({
-    output = "core:kubernetes",
-    recipe = {{"core:service_node", "core:kubeconfig"}}
-})
-
-minetest.register_craft({
     output = "core:service_node",
     recipe = {{"core:service_node", "core:file_node"}}
 })
