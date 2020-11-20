@@ -86,7 +86,7 @@ end
 function directory_entry:filter(stat_entity)
     local texture
     for index, f in pairs(filters) do
-        texture = f(self.path, stat_entity)
+        texture = f(self, stat_entity)
     end
     if not texture then
         texture = "core_file.png"
