@@ -33,6 +33,7 @@ RUN luarocks-5.1 install luagraph
 RUN luarocks-5.1 install md5
 RUN luarocks-5.1 install luabitop
 RUN luarocks-5.1 install lua-filesize
+RUN luarocks-5.1 install luasec
 
 FROM alpine:latest
 
