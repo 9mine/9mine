@@ -409,7 +409,7 @@ function platform:get_lua(entry_path)
     end
     local lua_file_path
     if entry_path then
-        lua_file_path = entry_path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/read_file"
+        lua_file_path = entry_path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/getattr"
     else
         lua_file_path = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
     end

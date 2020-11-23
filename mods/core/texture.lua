@@ -24,7 +24,6 @@ function texture.exists(name, directory)
     local f = io.open(path .. name, "r")
     if f ~= nil then
         io.close(f)
-        minetest.dynamic_add_media(path .. name)
         return true
     else
         return false
