@@ -49,6 +49,7 @@ require 'directory_entry'
 require 'graphs.platforms'
 require 'common'
 require 'np_prot'
+require 'texture'
 
 -- node/entities
 require 'entities.stat'
