@@ -43,3 +43,15 @@ function texture.download(url, secure, name, directory)
     f:close()
     minetest.dynamic_add_media(path .. name)
 end
+
+function texture.download_from_9p(conn, source_path, destination_name, destination_directory)
+    local result, texture_string = pcall(np_prot.file_read, conn, source_path)
+    if not texture.exists(destination_name) then
+        local path = destination_directory and texture.path .. destination_directory .. "/" .. destination_name or
+                         texture.path .. destination_name
+        local file = io.open(path, "w")
+        file:write(texture_string)
+        file:close()
+        minetest.dynamic_add_media(path)
+    end
+end
