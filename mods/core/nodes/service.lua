@@ -80,16 +80,8 @@ function ServiceNode.mount(entity, player)
 
     end, entity, player, platform_path)
     minetest.after(3, function(platform, conn, platform_path)
-        local include_file_path = platform_path == "/" and platform_path .. ".include.lua" or platform_path .. "/" ..
-                                      ".include.lua"
-        local result, include_string = pcall(np_prot.file_read, conn, include_file_path)
-        if result then
-            include_string = include_string:gsub("REPLACE_ME", platform_path)
-            loadstring(include_string)()
-            minetest.chat_send_all(".include.lua loaded")
-        else
-            minetest.chat_send_all("no .include.lua was found")
-        end
+        platform.mount_point = platform_path
+        platform:load_lua()
         platform:set_external_handler_flag(false)
     end, platform, platform:get_attachment(), platform_path)
 

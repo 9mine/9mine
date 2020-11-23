@@ -246,12 +246,11 @@ function platform:spawn(root_point)
     end
     local size = self:compute_size(content)
     self:draw(root_point, size)
+    self:load_lua()
     minetest.after(0.2, function(plt, content)
         platform.spawn_content(plt, content)
         platform.update(plt)
     end, self, content)
-    -- self:spawn_content(content)
-    -- self:update()
 end
 
 -- receives table with paths to spawn platform after platform
@@ -284,6 +283,7 @@ function platform:spawn_child(path)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
     local pos = self:next_pos()
+    child_platform.mount_point = self.mount_point
     child_platform:spawn(pos)
     return child_platform
 end
@@ -372,6 +372,24 @@ function platform:update()
         end
     end
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+end
+
+-- check if something is present in correspoing 
+-- .lua directory
+function platform:load_lua()
+    if not self.mount_point then
+        minetest.chat_send_all("No mount point found")
+        return
+    end
+    local lua_file_path = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
+    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_file_path)
+    if result then
+        minetest.chat_send_all(lua_file_path .. " : " .. include_string)
+        loadstring(include_string)()
+    else
+        minetest.chat_send_all("Error loading .lua file: " .. lua_file_path)
+        return
+    end
 end
 
 function platform:delete_entry(entry)
