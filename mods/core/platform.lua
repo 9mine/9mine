@@ -142,12 +142,23 @@ end
 function platform:spawn_stat(stat)
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
-
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity)
+    local lua = self:get_lua(directory_entry.path)
+    if lua then
+        lua = loadstring(lua)
+        setfenv(lua, setmetatable({
+            np_prot = np_prot,
+            directory_entry = directory_entry,
+            stat_entity = stat_entity,
+            platform = self
+        }, {
+            __index = _G
+        }))
+    end
+    directory_entry:filter(stat_entity, lua)
     return directory_entry
 end
 
@@ -378,14 +389,35 @@ end
 -- .lua directory
 function platform:load_lua()
     if not self.mount_point then
-        minetest.chat_send_all("No mount point found")
         return
     end
     local lua_file_path = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_file_path)
-    if result then
+    if result and include_string ~= "" then
         minetest.chat_send_all(lua_file_path .. " : " .. include_string)
         loadstring(include_string)()
+    elseif include_string == "" then
+    else
+        minetest.chat_send_all("Error loading .lua file: " .. lua_file_path)
+        return
+    end
+end
+
+function platform:get_lua(entry_path)
+    if not self.mount_point then
+        return
+    end
+    local lua_file_path
+    if entry_path then
+        lua_file_path = entry_path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/read_file"
+    else
+        lua_file_path = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
+    end
+    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_file_path)
+    if result and include_string ~= "" then
+        minetest.chat_send_all(lua_file_path .. " : " .. include_string)
+        return include_string
+    elseif include_string == "" then
     else
         minetest.chat_send_all("Error loading .lua file: " .. lua_file_path)
         return

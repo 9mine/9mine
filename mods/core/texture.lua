@@ -16,6 +16,7 @@ function texture.set_texture(entity, texture, visual)
             textures = {texture}
         })
     end
+    return true
 end
 
 function texture.exists(name, directory)
@@ -23,6 +24,7 @@ function texture.exists(name, directory)
     local f = io.open(path .. name, "r")
     if f ~= nil then
         io.close(f)
+        minetest.dynamic_add_media(path .. name)
         return true
     else
         return false

@@ -83,12 +83,14 @@ function directory_entry:set_entry_string()
 end
 
 -- methods
-function directory_entry:filter(stat_entity)
+function directory_entry:filter(stat_entity, lua)
+    -- for index, f in pairs(filters) do
+    --     texture = f(self, stat_entity)
+    -- end
     local texture
-    for index, f in pairs(filters) do
-        texture = f(self, stat_entity)
-    end
-    if not texture then
+    if lua then
+        lua()
+    else
         texture = "core_file.png"
         if self.stat.qid.type == 128 then
             texture = "core_dir.png"
@@ -99,7 +101,6 @@ function directory_entry:filter(stat_entity)
         })
     end
     local lua_entity = stat_entity:get_luaentity()
-    lua_entity.texture = texture
     lua_entity.entry_string = self:get_entry_string()
     stat_entity:set_properties({
         nametag = self.stat.name
