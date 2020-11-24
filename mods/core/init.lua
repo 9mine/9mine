@@ -6,6 +6,7 @@ core_conf = Settings(path .. "/mod.conf")
 -- global values
 connections = {}
 -- libraries 
+require 'lfs'
 require 'graph'
 require "socket"
 require "class"
