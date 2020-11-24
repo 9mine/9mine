@@ -140,13 +140,15 @@ end
 
 -- takes stat record (from readdir) and spawn entity with given properties
 function platform:spawn_stat(stat)
+    
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity)
+    local lua = self:load_getattr(directory_entry, stat_entity)
+    directory_entry:filter(stat_entity, lua)
     return directory_entry
 end
 
@@ -243,6 +245,7 @@ function platform:spawn(root_point)
     if not content then
         return nil
     end
+    self:load_readdir()
     local size = self:compute_size(content)
     self:draw(root_point, size)
     minetest.after(0.2, function(plt, content)
@@ -381,7 +384,12 @@ function platform:load_readdir()
     local lua_readdir = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_readdir)
     if result and include_string ~= "" then
+        print(dump(include_string))
         local lua = loadstring(include_string)
+        if not lua then 
+            minetest.chat_send_all(".lua is not valid")
+            return
+        end
         setfenv(lua, setmetatable({
             platform = self
         }, {
@@ -395,7 +403,7 @@ function platform:load_readdir()
     end
 end
 
-function platform:load_getattr(entry)
+function platform:load_getattr(entry, entity)
     if not self.mount_point then
         return
     end
@@ -403,13 +411,18 @@ function platform:load_getattr(entry)
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
     if result and include_string ~= "" then
         local lua = loadstring(include_string)
+        if not lua then 
+            minetest.chat_send_all(".lua is not valid")
+            return
+        end
         setfenv(lua, setmetatable({
             platform = self,
-            entry = entry
+            entry = entry,
+            entity = entity
         }, {
             __index = _G
         }))
-        lua()
+        return lua
     elseif include_string == "" then
     else
         minetest.chat_send_all("Error loading .lua file: " .. load_getattr)
@@ -425,6 +438,10 @@ function platform:load_read_file(entry)
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
     if result and include_string ~= "" then
         local lua = loadstring(include_string)
+        if not lua then 
+            minetest.chat_send_all(".lua is not valid")
+            return
+        end
         setfenv(lua, setmetatable({
             platform = self,
             entry = entry

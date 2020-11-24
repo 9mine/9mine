@@ -81,7 +81,6 @@ function ServiceNode.mount(entity, player)
     end, entity, player, platform_path)
     minetest.after(3, function(platform, conn, platform_path)
         platform.mount_point = platform_path
-        platform:load_lua()
         platform:set_external_handler_flag(false)
     end, platform, platform:get_attachment(), platform_path)
 
