@@ -14,6 +14,7 @@ require 'readdir'
 md5 = require 'md5'
 require 'connection'
 require 'cmdchan'
+require 'register'
 
 filesize = require 'filesize'
 np = require '9p'
