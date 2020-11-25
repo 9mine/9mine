@@ -88,6 +88,7 @@ function directory_entry:filter(stat_entity, lua)
         nametag = self.stat.name,
         textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
     })
+    register.call_texture_handlers(self, stat_entity)
     if lua then
         lua()
     end
