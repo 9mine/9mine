@@ -383,10 +383,9 @@ function platform:load_readdir()
     local lua_readdir = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_readdir)
     if result and include_string ~= "" then
-        print(dump(include_string))
-        local lua = loadstring(include_string)
+        local lua, error = loadstring(include_string)
         if not lua then
-            minetest.chat_send_all(".lua is not valid")
+            minetest.chat_send_all(".lua is not valid: " .. error)
             return
         end
         setfenv(lua, setmetatable({
@@ -409,9 +408,9 @@ function platform:load_getattr(entry, entity)
     local lua_getattr = entry.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/getattr"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
     if result and include_string ~= "" then
-        local lua = loadstring(include_string)
+        local lua, error = loadstring(include_string)
         if not lua then
-            minetest.chat_send_all(".lua is not valid")
+            minetest.chat_send_all(".lua is not valid: " .. error)
             return
         end
         setfenv(lua, setmetatable({
@@ -436,9 +435,9 @@ function platform:load_read_file(entry, entity, player)
     local lua_read_file = entry.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/read_file"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
     if result and include_string ~= "" then
-        local lua = loadstring(include_string)
+        local lua, error = loadstring(include_string)
         if not lua then
-            minetest.chat_send_all(".lua is not valid")
+            minetest.chat_send_all(".lua is not valid:" .. error)
             return
         end
         setfenv(lua, setmetatable({
