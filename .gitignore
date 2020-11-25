@@ -1,2 +1,3 @@
 .vscode
 mods/core/rendered_graphs/*.png
+mods/core/textures/*/*

@@ -32,6 +32,7 @@ end
 
 function texture.download(url, secure, name, directory)
     local path = directory and texture.path .. directory .. "/" or texture.path
+    lfs.mkdir(path)
     local http = secure and require("ssl.https") or require('socket.http')
     local body, code = http.request(url)
     if not body then
@@ -44,8 +45,11 @@ function texture.download(url, secure, name, directory)
 end
 
 function texture.download_from_9p(conn, source_path, destination_name, destination_directory)
-    local result, texture_string = pcall(np_prot.file_read, conn, source_path)
-    if not texture.exists(destination_name) then
+    if not texture.exists(destination_name, destination_directory) then
+        local result, texture_string = pcall(np_prot.file_read, conn, source_path)
+        if destination_directory then
+            lfs.mkdir(texture.path .. destination_directory)
+        end
         local path = destination_directory and texture.path .. destination_directory .. "/" .. destination_name or
                          texture.path .. destination_name
         local file = io.open(path, "w")

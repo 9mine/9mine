@@ -140,7 +140,6 @@ end
 
 -- takes stat record (from readdir) and spawn entity with given properties
 function platform:spawn_stat(stat)
-    
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
     directory_entry:set_pos(slot)
@@ -386,7 +385,7 @@ function platform:load_readdir()
     if result and include_string ~= "" then
         print(dump(include_string))
         local lua = loadstring(include_string)
-        if not lua then 
+        if not lua then
             minetest.chat_send_all(".lua is not valid")
             return
         end
@@ -411,7 +410,7 @@ function platform:load_getattr(entry, entity)
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
     if result and include_string ~= "" then
         local lua = loadstring(include_string)
-        if not lua then 
+        if not lua then
             minetest.chat_send_all(".lua is not valid")
             return
         end
@@ -438,7 +437,7 @@ function platform:load_read_file(entry)
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
     if result and include_string ~= "" then
         local lua = loadstring(include_string)
-        if not lua then 
+        if not lua then
             minetest.chat_send_all(".lua is not valid")
             return
         end
@@ -511,4 +510,3 @@ end
 function platform:set_external_handler_flag(flag)
     self.properties.external_handler = flag
 end
-
