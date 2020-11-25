@@ -146,8 +146,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    local lua = self:load_getattr(directory_entry, stat_entity)
-    directory_entry:filter(stat_entity, lua)
+    directory_entry:filter(stat_entity, self:load_getattr(directory_entry, stat_entity))
     return directory_entry
 end
 

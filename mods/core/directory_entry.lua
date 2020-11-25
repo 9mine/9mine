@@ -84,27 +84,15 @@ end
 
 -- methods
 function directory_entry:filter(stat_entity, lua)
-    -- for index, f in pairs(filters) do
-    --     texture = f(self, stat_entity)
-    -- end
-    local texture
+    stat_entity:set_properties({
+        nametag = self.stat.name,
+        textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
+    })
     if lua then
         lua()
-    else
-        texture = "core_file.png"
-        if self.stat.qid.type == 128 then
-            texture = "core_dir.png"
-        end
-        stat_entity:set_properties({
-            textures = {texture},
-            nametag = self.stat.name
-        })
     end
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.entry_string = self:get_entry_string()
-    stat_entity:set_properties({
-        nametag = self.stat.name
-    })
     stat_entity:set_acceleration({
         x = 0,
         y = -9.81,
