@@ -17,6 +17,9 @@ local StatEntity = {
 
 function StatEntity:on_punch(puncher, dtime, tool, dir)
     local player_name = puncher:get_player_name()
+    local directory_entry = platforms:get_entry(self.entry_string)
+    local platform = platforms:get_platform(directory_entry:get_platform_string())
+    platform:load_read_file(directory_entry, self, puncher)
     if tool.damage_groups.stat == 1 then
         StatTool.show_stat(self, puncher, player_name)
     end

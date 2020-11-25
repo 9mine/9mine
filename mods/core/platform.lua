@@ -429,7 +429,7 @@ function platform:load_getattr(entry, entity)
     end
 end
 
-function platform:load_read_file(entry)
+function platform:load_read_file(entry, entity, player)
     if not self.mount_point then
         return
     end
@@ -443,7 +443,9 @@ function platform:load_read_file(entry)
         end
         setfenv(lua, setmetatable({
             platform = self,
-            entry = entry
+            entry = entry,
+            entity = entity,
+            player = player
         }, {
             __index = _G
         }))
