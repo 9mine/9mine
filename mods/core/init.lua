@@ -42,8 +42,7 @@ require 'nodes.dir'
 require 'nodes.file'
 require 'nodes.service'
 
--- crafts
-require 'crafts.service'
+require 'recipes'
 
 -- objects
 require 'platform'
