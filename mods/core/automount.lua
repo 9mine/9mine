@@ -8,5 +8,5 @@ automount = function(player)
 end
 
 minetest.register_on_joinplayer(function(player)
-    minetest.after(1, automount, player)
+    minetest.after(2, automount, player)
 end)
