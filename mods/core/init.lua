@@ -52,6 +52,7 @@ require 'graphs.platforms'
 require 'common'
 require 'np_prot'
 require 'texture'
+require 'mounts'
 
 -- node/entities
 require 'entities.stat'
@@ -66,6 +67,7 @@ require 'chat.mvcp'
 
 platforms = platforms(graph)
 np_prot = np_prot()
+mounts = mounts()
 
 current_hud = {}
 functions = {}
