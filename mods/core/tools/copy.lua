@@ -119,7 +119,7 @@ end
 minetest.register_tool("core:copy", CopyTool)
 
 minetest.register_on_joinplayer(function(player)
-    local inventory = player.get_inventory(player)
+    local inventory = player:get_inventory()
     if not inventory:contains_item("main", "core:copy") then
         inventory:add_item("main", "core:copy")
     end

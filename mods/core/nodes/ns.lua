@@ -1,6 +1,6 @@
 local function on_drop(itemstack, dropper, pos)
     local item_meta = itemstack:get_meta()
-    local name = item_meta:get_string("ns")
+    local namespace = item_meta:get_string("ns")
     itemstack:take_item(1)
     local pos = dropper:get_pos()
     local p = table.copy(pos)
@@ -22,7 +22,8 @@ local function on_drop(itemstack, dropper, pos)
         textures = {"core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png"},
         nametag = "NameSpace"
     })
-    stat_entity:get_luaentity().service = name
+    stat_entity:get_luaentity().ns = namespace
+
     minetest.after(1, NsNode.newns, stat_entity, dropper)
     return itemstack
 end
@@ -41,13 +42,15 @@ NsNode = {
     on_drop = on_drop
 }
 
-
 function NsNode.newns(entity, player)
     local platform_string = common.get_platform_string_near(entity, player)
     local cmdchan = platforms:get_cmdchan(platform_string)
     local platform = platforms:get_platform(platform_string)
+    local attachment = platform:get_attachment()
+    local ns = entity:get_luaentity().ns
     local platform_path = platform:get_path()
-    minetest.chat_send_all(cmdchan:execute("echo fork\nmount -A tcp!45.63.75.148!9564 /n/client > /tmp/ns"))
+    cmdchan:execute("touch /tmp/ns")
+    np_prot.file_write(attachment, "/tmp/ns", ns)
     minetest.chat_send_all(cmdchan:execute("auth/newns -n /tmp/ns ns"))
     entity:set_acceleration({
         x = 0,
@@ -59,5 +62,16 @@ function NsNode.newns(entity, player)
     end, entity)
 end
 
-
 minetest.register_node("core:ns_node", NsNode)
+
+minetest.register_on_joinplayer(function(player)
+    local inventory = player:get_inventory()
+    if not inventory:contains_item("main", "core:ns_node") then
+        local ns = ItemStack("core:ns_node")
+        local ns_meta = ns:get_meta()
+        ns_meta:set_string("ns", "")
+        ns_meta:set_string("description", "newns")
+        inventory:add_item("main", ns)
+    end
+end)
+

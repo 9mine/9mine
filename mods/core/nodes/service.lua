@@ -50,7 +50,7 @@ function ServiceNode.mount(entity, player)
         local service = item:get_meta()
         service:set_string("service", entity:get_luaentity().service)
         service:set_string("description", entity:get_luaentity().service)
-        local inventory = player.get_inventory(player)
+        local inventory = player:get_inventory()
         inventory:add_item("main", item)
         entity:remove()
         return
@@ -74,7 +74,7 @@ function ServiceNode.mount(entity, player)
         service:set_string("service", entity:get_luaentity().service)
         service:set_string("path", platform_path)
         service:set_string("description", entity:get_luaentity().service .. platform_path)
-        local inventory = player.get_inventory(player)
+        local inventory = player:get_inventory()
         inventory:add_item("main", item)
         entity:remove()
 
@@ -89,13 +89,14 @@ end
 minetest.register_node("core:service_node", ServiceNode)
 
 minetest.register_on_joinplayer(function(player)
-    local inventory = player.get_inventory(player)
+    local inventory = player:get_inventory()
     if not inventory:contains_item("main", "core:service_node") then
         local item = ItemStack("core:service_node")
         local service = item:get_meta()
+
         service:set_string("service", "tcp!localhost!2100")
         service:set_string("description", "tcp!localhost!2100")
-        local inventory = player.get_inventory(player)
+
         inventory:add_item("main", item)
     end
 end)
