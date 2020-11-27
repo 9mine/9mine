@@ -423,7 +423,7 @@ function platform:load_getattr(entry, entity)
         return lua
     elseif include_string == "" then
     else
-        minetest.chat_send_all("Error loading .lua file: " .. load_getattr)
+        minetest.chat_send_all("Error loading .lua file: " .. lua_getattr)
         return
     end
 end
