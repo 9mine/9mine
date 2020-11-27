@@ -6,10 +6,10 @@ function common.set_look(player, destination)
 end
 
 function common.goto_platform(player, pos)
-    if not pos then 
+    if not pos then
         minetest.chat_send_player(player:get_player_name(), "No position provided for goto_platform")
-        return 
-    end 
+        return
+    end
     local destination = table.copy(pos)
     pos.x = pos.x - 2
     pos.y = pos.y + 1
@@ -25,7 +25,9 @@ function common.get_platform_string(player)
 end
 
 function common.qid_as_key(dir)
-    if not dir then return end
+    if not dir then
+        return
+    end
     local new_dir = {}
     for _, stat in pairs(dir) do
         new_dir[stat.qid.path_hex] = stat
@@ -138,4 +140,13 @@ function common.get_platform_string_near(entity, player)
     end
     local meta = minetest.get_meta(node_pos)
     return meta:get_string("platform_string")
+end
+
+function common.add_ns_to_inventory(player, result)
+    local inventory = player:get_inventory()
+    local ns = ItemStack("core:ns_node")
+    local ns_meta = ns:get_meta()
+    ns_meta:set_string("ns", result)
+    ns_meta:set_string("description", result)
+    inventory:add_item("main", ns)
 end

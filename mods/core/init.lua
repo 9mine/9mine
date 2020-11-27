@@ -32,6 +32,7 @@ require 'tools.stat'
 
 -- mod files 
 require 'automount'
+require 'recipes'
 require 'events.ffi'
 require 'events.core'
 require 'events.stat'
@@ -41,8 +42,8 @@ require 'events.platform'
 require 'nodes.dir'
 require 'nodes.file'
 require 'nodes.service'
-
-require 'recipes'
+require 'nodes.platform'
+require 'nodes.ns'
 
 -- objects
 require 'platform'
@@ -53,10 +54,8 @@ require 'np_prot'
 require 'texture'
 require 'mounts'
 
--- node/entities
+-- entities
 require 'entities.stat'
-require 'nodes.platform'
-
 -- chat
 require 'chat.ffi'
 require 'chat.cmdchan'

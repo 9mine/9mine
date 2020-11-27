@@ -10,6 +10,10 @@ minetest.register_on_chat_message(function(player_name, message)
             message = message:gsub("| minetest", "")
             local result = cmdchan:execute(message, path)
             cmdchan:show_response(result, player_name)
+        elseif message:match(" | inventory$") then
+            message = message:gsub("| inventory", "")
+            local result = cmdchan:execute(message)
+            common.add_ns_to_inventory(player, result)
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_all(result .. "\n")
