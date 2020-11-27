@@ -37,6 +37,7 @@ require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+require 'crafts.ns'
 
 -- nodes
 require 'nodes.dir'
@@ -56,6 +57,7 @@ require 'mounts'
 
 -- entities
 require 'entities.stat'
+
 -- chat
 require 'chat.ffi'
 require 'chat.cmdchan'

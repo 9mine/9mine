@@ -37,8 +37,8 @@ end
 
 
 -- craft handlers
-function register.add_craft_handlers(handler_name, f)
-    register.craft_handlers = f
+function register.add_craft_handler(handler_name, f)
+    register.craft_handlers[handler_name] = f
 end
 
 function register.delete_craft_handler(handler_name) 
