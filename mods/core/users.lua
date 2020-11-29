@@ -1,6 +1,6 @@
 minetest.register_on_prejoinplayer(function(name, ip)
     local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name)
-    if not user_addr or user_addr == "" then
+    if not user_addr or user_addr:gsub("%s+", "") == "" then
         root_cmdchan:write("echo -n " .. name .. " >> /n/9mine/user")
         os.execute("sleep 2")
         user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name)
