@@ -133,8 +133,9 @@ end
 
 function common.show_wait_notification(player_name, info)
     -- minetest.chat_send_player(player_name, warning)
-    minetest.show_formspec(player_name, "core:info", table.concat(
-        {"formspec_version[3]", "size[10,1,false]", "label[0.5,0.5;" .. minetest.formspec_escape(info) .. "]"}, ""))
+    minetest.show_formspec(player_name, "core:info",
+        table.concat({"formspec_version[4]", "size[10,3,false]", "hypertext[0.5,0.5;9,2;;<big><center>Hello ",
+                      player_name, "\n", minetest.formspec_escape(info), "<center><big>]"}))
 end
 
 -- finds core:platform nearby (in radius of 1) and reads it's platform_string from metadata

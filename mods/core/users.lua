@@ -13,7 +13,7 @@ minetest.register_on_joinplayer(function(player, last_login)
     if response == "" then
         minetest.chat_send_player(name, user_addr .. " mounted")
     else
-        common.show_wait_notification(name, "Please, wait. The namespace is creating . . .")
+        common.show_wait_notification(name, "Please, wait.\nThe namespace is creating.")
         minetest.after(1, function(name)
             local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
             local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
