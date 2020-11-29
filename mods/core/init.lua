@@ -31,13 +31,14 @@ require 'tools.remove'
 require 'tools.stat'
 
 -- mod files 
-require 'automount'
+--require 'automount'
 require 'recipes'
 require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
 require 'crafts.ns'
+require 'users'
 
 -- nodes
 require 'nodes.dir'
