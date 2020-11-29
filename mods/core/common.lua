@@ -131,6 +131,12 @@ function common.show_info(player_name, info)
                       "button_exit[7,1.0;2.5,0.7;close;close]"}, ""))
 end
 
+function common.show_wait_notification(player_name, info)
+    -- minetest.chat_send_player(player_name, warning)
+    minetest.show_formspec(player_name, "core:info", table.concat(
+        {"formspec_version[3]", "size[10,1,false]", "label[0.5,0.5;" .. minetest.formspec_escape(info) .. "]"}, ""))
+end
+
 -- finds core:platform nearby (in radius of 1) and reads it's platform_string from metadata
 function common.get_platform_string_near(entity, player)
     local node_pos = minetest.find_node_near(entity:get_pos(), 1, {"core:platform"})

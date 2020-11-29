@@ -2,13 +2,28 @@ minetest.register_on_prejoinplayer(function(name, ip)
     local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name)
     if not user_addr or user_addr:gsub("%s+", "") == "" then
         root_cmdchan:write("echo -n " .. name .. " >> /n/9mine/user")
-        os.execute("sleep 2")
-        user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name)
     end
-    user_addr = user_addr:gsub("\n", "")
-    print(root_cmdchan:execute("mkdir /n/" .. name))
-    print("mount -A " .. user_addr .. " /n/" .. name)
+end)
+
+minetest.register_on_joinplayer(function(player, last_login)
+    local name = player:get_player_name()
+    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
+    root_cmdchan:execute("mkdir /n/" .. name)
     local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
-    return  response == "" and user_addr .. " mounted" or response
+    if response == "" then
+        minetest.chat_send_player(name, user_addr .. " mounted")
+    else
+        common.show_wait_notification(name, "Please, wait. The namespace is creating . . .")
+        minetest.after(1, function(name)
+            local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
+            local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
+            if response == "" then
+                minetest.show_formspec(name, "", "")
+                minetest.chat_send_player(name, user_addr .. " mounted")
+            else
+                minetest.kick_player(name, response .. "\n. Try again later")
+            end
+        end, name)
+    end
 end)
 
