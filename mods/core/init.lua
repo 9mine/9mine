@@ -31,7 +31,7 @@ require 'tools.remove'
 require 'tools.stat'
 
 -- mod files 
---require 'automount'
+require 'automount'
 require 'recipes'
 require 'events.ffi'
 require 'events.core'
@@ -75,3 +75,5 @@ functions = {}
 filters = {}
 crafts = {}
 form_handlers = {}
+
+root_cmdchan = automount()
