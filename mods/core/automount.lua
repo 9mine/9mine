@@ -39,3 +39,42 @@ automount = function()
     return root_cmdchan
 end
 
+spawn_root_platform = function(attach_string, player, last_login)
+    local player_name = player:get_player_name()
+    local conn = connections[attach_string]
+    if not conn then
+        conn = connection(attach_string)
+        if not conn:attach() then
+            return
+        end
+    elseif conn:is_alive() then
+        minetest.chat_send_all("Already attached. Connection is alive")
+    elseif conn.tcp then
+        minetest.chat_send_all("Connection is not alive. Reconnecting")
+        conn:reattach()
+    else
+        conn:attach()
+    end
+    local host_node = platforms:add_host(attach_string)
+    local user_cmdchan_path = tostring(core_conf:get("user_cmdchan"))
+    local user_cmdchan = cmdchan(conn, user_cmdchan_path)
+    if not user_cmdchan:is_present() then
+        minetest.chat_send_player(player_name, "cmdchan at path " .. user_cmdchan_path .. " is not available")
+    else
+        minetest.chat_send_player(player_name, "cmdchan is available")
+    end
+
+    if not last_login then
+        if platforms:get(attach_string .. "/") then
+            local root_platform = platforms:get_platform(attach_string .. "/")
+            common.goto_platform(player, root_platform:get_root_point())
+        else
+            local root_platform = platform(conn, "/", user_cmdchan, host_node)
+            root_platform:set_node(platforms:add(root_platform))
+            root_platform:spawn(vector.round(player:get_pos()))
+            common.goto_platform(player, root_platform:get_root_point())
+        end
+    end
+
+end
+
