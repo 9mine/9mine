@@ -281,7 +281,7 @@ end
 function platform:spawn_child(path)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
-    child_platform.player_name = self.player_name
+    child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
@@ -338,11 +338,13 @@ end
 -- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
-        table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
-                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. self.properties.refresh_time .. "]",
-                      "field[0.5,2;9,0.7;external_handler;External Handler;" ..
-            tostring(self.properties.external_handler) .. "]", "button_exit[7,4.8;2.5,0.7;save;save]",
-                      "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
+        table.concat({"formspec_version[3]", "size[10,6.5,false]", "label[4,0.5;Platform settings]",
+                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
+                      "field[0.5,2.5;9,0.7;external_handler;External Handler;",
+            tostring(self.properties.external_handler), "]",
+            "field[0.5,4;9,0.7;player_name;Player name;", minetest.formspec_escape(self.properties.player_name), "]",
+            "button_exit[7,5.3;2.5,0.7;save;save]",
+                      "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
 end
 
 -- reads directory content and spawn new entities if needed
@@ -501,7 +503,7 @@ function platform:get_path()
 end
 
 function platform:get_player()
-    return self.player_name
+    return self.properties.player_name
 end
 
 -- Setters
@@ -510,7 +512,7 @@ function platform:set_node(node)
 end
 
 function platform:set_player(player_name)
-    self.player_name = player_name
+    self.properties.player_name = player_name
 end
 
 function platform:set_refresh_time(refresh_time)
