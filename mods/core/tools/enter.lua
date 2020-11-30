@@ -18,7 +18,7 @@ function EnterTool.enter(entity, player, player_name)
     local child_platform = platforms:get_platform(directory_entry.entry_string)
     if not child_platform then
         local parent_platform = platforms:get_platform(directory_entry.platform_string)
-        child_platform = parent_platform:spawn_child(directory_entry.path)
+        child_platform = parent_platform:spawn_child(directory_entry.path, player)
     end
     if child_platform then
         common.goto_platform(player, child_platform:get_root_point())

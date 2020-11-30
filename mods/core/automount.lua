@@ -69,19 +69,18 @@ spawn_root_platform = function(attach_string, player, last_login)
             local root_platform = platforms:get_platform(attach_string .. "/")
             common.goto_platform(player, root_platform:get_root_point())
         else
-            player:set_pos({
+            local result = player:set_pos({
                 x = math.random(-30000, 30000),
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
             minetest.chat_send_player(player_name, "Please, wait. Platform will be spawn in 1.5 seconds")
-            minetest.after(1.5, function(conn, user_cmdchan, host_node, player)
+            minetest.after(1.5, function(conn, user_cmdchan, host_node, player, player_name)
                 local root_platform = platform(conn, "/", user_cmdchan, host_node)
                 root_platform:set_player(player_name)
                 root_platform:set_node(platforms:add(root_platform))
-                root_platform:spawn(vector.round(player:get_pos()))
-                common.goto_platform(player, root_platform:get_root_point())
-            end, conn, user_cmdchan, host_node, player)
+                root_platform:spawn(vector.round(player:get_pos()), player)
+            end, conn, user_cmdchan, host_node, player, player_name)
         end
     end
 end

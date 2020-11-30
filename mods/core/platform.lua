@@ -238,18 +238,21 @@ function platform:next_pos()
 end
 
 -- read directory and spawn platform with directory content 
-function platform:spawn(root_point)
+function platform:spawn(root_point, player)
     local content = self:readdir()
     if not content then
         return nil
     end
     self:load_readdir()
     local size = self:compute_size(content)
-    self:draw(root_point, size)
-    minetest.after(0.2, function(plt, content)
-        platform.spawn_content(plt, content)
-        platform.update(plt)
-    end, self, content)
+    minetest.after(1, function(plt, content, root_point, size, player)
+        plt:draw(root_point, size)
+        common.goto_platform(player, plt.root_point)
+        minetest.after(1, function(plt, content, root_point, size, player)
+            plt:spawn_content(content)
+            plt:update()
+        end, plt, content, root_point, size, player)
+    end, self, content, root_point, size, player)
 end
 
 -- receives table with paths to spawn platform after platform
@@ -278,14 +281,14 @@ function platform:spawn_path(path, player)
 end
 
 -- spawn one one platform directory as a separate platform
-function platform:spawn_child(path)
+function platform:spawn_child(path, player)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
-    child_platform:spawn(pos)
+    child_platform:spawn(pos, player)
     return child_platform
 end
 
@@ -341,10 +344,10 @@ function platform:show_properties(player)
         table.concat({"formspec_version[3]", "size[10,6.5,false]", "label[4,0.5;Platform settings]",
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
                       "field[0.5,2.5;9,0.7;external_handler;External Handler;",
-            tostring(self.properties.external_handler), "]",
-            "field[0.5,4;9,0.7;player_name;Player name;", minetest.formspec_escape(self.properties.player_name), "]",
-            "button_exit[7,5.3;2.5,0.7;save;save]",
-                      "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
+                      tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
+                      minetest.formspec_escape(self.properties.player_name), "]",
+                      "button_exit[7,5.3;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
+                      "]"}, ""))
 end
 
 -- reads directory content and spawn new entities if needed
