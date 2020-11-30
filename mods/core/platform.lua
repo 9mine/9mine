@@ -10,13 +10,17 @@ function platform:platform(conn, path, cmdchan, parent_node)
     self.platform_string = conn.addr .. self.path
     self.directory_entries = {}
     self.properties = {
+        -- name of the player, who have access to the platform
+        player_name = "",
         -- flag indicating that platform update will be mabe by some other function 
         -- than platform:update()
         external_handler = false,
         -- period of time, on which readdir() occurs for current platform and if 
         -- new entries are there, they will be spawn and if some of present entities 
         -- are no more in new readdir() they will removed
-        refresh_time = refresh_time
+        refresh_time = refresh_time,
+        -- count of the spawn platforms of directories
+        spawn_platforms = 0
     }
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
@@ -289,6 +293,7 @@ function platform:spawn_child(path, player)
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
     child_platform:spawn(pos, player)
+    self:inc_spawn_count()
     return child_platform
 end
 
@@ -341,12 +346,14 @@ end
 -- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
-        table.concat({"formspec_version[3]", "size[10,6.5,false]", "label[4,0.5;Platform settings]",
+        table.concat({"formspec_version[3]", "size[10,8,false]", "label[4,0.5;Platform settings]",
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
                       "field[0.5,2.5;9,0.7;external_handler;External Handler;",
                       tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
                       minetest.formspec_escape(self.properties.player_name), "]",
-                      "button_exit[7,5.3;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
+                      "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
+                      minetest.formspec_escape(self.properties.spawn_platforms), "]",
+                      "button_exit[7,6.8;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
                       "]"}, ""))
 end
 
@@ -477,6 +484,14 @@ end
 function platform:inject_entry(entry)
     self:configure_entry(entry)
     self:add_entry(entry)
+end
+
+function platform:inc_spawn_count()
+    self.properties.spawn_platforms = self.properties.spawn_platforms + 1
+end
+
+function platform:dec_spawn_count()
+    self.properties.spawn_platforms = self.properties.spawn_platforms - 1
 end
 
 -- Getters
