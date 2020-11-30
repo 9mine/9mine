@@ -25,7 +25,7 @@ function common.get_platform_string(player)
 end
 
 function common.qid_as_key(dir)
-    if not dir then
+    if not dir or type(dir) == "string" then
         return
     end
     local new_dir = {}
