@@ -20,9 +20,7 @@ function EnterTool.enter(entity, player, player_name)
         local parent_platform = platforms:get_platform(directory_entry.platform_string)
         child_platform = parent_platform:spawn_child(directory_entry.path, player)
     end
-    if child_platform then
-        common.goto_platform(player, child_platform:get_root_point())
-    else 
+    if not child_platform then
         minetest.chat_send_player(player_name, "Error spawning platform")
     end
 end

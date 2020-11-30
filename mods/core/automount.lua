@@ -74,7 +74,6 @@ spawn_root_platform = function(attach_string, player, last_login)
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
-            minetest.chat_send_player(player_name, "Please, wait. Platform will be spawn in 1.5 seconds")
             minetest.after(1.5, function(conn, user_cmdchan, host_node, player, player_name)
                 local root_platform = platform(conn, "/", user_cmdchan, host_node)
                 root_platform:set_player(player_name)
