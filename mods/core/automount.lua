@@ -69,12 +69,18 @@ spawn_root_platform = function(attach_string, player, last_login)
             local root_platform = platforms:get_platform(attach_string .. "/")
             common.goto_platform(player, root_platform:get_root_point())
         else
-            local root_platform = platform(conn, "/", user_cmdchan, host_node)
-            root_platform:set_node(platforms:add(root_platform))
-            root_platform:spawn(vector.round(player:get_pos()))
-            common.goto_platform(player, root_platform:get_root_point())
+            player:set_pos({
+                x = math.random(-30000, 30000),
+                y = math.random(-30000, 30000),
+                z = math.random(-30000, 30000)
+            })
+            minetest.after(1, function()
+                local root_platform = platform(conn, "/", user_cmdchan, host_node)
+                root_platform:set_node(platforms:add(root_platform))
+                root_platform:spawn(vector.round(player:get_pos()))
+                common.goto_platform(player, root_platform:get_root_point())
+            end, conn, user_cmdchan, host_node, player)
         end
     end
-
 end
 
