@@ -11,7 +11,7 @@ minetest.register_on_joinplayer(function(player, last_login)
     root_cmdchan:execute("mkdir /n/" .. name)
     if root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name) == "" then
         minetest.chat_send_player(name, user_addr .. " mounted")
-        spawn_root_platform(user_addr, player, last_login)
+        minetest.after(2, spawn_root_platform, user_addr, player, last_login)
     else
         common.show_wait_notification(name, "Please, wait.\nThe namespace is creating.")
         minetest.after(1, function(name)
@@ -20,7 +20,7 @@ minetest.register_on_joinplayer(function(player, last_login)
             if response == "" then
                 minetest.show_formspec(name, "", "")
                 minetest.chat_send_player(name, user_addr .. " mounted")
-                spawn_root_platform(user_addr, player, last_login)
+                minetest.after(2, spawn_root_platform, user_addr, player, last_login)
             else
                 minetest.kick_player(name, response .. "\n. Try again later")
             end

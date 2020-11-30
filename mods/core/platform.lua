@@ -283,7 +283,7 @@ function platform:spawn_child(path)
     child_platform.node = (platforms:add(child_platform, self))
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
-    mounts:set_mount_points()
+    mounts:set_mount_points(self)
     child_platform:spawn(pos)
     return child_platform
 end
