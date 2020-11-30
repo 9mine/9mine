@@ -8,6 +8,8 @@ minetest.register_node("core:platform", {
     walkable = true,
     pointable = true,
     diggable = true,
+    palette = "core_palette.png",
+    paramtype2 = "color",
     node_box = {
         type = "regular"
     },

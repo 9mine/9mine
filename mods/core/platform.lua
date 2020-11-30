@@ -59,7 +59,7 @@ function platform:compute_size(content)
 end
 
 -- sets platform nodes on area specified
-function platform:draw(root_point, size)
+function platform:draw(root_point, size, color)
     local slots = {}
     local p1 = root_point
     local p2 = {
@@ -76,7 +76,9 @@ function platform:draw(root_point, size)
                     z = z
                 }
                 minetest.add_node(p, {
-                    name = "core:platform"
+                    name = "core:platform",
+                    param1 = 0,
+                    param2 = color
                 })
                 local node = minetest.get_meta(p)
                 node:set_string("platform_string", self.platform_string)
@@ -88,6 +90,7 @@ function platform:draw(root_point, size)
     self.slots = slots
     self.root_point = root_point
     self.size = size
+    self.properties.color = color
 end
 
 function platform:wipe_top()
@@ -242,21 +245,21 @@ function platform:next_pos()
 end
 
 -- read directory and spawn platform with directory content 
-function platform:spawn(root_point, player)
+function platform:spawn(root_point, player, color)
     local content = self:readdir()
     if not content then
         return nil
     end
     self:load_readdir()
     local size = self:compute_size(content)
-    minetest.after(1, function(plt, content, root_point, size, player)
-        plt:draw(root_point, size)
+    minetest.after(1, function(plt, content, root_point, size, player, color)
+        plt:draw(root_point, size, color)
         common.goto_platform(player, plt.root_point)
         minetest.after(1, function(plt, content, root_point, size, player)
             plt:spawn_content(content)
             plt:update()
         end, plt, content, root_point, size, player)
-    end, self, content, root_point, size, player)
+    end, self, content, root_point, size, player, color)
 end
 
 -- receives table with paths to spawn platform after platform
@@ -292,7 +295,7 @@ function platform:spawn_child(path, player)
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
-    child_platform:spawn(pos, player)
+    child_platform:spawn(pos, player, self:get_color())
     self:inc_spawn_count()
     return child_platform
 end
@@ -346,14 +349,16 @@ end
 -- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
-        table.concat({"formspec_version[3]", "size[10,8,false]", "label[4,0.5;Platform settings]",
+        table.concat({"formspec_version[3]", "size[10,9.5,false]", "label[4,0.5;Platform settings]",
                       "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
                       "field[0.5,2.5;9,0.7;external_handler;External Handler;",
                       tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
                       minetest.formspec_escape(self.properties.player_name), "]",
                       "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
                       minetest.formspec_escape(self.properties.spawn_platforms), "]",
-                      "button_exit[7,6.8;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
+                      "field[0.5,7;9,0.7;color;Color;",
+                      minetest.formspec_escape(self.properties.color), "]",
+                      "button_exit[7,8.3;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
                       "]"}, ""))
 end
 
@@ -524,9 +529,17 @@ function platform:get_player()
     return self.properties.player_name
 end
 
+function platform:get_color()
+    return self.properties.color
+end
+
 -- Setters
 function platform:set_node(node)
     self.node = node
+end
+
+function platform:set_color(color)
+    self.properties.color = color
 end
 
 function platform:set_player(player_name)
