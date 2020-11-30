@@ -48,9 +48,9 @@ spawn_root_platform = function(attach_string, player, last_login)
             return
         end
     elseif conn:is_alive() then
-        minetest.chat_send_all("Already attached. Connection is alive")
+        minetest.chat_send_player(player_name, "Already attached. Connection is alive")
     elseif conn.tcp then
-        minetest.chat_send_all("Connection is not alive. Reconnecting")
+        minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
         conn:reattach()
     else
         conn:attach()
@@ -74,8 +74,9 @@ spawn_root_platform = function(attach_string, player, last_login)
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
-            minetest.after(1, function()
+            minetest.after(1, function(conn, user_cmdchan, host_node, player)
                 local root_platform = platform(conn, "/", user_cmdchan, host_node)
+                root_platform:set_player(player_name)
                 root_platform:set_node(platforms:add(root_platform))
                 root_platform:spawn(vector.round(player:get_pos()))
                 common.goto_platform(player, root_platform:get_root_point())

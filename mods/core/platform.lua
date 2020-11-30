@@ -281,6 +281,7 @@ end
 function platform:spawn_child(path)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
+    child_platform.player_name = self.player_name
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
@@ -499,9 +500,17 @@ function platform:get_path()
     return self.path
 end
 
+function platform:get_player()
+    return self.player_name
+end
+
 -- Setters
 function platform:set_node(node)
     self.node = node
+end
+
+function platform:set_player(player_name)
+    self.player_name = player_name
 end
 
 function platform:set_refresh_time(refresh_time)
