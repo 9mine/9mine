@@ -31,11 +31,12 @@ automount = function()
     end
 
     -- mount registry
+    root_cmdchan:execute("mkdir -p /n/9mine")
     root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry")
     os.execute("sleep 2")
     -- get and mount user management service
     local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'")
-    root_cmdchan:execute("mount -A tcp!user.dev.metacoma.io!30101 /n/9mine")
+    root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine")
     return root_cmdchan
 end
 
