@@ -16,7 +16,7 @@ poll_regquery = function(name, counter, player, last_login)
         minetest.chat_send_player(name, user_addr .. " mounted")
         minetest.after(2, spawn_root_platform, user_addr, player, last_login)
     else
-        minetest.after(2, poll_regquery, name)
+        minetest.after(2, poll_regquery, name, counter, player, last_login)
     end
 end
 
