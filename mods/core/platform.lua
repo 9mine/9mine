@@ -277,7 +277,7 @@ function platform:next_pos()
     pos.y = pos.y + 13
     pos.x = pos.x + radius * math.cos(angle)
     pos.z = pos.z + radius * math.sin(angle)
-    return pos
+    return vector.round(pos)
 end
 
 -- read directory and spawn platform with directory content 
@@ -449,7 +449,6 @@ function platform:load_readdir()
         lua()
     elseif include_string == "" then
     else
-        minetest.chat_send_all("Error loading .lua file: " .. lua_readdir)
         return
     end
 end
@@ -477,7 +476,6 @@ function platform:load_getattr(entry, entity)
         return lua
     elseif include_string == "" then
     else
-        minetest.chat_send_all("Error loading .lua file: " .. lua_getattr)
         return
     end
 end
@@ -506,7 +504,6 @@ function platform:load_read_file(entry, entity, player)
         lua()
     elseif include_string == "" then
     else
-        minetest.chat_send_all("Error loading .lua file: " .. lua_read_file)
         return
     end
 end
