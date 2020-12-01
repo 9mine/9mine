@@ -281,21 +281,24 @@ function platform:next_pos()
 end
 
 -- read directory and spawn platform with directory content 
-function platform:spawn(root_point, player, color)
+function platform:spawn(root_point, player, color, paths)
     local content = self:readdir()
     if not content then
         return nil
     end
     self:load_readdir()
     local size = self:compute_size(content)
-    minetest.after(1, function(plt, content, root_point, size, player, color)
+    minetest.after(1, function(plt, content, root_point, size, player, color, paths)
         plt:draw(root_point, size, color)
         common.goto_platform(player, plt:get_root_point())
-        minetest.after(1, function(plt, content, root_point, size, player)
+        minetest.after(1, function(plt, content, root_point, size, player, paths)
             plt:spawn_content(content)
+            if paths then 
+                minetest.after(0.6, platform.spawn_path_step, plt, paths, player)
+            end
             plt:update()
-        end, plt, content, root_point, size, player)
-    end, self, content, root_point, size, player, color)
+        end, plt, content, root_point, size, player, paths)
+    end, self, content, root_point, size, player, color, paths)
 end
 
 -- receives table with paths to spawn platform after platform
@@ -306,8 +309,7 @@ function platform:spawn_path_step(paths, player)
         return
     end
     if not platforms:get_platform(self.conn.addr .. next) then
-        local child_platform = self:spawn_child(next, player)
-        minetest.after(2, platform.spawn_path_step, child_platform, paths, player)
+        local child_platform = self:spawn_child(next, player, paths)
     else
         local child_platform = platforms:get_platform(self.conn.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
@@ -323,14 +325,14 @@ function platform:spawn_path(path, player)
 end
 
 -- spawn one one platform directory as a separate platform
-function platform:spawn_child(path, player)
+function platform:spawn_child(path, player, paths)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
-    child_platform:spawn(pos, player, self:get_color())
+    child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()
     return child_platform
 end
