@@ -46,6 +46,9 @@ end
 function common.path_to_table(path)
     local i = 1
     local paths = {}
+    if path:match("^/") then 
+        table.insert(paths, 1, "/")
+    end
     while true do
         i = path:find("/", i + 1)
         if not i then

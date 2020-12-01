@@ -307,8 +307,7 @@ function platform:spawn_path_step(paths, player)
     end
     if not platforms:get_platform(self.conn.addr .. next) then
         local child_platform = self:spawn_child(next, player)
-        common.goto_platform(player, child_platform:get_root_point())
-        minetest.after(1.5, platform.spawn_path_step, child_platform, paths, player)
+        minetest.after(2, platform.spawn_path_step, child_platform, paths, player)
     else
         local child_platform = platforms:get_platform(self.conn.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
