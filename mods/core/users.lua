@@ -14,7 +14,7 @@ minetest.register_on_joinplayer(function(player, last_login)
         minetest.after(2, spawn_root_platform, user_addr, player, last_login)
     else
         common.show_wait_notification(name, "Please, wait.\nThe namespace is creating.")
-        minetest.after(1, function(name)
+        minetest.after(2, function(name)
             local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
             local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
             if response == "" then
