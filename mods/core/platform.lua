@@ -10,14 +10,19 @@ function platform:platform(conn, path, cmdchan, parent_node)
     self.platform_string = conn.addr .. self.path
     self.directory_entries = {}
     self.properties = {
+        -- name of the player, who have access to the platform
+        player_name = "",
         -- flag indicating that platform update will be mabe by some other function 
         -- than platform:update()
         external_handler = false,
         -- period of time, on which readdir() occurs for current platform and if 
         -- new entries are there, they will be spawn and if some of present entities 
         -- are no more in new readdir() they will removed
-        refresh_time = refresh_time
+        refresh_time = refresh_time,
+        -- count of the spawn platforms of directories
+        spawn_platforms = 0
     }
+
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
     self.node = parent_node
@@ -55,7 +60,7 @@ function platform:compute_size(content)
 end
 
 -- sets platform nodes on area specified
-function platform:draw(root_point, size)
+function platform:draw(root_point, size, color)
     local slots = {}
     local p1 = root_point
     local p2 = {
@@ -72,7 +77,9 @@ function platform:draw(root_point, size)
                     z = z
                 }
                 minetest.add_node(p, {
-                    name = "core:platform"
+                    name = "core:platform",
+                    param1 = 0,
+                    param2 = color
                 })
                 local node = minetest.get_meta(p)
                 node:set_string("platform_string", self.platform_string)
@@ -84,6 +91,36 @@ function platform:draw(root_point, size)
     self.slots = slots
     self.root_point = root_point
     self.size = size
+    self.properties.color = color
+end
+
+function platform:colorize(color)
+    local slots = {}
+    local p1 = self.root_point
+    local p2 = {
+        x = p1.x + self.size,
+        y = p1.y,
+        z = p1.z + self.size
+    }
+    for z = p1.z, p2.z do
+        for y = p1.y, p2.y do
+            for x = p1.x, p2.x do
+                local p = {
+                    x = x,
+                    y = y,
+                    z = z
+                }
+                minetest.add_node(p, {
+                    name = "core:platform",
+                    param1 = 0,
+                    param2 = color
+                })
+                local node = minetest.get_meta(p)
+                node:set_string("platform_string", self.platform_string)
+            end
+        end
+    end
+    self.properties.color = color
 end
 
 function platform:wipe_top()
@@ -142,12 +179,11 @@ end
 function platform:spawn_stat(stat)
     local directory_entry = directory_entry(stat)
     local slot = table.copy(self:get_slot())
-
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity)
+    directory_entry:filter(stat_entity, self:load_getattr(directory_entry, stat_entity))
     return directory_entry
 end
 
@@ -231,27 +267,38 @@ end
 
 -- calculates position for child directory
 function platform:next_pos()
+    local spawn_count = self:get_spawn_count()
+    local next_point = spawn_count % 6
+    local radius_multiplier = spawn_count / 6
+    local radius = 50 + 50 * radius_multiplier
+    local angle = (next_point * math.pi) / 3
+
     local pos = table.copy(self.root_point)
-    pos.y = pos.y + math.random(10, 16)
-    pos.x = pos.x + math.random(60) - 15
-    pos.z = pos.z + math.random(60) - 15
-    return pos
+    pos.y = pos.y + 13
+    pos.x = pos.x + radius * math.cos(angle)
+    pos.z = pos.z + radius * math.sin(angle)
+    return vector.round(pos)
 end
 
 -- read directory and spawn platform with directory content 
-function platform:spawn(root_point)
+function platform:spawn(root_point, player, color, paths)
     local content = self:readdir()
     if not content then
         return nil
     end
+    self:load_readdir()
     local size = self:compute_size(content)
-    self:draw(root_point, size)
-    minetest.after(0.2, function(plt, content)
-        platform.spawn_content(plt, content)
-        platform.update(plt)
-    end, self, content)
-    -- self:spawn_content(content)
-    -- self:update()
+    minetest.after(1, function(plt, content, root_point, size, player, color, paths)
+        plt:draw(root_point, size, color)
+        common.goto_platform(player, plt:get_root_point())
+        minetest.after(1, function(plt, content, root_point, size, player, paths)
+            plt:spawn_content(content)
+            if paths then 
+                minetest.after(0.6, platform.spawn_path_step, plt, paths, player)
+            end
+            plt:update()
+        end, plt, content, root_point, size, player, paths)
+    end, self, content, root_point, size, player, color, paths)
 end
 
 -- receives table with paths to spawn platform after platform
@@ -262,9 +309,7 @@ function platform:spawn_path_step(paths, player)
         return
     end
     if not platforms:get_platform(self.conn.addr .. next) then
-        local child_platform = self:spawn_child(next)
-        common.goto_platform(player, child_platform:get_root_point())
-        minetest.after(1.5, platform.spawn_path_step, child_platform, paths, player)
+        local child_platform = self:spawn_child(next, player, paths)
     else
         local child_platform = platforms:get_platform(self.conn.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
@@ -280,11 +325,15 @@ function platform:spawn_path(path, player)
 end
 
 -- spawn one one platform directory as a separate platform
-function platform:spawn_child(path)
+function platform:spawn_child(path, player, paths)
     local child_platform = platform(self.conn, path, self.cmdchan)
     child_platform.node = (platforms:add(child_platform, self))
+    child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
-    child_platform:spawn(pos)
+    child_platform.mount_point = self.mount_point
+    mounts:set_mount_points(self)
+    child_platform:spawn(pos, player, self:get_color(), paths)
+    self:inc_spawn_count()
     return child_platform
 end
 
@@ -337,11 +386,15 @@ end
 -- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
-        table.concat({"formspec_version[3]", "size[10,6,false]", "label[4,0.5;Platform settings]",
-                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;" .. self.properties.refresh_time .. "]",
-                      "field[0.5,2;9,0.7;external_handler;External Handler;" ..
-            tostring(self.properties.external_handler) .. "]", "button_exit[7,4.8;2.5,0.7;save;save]",
-                      "field[0,0;0,0;platform_string;;" .. self.platform_string .. "]"}, ""))
+        table.concat({"formspec_version[3]", "size[10,9.5,false]", "label[4,0.5;Platform settings]",
+                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
+                      "field[0.5,2.5;9,0.7;external_handler;External Handler;",
+                      tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
+                      minetest.formspec_escape(self.properties.player_name), "]",
+                      "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
+                      minetest.formspec_escape(self.properties.spawn_platforms), "]", "field[0.5,7;9,0.7;color;Color;",
+                      minetest.formspec_escape(self.properties.color), "]", "button_exit[7,8.3;2.5,0.7;save;save]",
+                      "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
 end
 
 -- reads directory content and spawn new entities if needed
@@ -374,6 +427,88 @@ function platform:update()
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
 end
 
+-- check if something is present in correspoing 
+-- .lua directory
+function platform:load_readdir()
+    if not self.mount_point then
+        return
+    end
+    local lua_readdir = self.path:gsub("^" .. self.mount_point,
+                            self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/readdir"
+    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_readdir)
+    if result and include_string ~= "" then
+        local lua, error = loadstring(include_string)
+        if not lua then
+            minetest.chat_send_all(".lua is not valid: " .. error)
+            return
+        end
+        setfenv(lua, setmetatable({
+            platform = self
+        }, {
+            __index = _G
+        }))
+        lua()
+    elseif include_string == "" then
+    else
+        return
+    end
+end
+
+function platform:load_getattr(entry, entity)
+    if not self.mount_point then
+        return
+    end
+    local lua_getattr = entry.path:gsub("^" .. self.mount_point,
+                            self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/getattr"
+    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
+    if result and include_string ~= "" then
+        local lua, error = loadstring(include_string)
+        if not lua then
+            minetest.chat_send_all(".lua is not valid: " .. error)
+            return
+        end
+        setfenv(lua, setmetatable({
+            platform = self,
+            entry = entry,
+            entity = entity
+        }, {
+            __index = _G
+        }))
+        return lua
+    elseif include_string == "" then
+    else
+        return
+    end
+end
+
+function platform:load_read_file(entry, entity, player)
+    if not self.mount_point then
+        return
+    end
+    local lua_read_file = entry.path:gsub("^" .. self.mount_point,
+                              self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/read_file"
+    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
+    if result and include_string ~= "" then
+        local lua, error = loadstring(include_string)
+        if not lua then
+            minetest.chat_send_all(".lua is not valid:" .. error)
+            return
+        end
+        setfenv(lua, setmetatable({
+            platform = self,
+            entry = entry,
+            entity = entity,
+            player = player
+        }, {
+            __index = _G
+        }))
+        lua()
+    elseif include_string == "" then
+    else
+        return
+    end
+end
+
 function platform:delete_entry(entry)
     self.directory_entries[entry.stat.qid.path_hex] = nil
 end
@@ -391,7 +526,19 @@ function platform:inject_entry(entry)
     self:add_entry(entry)
 end
 
+function platform:inc_spawn_count()
+    self.properties.spawn_platforms = self.properties.spawn_platforms + 1
+end
+
+function platform:dec_spawn_count()
+    self.properties.spawn_platforms = self.properties.spawn_platforms - 1
+end
+
 -- Getters
+
+function platform:get_spawn_count()
+    return self.properties.spawn_platforms
+end
 
 function platform:get_node()
     return self.node
@@ -417,9 +564,25 @@ function platform:get_path()
     return self.path
 end
 
+function platform:get_player()
+    return self.properties.player_name
+end
+
+function platform:get_color()
+    return self.properties.color
+end
+
 -- Setters
 function platform:set_node(node)
     self.node = node
+end
+
+function platform:set_color(color)
+    self.properties.color = color
+end
+
+function platform:set_player(player_name)
+    self.properties.player_name = player_name
 end
 
 function platform:set_refresh_time(refresh_time)
@@ -429,4 +592,3 @@ end
 function platform:set_external_handler_flag(flag)
     self.properties.external_handler = flag
 end
-

@@ -21,7 +21,7 @@ connect = function(player, fields)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(conn, cmdchan_path)
     if not root_cmdchan:is_present() then
-        minetest.chat_send_all("cmdchan at path " .. cmdchan_path .. "is not available")
+        minetest.chat_send_all("cmdchan at path " .. cmdchan_path .. " is not available")
     else
         minetest.chat_send_all("cmdchan is available")
     end
@@ -31,6 +31,7 @@ connect = function(player, fields)
     else
         local root_platform = platform(conn, "/", root_cmdchan, host_node)
         root_platform:set_node(platforms:add(root_platform))
+        root_platform:set_player(player)
         root_platform:spawn(vector.round(player:get_pos()))
         if attach_path ~= "/" then
             root_platform:spawn_path(attach_path, player)

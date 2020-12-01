@@ -110,14 +110,16 @@ function CopyTool.copy(entity, player)
     local item_meta = item:get_meta()
     item_meta:set_string("name", entity.object:get_nametag_attributes().text)
     item_meta:set_string("texture", entity.texture)
+    item_meta:set_string("path", directory_entry.path)
     item_meta:set_string("entry_string", entity.entry_string)
+    item_meta:set_string("description", entity.entry_string)
     player:get_inventory():add_item("main", item)
 end
 
 minetest.register_tool("core:copy", CopyTool)
 
 minetest.register_on_joinplayer(function(player)
-    local inventory = player.get_inventory(player)
+    local inventory = player:get_inventory()
     if not inventory:contains_item("main", "core:copy") then
         inventory:add_item("main", "core:copy")
     end

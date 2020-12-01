@@ -6,10 +6,10 @@ function common.set_look(player, destination)
 end
 
 function common.goto_platform(player, pos)
-    if not pos then 
+    if not pos then
         minetest.chat_send_player(player:get_player_name(), "No position provided for goto_platform")
-        return 
-    end 
+        return
+    end
     local destination = table.copy(pos)
     pos.x = pos.x - 2
     pos.y = pos.y + 1
@@ -25,7 +25,9 @@ function common.get_platform_string(player)
 end
 
 function common.qid_as_key(dir)
-    if not dir then return end
+    if not dir or type(dir) == "string" then
+        return
+    end
     local new_dir = {}
     for _, stat in pairs(dir) do
         new_dir[stat.qid.path_hex] = stat
@@ -44,6 +46,9 @@ end
 function common.path_to_table(path)
     local i = 1
     local paths = {}
+    if path:match("^/") then 
+        table.insert(paths, 1, "/")
+    end
     while true do
         i = path:find("/", i + 1)
         if not i then
@@ -129,6 +134,13 @@ function common.show_info(player_name, info)
                       "button_exit[7,1.0;2.5,0.7;close;close]"}, ""))
 end
 
+function common.show_wait_notification(player_name, info)
+    -- minetest.chat_send_player(player_name, warning)
+    minetest.show_formspec(player_name, "core:info",
+        table.concat({"formspec_version[4]", "size[10,3,false]", "hypertext[0.5,0.5;9,2;;<big><center>Hello ",
+                      player_name, "\n", minetest.formspec_escape(info), "<center><big>]"}))
+end
+
 -- finds core:platform nearby (in radius of 1) and reads it's platform_string from metadata
 function common.get_platform_string_near(entity, player)
     local node_pos = minetest.find_node_near(entity:get_pos(), 1, {"core:platform"})
@@ -138,4 +150,13 @@ function common.get_platform_string_near(entity, player)
     end
     local meta = minetest.get_meta(node_pos)
     return meta:get_string("platform_string")
+end
+
+function common.add_ns_to_inventory(player, result)
+    local inventory = player:get_inventory()
+    local ns = ItemStack("core:ns_node")
+    local ns_meta = ns:get_meta()
+    ns_meta:set_string("ns", result)
+    ns_meta:set_string("description", result)
+    inventory:add_item("main", ns)
 end

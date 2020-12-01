@@ -17,6 +17,13 @@ local StatEntity = {
 
 function StatEntity:on_punch(puncher, dtime, tool, dir)
     local player_name = puncher:get_player_name()
+    local directory_entry = platforms:get_entry(self.entry_string)
+    if not directory_entry then
+        minetest.chat_send_all("No directory entry found")
+        return
+    end
+    local platform = platforms:get_platform(directory_entry:get_platform_string())
+    platform:load_read_file(directory_entry, self, puncher)
     if tool.damage_groups.stat == 1 then
         StatTool.show_stat(self, puncher, player_name)
     end
@@ -43,8 +50,10 @@ end
 
 function StatEntity:get_staticdata()
     local attributes = self.object:get_nametag_attributes()
+    local properties = self.object:get_properties()
     local data = {
-        texture = self.texture,
+        visual = properties.visual,
+        textures = properties.textures,
         entry_string = self.entry_string,
         attr = attributes
     }
@@ -56,9 +65,9 @@ function StatEntity:on_activate(staticdata, dtime_s)
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)
         self.entry_string = data.entry_string
-        self.texture = data.texture
         self.object:set_properties({
-            textures = {data.texture}
+            visual = data.visual,
+            textures = data.textures
         })
     end
 end

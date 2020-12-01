@@ -18,19 +18,17 @@ function EnterTool.enter(entity, player, player_name)
     local child_platform = platforms:get_platform(directory_entry.entry_string)
     if not child_platform then
         local parent_platform = platforms:get_platform(directory_entry.platform_string)
-        child_platform = parent_platform:spawn_child(directory_entry.path)
+        child_platform = parent_platform:spawn_child(directory_entry.path, player)
+        return
     end
-    if child_platform then
-        common.goto_platform(player, child_platform:get_root_point())
-    else 
-        minetest.chat_send_player(player_name, "Error spawning platform")
-    end
+    common.goto_platform(player, child_platform:get_root_point())
+
 end
 
 minetest.register_tool("core:enter", EnterTool)
 
 minetest.register_on_joinplayer(function(player)
-    local inventory = player.get_inventory(player)
+    local inventory = player:get_inventory()
     if not inventory:contains_item("main", "core:enter") then
         inventory:add_item("main", "core:enter")
     end

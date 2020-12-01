@@ -49,7 +49,6 @@ minetest.register_entity("core:console", {
             self.addr = data.addr
             self.input = data.input
             self.output = data.output
-
         end
     end
 })

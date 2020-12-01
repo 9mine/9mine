@@ -6,6 +6,7 @@ core_conf = Settings(path .. "/mod.conf")
 -- global values
 connections = {}
 -- libraries 
+require 'lfs'
 require 'graph'
 require "socket"
 require "class"
@@ -13,6 +14,7 @@ require 'readdir'
 md5 = require 'md5'
 require 'connection'
 require 'cmdchan'
+require 'register'
 
 filesize = require 'filesize'
 np = require '9p'
@@ -30,20 +32,20 @@ require 'tools.stat'
 
 -- mod files 
 require 'automount'
+require 'recipes'
+require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+require 'crafts.ns'
+require 'users'
 
 -- nodes
 require 'nodes.dir'
 require 'nodes.file'
 require 'nodes.service'
-require 'nodes.fileserver'
-require 'nodes.kubeconfig'
-require 'nodes.kubernetes'
-
--- crafts
-require 'crafts.kubernetes'
+require 'nodes.platform'
+require 'nodes.ns'
 
 -- objects
 require 'platform'
@@ -51,12 +53,14 @@ require 'directory_entry'
 require 'graphs.platforms'
 require 'common'
 require 'np_prot'
+require 'texture'
+require 'mounts'
 
--- node/entities
+-- entities
 require 'entities.stat'
-require 'nodes.platform'
 
 -- chat
+require 'chat.ffi'
 require 'chat.cmdchan'
 require 'chat.graph'
 require 'chat.commands'
@@ -64,5 +68,12 @@ require 'chat.mvcp'
 
 platforms = platforms(graph)
 np_prot = np_prot()
+mounts = mounts()
 
 current_hud = {}
+functions = {}
+filters = {}
+crafts = {}
+form_handlers = {}
+
+root_cmdchan = automount()
