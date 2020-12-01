@@ -1,3 +1,15 @@
+poll_user_management = function(root_cmdchan)
+    print("Polling user management . . .")
+    local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
+    if user_management:match(".*!.*!.*") then
+        print(user_management)
+        print("mount -A " .. user_management .. " /n/9mine")
+        print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
+    else
+        minetest.after(3, poll_user_management, root_cmdchan)
+    end
+end
+
 automount = function()
     -- get string in form of tcp!host!port from ENV or mod.conf
     local attach_string = os.getenv("INFERNO_ADDRESS") ~= "" and os.getenv("INFERNO_ADDRESS") or
@@ -32,18 +44,18 @@ automount = function()
 
     -- mount registry
     print(root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry"))
-    print(root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry"))
+    --print(root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry"))
 
     -- get and mount user management service
     local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
-    while not user_management:match(".*!.*!.*") do
-        os.execute("sleep 2")
-        user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
-        print("Polling user management . . .")
+    if user_management:match(".*!.*!.*") then
+        print(user_management)
+        print("mount -A " .. user_management .. " /n/9mine")
+        print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
+    else
+        minetest.after(3, poll_user_management, root_cmdchan)
     end
-    print(user_management)
-    print("mount -A " .. user_management .. " /n/9mine")
-    print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
+
     return root_cmdchan
 end
 
