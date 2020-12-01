@@ -80,6 +80,7 @@ spawn_root_platform = function(attach_string, player, last_login)
                 root_platform.mount_point = "/"
                 root_platform:set_node(platforms:add(root_platform))
                 root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
+                minetest.show_formspec(player_name, "", "")
             end, conn, user_cmdchan, host_node, player, player_name)
         end
     end

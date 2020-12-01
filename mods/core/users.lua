@@ -18,7 +18,6 @@ minetest.register_on_joinplayer(function(player, last_login)
             local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
             local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
             if response == "" then
-                minetest.show_formspec(name, "", "")
                 minetest.chat_send_player(name, user_addr .. " mounted")
                 minetest.after(2, spawn_root_platform, user_addr, player, last_login)
             else
