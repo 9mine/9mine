@@ -237,10 +237,16 @@ end
 
 -- calculates position for child directory
 function platform:next_pos()
+    local spawn_count = self:get_spawn_count()
+    local next_point = spawn_count % 6
+    local radius_multiplier = spawn_count / 6
+    local radius = 50 + 50 * radius_multiplier
+    local angle = (next_point * math.pi) / 3
+
     local pos = table.copy(self.root_point)
-    pos.y = pos.y + math.random(10, 16)
-    pos.x = pos.x + math.random(60) - 15
-    pos.z = pos.z + math.random(60) - 15
+    pos.y = pos.y + 13
+    pos.x = pos.x + radius * math.cos(angle)
+    pos.z = pos.z + radius * math.sin(angle)
     return pos
 end
 
@@ -355,11 +361,9 @@ function platform:show_properties(player)
                       tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
                       minetest.formspec_escape(self.properties.player_name), "]",
                       "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
-                      minetest.formspec_escape(self.properties.spawn_platforms), "]",
-                      "field[0.5,7;9,0.7;color;Color;",
-                      minetest.formspec_escape(self.properties.color), "]",
-                      "button_exit[7,8.3;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;", self.platform_string,
-                      "]"}, ""))
+                      minetest.formspec_escape(self.properties.spawn_platforms), "]", "field[0.5,7;9,0.7;color;Color;",
+                      minetest.formspec_escape(self.properties.color), "]", "button_exit[7,8.3;2.5,0.7;save;save]",
+                      "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
 end
 
 -- reads directory content and spawn new entities if needed
@@ -500,6 +504,10 @@ function platform:dec_spawn_count()
 end
 
 -- Getters
+
+function platform:get_spawn_count()
+    return self.properties.spawn_platforms
+end
 
 function platform:get_node()
     return self.node
