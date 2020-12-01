@@ -93,6 +93,35 @@ function platform:draw(root_point, size, color)
     self.properties.color = color
 end
 
+function platform:colorize(color)
+    local slots = {}
+    local p1 = self.root_point
+    local p2 = {
+        x = p1.x + self.size,
+        y = p1.y,
+        z = p1.z + self.size
+    }
+    for z = p1.z, p2.z do
+        for y = p1.y, p2.y do
+            for x = p1.x, p2.x do
+                local p = {
+                    x = x,
+                    y = y,
+                    z = z
+                }
+                minetest.add_node(p, {
+                    name = "core:platform",
+                    param1 = 0,
+                    param2 = color
+                })
+                local node = minetest.get_meta(p)
+                node:set_string("platform_string", self.platform_string)
+            end
+        end
+    end
+    self.properties.color = color
+end
+
 function platform:wipe_top()
     for qid, entry in pairs(self.directory_entries) do
         platforms:delete_entry_node(entry:get_entry_string())
@@ -260,7 +289,7 @@ function platform:spawn(root_point, player, color)
     local size = self:compute_size(content)
     minetest.after(1, function(plt, content, root_point, size, player, color)
         plt:draw(root_point, size, color)
-        common.goto_platform(player, plt.root_point)
+        common.goto_platform(player, plt:get_root_point())
         minetest.after(1, function(plt, content, root_point, size, player)
             plt:spawn_content(content)
             plt:update()
