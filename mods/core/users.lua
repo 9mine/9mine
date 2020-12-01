@@ -7,14 +7,12 @@ end)
 
 poll_regquery = function(name, counter, player, last_login)
     if counter > 5 then
-        minetest.kick_player(name, "Error creating NS. Try again later")
+        local ns_create_output = root_cmdchan:read()
+        minetest.kick_player(name, "Error creating NS. Try again later. Log: \n" .. ns_create_output)
     end
     counter = counter + 1
     local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
     local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
-    print(user_addr)
-    print(name)
-    print(response)
     if response == "" then
         minetest.chat_send_player(name, user_addr .. " mounted")
         minetest.after(2, spawn_root_platform, user_addr, player, last_login)
