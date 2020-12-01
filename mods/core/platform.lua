@@ -22,6 +22,7 @@ function platform:platform(conn, path, cmdchan, parent_node)
         -- count of the spawn platforms of directories
         spawn_platforms = 0
     }
+
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
     self.node = parent_node
@@ -431,7 +432,8 @@ function platform:load_readdir()
     if not self.mount_point then
         return
     end
-    local lua_readdir = self.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/readdir"
+    local lua_readdir = self.path:gsub("^" .. self.mount_point,
+                            self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/readdir"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_readdir)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
@@ -456,7 +458,8 @@ function platform:load_getattr(entry, entity)
     if not self.mount_point then
         return
     end
-    local lua_getattr = entry.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/getattr"
+    local lua_getattr = entry.path:gsub("^" .. self.mount_point,
+                            self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/getattr"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
@@ -483,7 +486,8 @@ function platform:load_read_file(entry, entity, player)
     if not self.mount_point then
         return
     end
-    local lua_read_file = entry.path:gsub("^" .. self.mount_point, self.mount_point .. "/.lua") .. "/read_file"
+    local lua_read_file = entry.path:gsub("^" .. self.mount_point,
+                              self.mount_point == "/" and "/.lua" or self.mount_point .. "/.lua") .. "/read_file"
     local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)

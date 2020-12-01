@@ -77,6 +77,7 @@ spawn_root_platform = function(attach_string, player, last_login)
             minetest.after(1.5, function(conn, user_cmdchan, host_node, player, player_name)
                 local root_platform = platform(conn, "/", user_cmdchan, host_node)
                 root_platform:set_player(player_name)
+                root_platform.mount_point = "/"
                 root_platform:set_node(platforms:add(root_platform))
                 root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
             end, conn, user_cmdchan, host_node, player, player_name)
