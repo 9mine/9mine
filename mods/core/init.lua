@@ -51,6 +51,8 @@ require 'nodes.ns'
 require 'platform'
 require 'directory_entry'
 require 'graphs.platforms'
+require 'graphs.graphs'
+require 'graphs.player_graph'
 require 'common'
 require 'np_prot'
 require 'texture'
@@ -67,6 +69,7 @@ require 'chat.commands'
 require 'chat.mvcp'
 
 platforms = platforms(graph)
+graphs = graphs()
 np_prot = np_prot()
 mounts = mounts()
 

@@ -83,6 +83,7 @@ spawn_root_platform = function(attach_string, player, last_login)
     else
         conn:attach()
     end
+    local graph = graphs:get_graph(player_name) or graphs:add_graph(player_graph(player_name), player_name)
     local host_node = platforms:add_host(attach_string)
     local user_cmdchan_path = tostring(core_conf:get("user_cmdchan"))
     local user_cmdchan = cmdchan(conn, user_cmdchan_path)
