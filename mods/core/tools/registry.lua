@@ -21,7 +21,8 @@ end
 
 -- reads REGISTRY_PATH and returns all registries as comma-separated list
 function RegistryTool.get_registries_string(player)
-    local attachment = platforms:get_platform(common.get_platform_string(player)):get_attachment()
+    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local attachment = player_graph:get_platform(common.get_platform_string(player)):get_attachment()
     local registry_path = os.getenv("REGISTRY_PATH") ~= "" and os.getenv("REGISTRY_PATH") or
                               core_conf:get("registry_path")
     local index_path = registry_path == "/" and registry_path .. "index" or registry_path .. "/" .. "index"

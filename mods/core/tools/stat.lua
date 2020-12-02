@@ -93,8 +93,9 @@ function StatTool.parse_mode_bits(mode)
 end
 
 function StatTool.show_stat(entity, player, player_name)
-    local directory_entry = platforms:get_entry(entity.entry_string)
-    local platform = platforms:get_platform(directory_entry:get_platform_string())
+    local player_graph = graphs:get_player_graph(player_name)
+    local directory_entry = player_graph:get_entry(entity.entry_string)
+    local platform = player_graph:get_platform(directory_entry:get_platform_string())
     local attachment = platform:get_attachment()
 
     local s = np_prot.stat_read(attachment, directory_entry:get_path())

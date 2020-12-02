@@ -17,7 +17,7 @@ function player_graph:add_host(attach_string)
     local host_node = self.graph:node(attach_string)
     local result, response = pcall(self.graph.edge, self.graph, self.root_node, host_node)
     if not result then
-        minetest.chat_send_all("Error graphing edge: " .. response)
+        minetest.chat_send_all("Error graphing edge for host_node: " .. response)
     end
     return host_node
 end
@@ -52,19 +52,18 @@ end
 -- adds platform node to the graph. If parent_platform is provided
 -- edge made between current platform and parent. If no parent platform 
 -- provided then edge made between current platform and host node
-function player_graph:add_platform(platform, parent_platform)
+function player_graph:add_platform(platform, parent_platform, player_host_node)
     local platform_node = self.graph:node(platform.platform_string)
     platform_node.object = platform
     if not parent_platform then
-        local host_node = self.graph:findnode(platform.conn.addr)
-        local result, response = pcall(self.graph.edge, self.graph, host_node, platform_node)
+        local result, response = pcall(self.graph.edge, self.graph, player_host_node, platform_node)
         if not result then
-            minetest.chat_send_all("Error graphing edge: " .. response)
+            minetest.chat_send_all("Error graphing edge before host_node: " .. response)
         end
     else
         local result, response = pcall(self.graph.edge, self.graph, parent_platform:get_node(), platform_node)
         if not result then
-            minetest.chat_send_all("Error graphing edge: " .. response)
+            minetest.chat_send_all("Error graphing edge with parent_plat: " .. response)
         end
     end
     return platform_node

@@ -11,8 +11,9 @@ RemoveTool = {
 }
 
 function RemoveTool.remove(entity, player)
-    local directory_entry = platforms:get_entry(entity.entry_string)
-    local platform = platforms:get_platform(directory_entry:get_platform_string())
+    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local directory_entry = player_graph:get_entry(entity.entry_string)
+    local platform = player_graph:get_platform(directory_entry:get_platform_string())
     local cmdchan = platform:get_cmdchan() 
     platform:set_external_handler_flag(true)
     minetest.chat_send_all(cmdchan:execute("rm -rf " .. directory_entry:get_path(), "/"))

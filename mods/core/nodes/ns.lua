@@ -43,9 +43,10 @@ NsNode = {
 }
 
 function NsNode.newns(entity, player)
+    local player_graph = graphs:get_player_graph(player:get_player_name())
     local platform_string = common.get_platform_string_near(entity, player)
-    local cmdchan = platforms:get_cmdchan(platform_string)
-    local platform = platforms:get_platform(platform_string)
+    local platform = player_graph:get_platform(platform_string)
+    local cmdchan = platform:get_cmdchan()
     local attachment = platform:get_attachment()
     local ns = entity:get_luaentity().ns
     local platform_path = platform:get_path()

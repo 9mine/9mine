@@ -17,7 +17,8 @@ connect = function(player, fields)
     else
         conn:attach()
     end
-    local host_node = platforms:add_host(attach_string)
+    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(conn, cmdchan_path)
     if not root_cmdchan:is_present() then
@@ -26,14 +27,14 @@ connect = function(player, fields)
         minetest.chat_send_all("cmdchan is available")
     end
 
-    if platforms:get(attach_string .. "/") then
-        local root_platform = platforms:get_platform(attach_string .. "/")
+    if player_graph:get_platform(attach_string .. "/") then
+        local root_platform = player_graph:get_platform(attach_string .. "/")
         common.goto_platform(player, root_platform:get_root_point())
     else
         local root_platform = platform(conn, "/", root_cmdchan, host_node)
         root_platform:set_player(player:get_player_name())
         root_platform.mount_point = "/"
-        root_platform:set_node(platforms:add(root_platform))
+        root_platform:set_node(player_graph:add_platform(root_platform, nil, host_node))
         root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
     end
 end

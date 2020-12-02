@@ -22,8 +22,9 @@ function CopyTool.on_drop(stat_entity, name, player_name, command)
     local entry_string = stat_entity:get_luaentity().entry_string
     local meta = minetest.get_meta(node_pos)
     local platform_string = meta:get_string("platform_string")
-    local platform = platforms:get_platform(platform_string)
-    local directory_entry = platforms:get_entry(entry_string)
+    local player_graph = graphs:get_player_graph(player_name)
+    local platform = player_graph:get_platform(platform_string)
+    local directory_entry = player_graph:get_entry(entry_string)
     directory_entry = directory_entry:copy()
 
     -- check if place, where entity was dropped, is free slot
@@ -55,9 +56,9 @@ function CopyTool.on_drop(stat_entity, name, player_name, command)
     minetest.chat_send_all(cmdchan:execute(command .. " " .. directory_entry.path .. " " .. platform.path))
     local new_path = platform.path == "/" and platform.path .. directory_entry.stat.name or platform.path .. "/" ..
                          directory_entry.stat.name
-    if platforms:get_entry(platform.addr .. new_path) then
+    if player_graph:get_entry(platform.addr .. new_path) then
         minetest.chat_send_all("Already exist. Replacing")
-        platform:remove_entity(platforms:get_entry(platform.addr .. new_path):get_qid())
+        platform:remove_entity(player_graph:get_entry(platform.addr .. new_path):get_qid())
     end
     -- read stat of copied entry
     local result, stat = pcall(np_prot.stat_read, platform:get_attachment(), new_path)
@@ -67,7 +68,7 @@ function CopyTool.on_drop(stat_entity, name, player_name, command)
     platform:inject_entry(directory_entry)
     directory_entry:filter(stat_entity)
     -- update graph
-    platforms:add_directory_entry(platform, directory_entry)
+    player_graph:add_entry(platform, directory_entry)
     platform:set_external_handler_flag(false)
 end
 
@@ -104,7 +105,8 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
 end
 
 function CopyTool.copy(entity, player)
-    local directory_entry = platforms:get_entry(entity.entry_string)
+    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local directory_entry = player_graph:get_entry(entity.entry_string)
     local type = directory_entry.stat.qid.type == 128 and "core:dir_node" or "core:file_node"
     local item = ItemStack(type)
     local item_meta = item:get_meta()
