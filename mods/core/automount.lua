@@ -71,10 +71,10 @@ end
 
 spawn_root_platform = function(attach_string, player, last_login)
     local player_name = player:get_player_name()
-    local conn = connections:get_root_connection()
+    local conn = connections:get_connection(player_name, attach_string)
     if not conn then
         conn = connection(attach_string)
-        connections:set_root_connection(conn)
+        connections:add_connection(player_name, conn)
         if not conn:attach() then
             return
         end

@@ -27,3 +27,20 @@ end
 function connections:get_root_cmdchan()
     return self.root_cmdchan
 end
+
+function connections:get_connection(player_name, addr)
+    return self.connections[player_name][addr]
+end
+
+function connections:add_connection(player_name, conn)
+    if not self.connections[player_name][conn.addr] then
+        self.connections[player_name][conn.addr] = conn
+    end
+    return self.connections[player_name][conn.addr]
+end
+
+function connections:add_player(player_name)
+    if not self.connections[player_name] then
+        self.connections[player_name] = {}
+    end
+end
