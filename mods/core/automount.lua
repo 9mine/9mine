@@ -11,8 +11,8 @@ poll_user_management = function(root_cmdchan)
     end
 end
 
-mount_registry = function(root_cmdchan)
-    local response = root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry"):gsub("%s+", "")
+mount_registry = function(root_cmdchan, registry_addr)
+    local response = root_cmdchan:execute("mount -A ".. registry_addr .. " /mnt/registry"):gsub("%s+", "")
     if response == "" then
         local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
         if user_management:match(".*!.*!.*") then
@@ -24,7 +24,7 @@ mount_registry = function(root_cmdchan)
         end
     else
         print("Registry mount failed. Retry")
-        minetest.after(3, mount_registry, root_cmdchan)
+        minetest.after(3, mount_registry, root_cmdchan, registry_addr)
     end
 end
 
@@ -64,7 +64,9 @@ automount = function()
 
     -- mount registry
     print(root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry"))
-    mount_registry(root_cmdchan)
+    local registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
+                              core_conf:get("REGISTRY_ADDR")
+    mount_registry(root_cmdchan, registry_addr)
 
     return root_cmdchan
 end
