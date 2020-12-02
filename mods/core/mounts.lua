@@ -3,6 +3,9 @@ class 'mounts'
 function mounts:set_mount_points(platform)
     local host_addr = platform.addr
     local cmdchan = platform:get_cmdchan()
+    if not cmdchan then
+        return
+    end
     local mounts = cmdchan:execute("ns | grep '^mount'")
     if mounts and mounts ~= "" then
         for mount in mounts:gmatch("[^\n]+") do

@@ -25,22 +25,17 @@ connect = function(player, fields)
     else
         minetest.chat_send_all("cmdchan is available")
     end
+
     if platforms:get(attach_string .. "/") then
         local root_platform = platforms:get_platform(attach_string .. "/")
-        root_platform:spawn_path(attach_path, player)
+        common.goto_platform(player, root_platform:get_root_point())
     else
-        local root_platform = platform(conn, "/", root_cmdchan, host_node)
+        local root_platform = platform(conn, "/", user_cmdchan, host_node)
+        root_platform:set_player(player:get_player_name())
+        root_platform.mount_point = "/"
         root_platform:set_node(platforms:add(root_platform))
-        root_platform:set_player(player)
-        root_platform:spawn(vector.round(player:get_pos()))
-        if attach_path ~= "/" then
-            root_platform:spawn_path(attach_path, player)
-        else
-            common.goto_platform(player, root_platform:get_root_point())
-        end
-       
+        root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
     end
-
 end
 
 split_connection_string = function(connection_string)
