@@ -232,6 +232,7 @@ function mvcp:mvcp(platform, command, params, player_name)
     self.params = params
     self.recursive = false
     self.platform = platform
+    self.player_name = player_name
     self.addr = platform:get_addr()
     self.path = platform:get_path()
     self.attachment = platform:get_attachment()

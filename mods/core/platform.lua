@@ -218,7 +218,7 @@ function platform:get_entity_by_pos(old_pos)
 end
 
 function platform:get_entry_by_name(name)
-    local player_graph = graphs.get_player_graph(self:get_player())
+    local player_graph = graphs:get_player_graph(self:get_player())
     local entry_string
     if self.platform_string:match("/$") then
         entry_string = self.platform_string .. name
