@@ -61,7 +61,7 @@ automount = function()
     end
 
     -- mount registry
-    --print(root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry"))
+    print(root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry"))
     mount_registry(root_cmdchan)
 
     return root_cmdchan
