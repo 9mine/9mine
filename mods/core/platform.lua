@@ -272,7 +272,9 @@ function platform:next_pos()
     local radius_multiplier = spawn_count / 6
     local radius = 50 + 50 * radius_multiplier
     local angle = (next_point * math.pi) / 3
-
+    if not self.root_point then
+        return
+    end
     local pos = table.copy(self.root_point)
     pos.y = pos.y + 13
     pos.x = pos.x + radius * math.cos(angle)
@@ -293,7 +295,7 @@ function platform:spawn(root_point, player, color, paths)
         common.goto_platform(player, plt:get_root_point())
         minetest.after(1, function(plt, content, root_point, size, player, paths)
             plt:spawn_content(content)
-            if paths then 
+            if paths then
                 minetest.after(0.6, platform.spawn_path_step, plt, paths, player)
             end
             plt:update()
@@ -330,6 +332,9 @@ function platform:spawn_child(path, player, paths)
     child_platform.node = (platforms:add(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
+    if not pos then
+        return
+    end
     child_platform.mount_point = self.mount_point
     mounts:set_mount_points(self)
     child_platform:spawn(pos, player, self:get_color(), paths)

@@ -30,7 +30,7 @@ connect = function(player, fields)
         local root_platform = platforms:get_platform(attach_string .. "/")
         common.goto_platform(player, root_platform:get_root_point())
     else
-        local root_platform = platform(conn, "/", user_cmdchan, host_node)
+        local root_platform = platform(conn, "/", root_cmdchan, host_node)
         root_platform:set_player(player:get_player_name())
         root_platform.mount_point = "/"
         root_platform:set_node(platforms:add(root_platform))

@@ -50,8 +50,9 @@ function cmdchan:read()
 end
 
 function cmdchan:execute(command, location)
-    self:write(command, location)
-    return self:read()
+    local write_result, write_response = pcall(cmdchan.write, self, command, location)
+    local read_result, read_response = pcall(cmdchan.read, self)
+    return read_response
 end
 
 function cmdchan:show_response(response, player_name)
