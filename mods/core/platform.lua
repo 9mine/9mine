@@ -124,15 +124,17 @@ function platform:colorize(color)
 end
 
 function platform:wipe_top()
+    local player_graph = graphs:get_player_graph(self:get_player())
     for qid, entry in pairs(self.directory_entries) do
-        platforms:delete_entry_node(entry:get_entry_string())
+        player_graph:delete_entry_node(entry:get_entry_string())
         self:remove_entity(qid)
     end
 end
 
 function platform:wipe()
     self:wipe_top()
-    platforms:delete_node(self.platform_string)
+    local player_graph = graphs:get_player_graph(self:get_player())
+    player_graph:delete_node(self.platform_string)
     local root_point = self.root_point
     local size = self.size
     local slots = {}
@@ -195,13 +197,14 @@ function platform:get_entity_by_qid(qid)
 end
 
 function platform:get_entity_by_name(name)
+    local player_graph = graphs.get_player_graph(self:get_player())
     local entry_string
     if self.platform_string:match("/$") then
         entry_string = self.platform_string .. name
     else
         entry_string = self.platform_string .. "/" .. name
     end
-    local directory_entry = platforms:get_entry(entry_string)
+    local directory_entry = player_graph:get_entry(entry_string)
     local old_pos = directory_entry.pos
     local pos = table.copy(old_pos)
     pos.y = pos.y + 1
@@ -215,13 +218,14 @@ function platform:get_entity_by_pos(old_pos)
 end
 
 function platform:get_entry_by_name(name)
+    local player_graph = graphs.get_player_graph(self:get_player())
     local entry_string
     if self.platform_string:match("/$") then
         entry_string = self.platform_string .. name
     else
         entry_string = self.platform_string .. "/" .. name
     end
-    local directory_entry = platforms:get_entry(entry_string)
+    local directory_entry = player_graph:get_entry(entry_string)
     return directory_entry
 end
 
@@ -246,10 +250,11 @@ end
 
 -- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
+    local player_graph = graphs:get_player_graph(self:get_player())
     for _, stat in pairs(content) do
         local directory_entry = self:spawn_stat(stat)
         self.directory_entries[stat.qid.path_hex] = directory_entry
-        platforms:add_directory_entry(self, directory_entry)
+        player_graph:add_entry(self, directory_entry)
     end
 end
 
@@ -305,14 +310,15 @@ end
 -- receives table with paths to spawn platform after platform
 -- until there is path in paths 
 function platform:spawn_path_step(paths, player)
+    local player_graph = graphs:get_player_graph(self:get_player())
     local next = table.remove(paths)
     if not next then
         return
     end
-    if not platforms:get_platform(self.conn.addr .. next) then
+    if not player_graph:get_platform(self.conn.addr .. next) then
         local child_platform = self:spawn_child(next, player, paths)
     else
-        local child_platform = platforms:get_platform(self.conn.addr .. next)
+        local child_platform = player_graph:get_platform(self.conn.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
         minetest.after(0.5, platform.spawn_path_step, child_platform, paths, player)
     end
@@ -327,8 +333,9 @@ end
 
 -- spawn one one platform directory as a separate platform
 function platform:spawn_child(path, player, paths)
+    local player_graph = graphs:get_player_graph(self:get_player())
     local child_platform = platform(self.conn, path, self.cmdchan)
-    child_platform.node = (platforms:add(child_platform, self))
+    child_platform.node = (player_graph:add_platform(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
     if not pos then
@@ -412,10 +419,11 @@ function platform:update()
             self:wipe()
             return
         end
+        local player_graph = graphs:get_player_graph(self.properties.player_name)
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 local directory_entry = self:spawn_stat(st)
-                platforms:add_directory_entry(self, directory_entry)
+                player_graph:add_entry(self, directory_entry)
                 self.directory_entries[qid] = directory_entry
 
             end

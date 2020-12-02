@@ -17,34 +17,35 @@ local StatEntity = {
 
 function StatEntity:on_punch(puncher, dtime, tool, dir)
     local player_name = puncher:get_player_name()
-    local directory_entry = platforms:get_entry(self.entry_string)
+    local player_graph = graphs:get_player_graph(player_name)
+    local directory_entry = player_graph:get_entry(self.entry_string)
     if not directory_entry then
         minetest.chat_send_all("No directory entry found")
         return
     end
-    local platform = platforms:get_platform(directory_entry:get_platform_string())
+    local platform = player_graph:get_platform(directory_entry:get_platform_string())
     platform:load_read_file(directory_entry, self, puncher)
     if tool.damage_groups.stat == 1 then
-        StatTool.show_stat(self, puncher, player_name)
+        StatTool.show_stat(self, puncher, player_name,player_graph)
     end
     if tool.damage_groups.enter == 1 then
-        EnterTool.enter(self, puncher, player_name)
+        EnterTool.enter(self, puncher, player_name, player_graph)
     end
     if tool.damage_groups.read == 1 then
-        ReadTool.read(self, puncher, player_name)
+        ReadTool.read(self, puncher, player_name, player_graph)
     end
 
     if tool.damage_groups.edit == 1 then
-        EditTool.edit(self, puncher, player_name)
+        EditTool.edit(self, puncher, player_name, player_graph)
     end
     if tool.damage_groups.write == 1 then
-        WriteTool.write(self, player_name)
+        WriteTool.write(self, player_name, player_graph)
     end
     if tool.damage_groups.copy == 1 then
-        CopyTool.copy(self, puncher)
+        CopyTool.copy(self, puncher, player_graph)
     end
     if tool.damage_groups.remove == 1 then
-        RemoveTool.remove(self, puncher)
+        RemoveTool.remove(self, puncher, player_graph)
     end
 end
 
