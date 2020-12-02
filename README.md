@@ -1,5 +1,5 @@
-![Discord](https://img.shields.io/discord/337985133569114113?style=for-the-badge)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/9mine/9mine/Minetest%20Container%20Image?style=for-the-badge)
+[![Discord](https://img.shields.io/discord/337985133569114113?style=for-the-badge)](https://discord.gg/bVnNxsp7)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/9mine/9mine/Minetest%20Container%20Image?style=for-the-badge)](https://github.com/9mine/9mine/actions)
 [![GitHub issues](https://img.shields.io/github/issues/9mine/9mine?style=for-the-badge)](https://github.com/9mine/9mine/issues)
 [![GitHub license](https://img.shields.io/github/license/9mine/9mine?style=for-the-badge)](https://github.com/9mine/9mine/blob/master/LICENSE)
 # Start 9mine
