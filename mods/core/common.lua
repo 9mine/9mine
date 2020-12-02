@@ -7,7 +7,6 @@ end
 
 function common.goto_platform(player, pos)
     if not pos then
-        minetest.chat_send_player(player:get_player_name(), "No position provided for goto_platform")
         return
     end
     local destination = table.copy(pos)

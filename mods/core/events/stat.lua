@@ -6,7 +6,8 @@ local write = function(player, fields)
     if not file_path or not content then
         return
     end
-    local attachment = platforms:get_platform(common.get_platform_string(player)):get_attachment()
+    local player_graph = graphs:get_player_graph(player_name)
+    local attachment = player_graph:get_platform(common.get_platform_string(player)):get_attachment()
     local result, response = pcall(np_prot.file_write, attachment, file_path, content)
     if result then
         minetest.chat_send_player(player_name, "File successfully saved")

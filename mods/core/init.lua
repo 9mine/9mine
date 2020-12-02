@@ -48,9 +48,12 @@ require 'nodes.platform'
 require 'nodes.ns'
 
 -- objects
+require 'connections'
 require 'platform'
 require 'directory_entry'
 require 'graphs.platforms'
+require 'graphs.graphs'
+require 'graphs.player_graph'
 require 'common'
 require 'np_prot'
 require 'texture'
@@ -65,8 +68,9 @@ require 'chat.cmdchan'
 require 'chat.graph'
 require 'chat.commands'
 require 'chat.mvcp'
-
+connections = connections()
 platforms = platforms(graph)
+graphs = graphs()
 np_prot = np_prot()
 mounts = mounts()
 

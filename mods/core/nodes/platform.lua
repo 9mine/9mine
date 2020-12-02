@@ -14,7 +14,8 @@ minetest.register_node("core:platform", {
         type = "regular"
     },
     on_punch = function(pos, _, puncher)
-        local platform = platforms:get_platform(common.get_platform_string(puncher))
+        local player_graph = graphs:get_player_graph(puncher:get_player_name())
+        local platform = player_graph:get_platform(common.get_platform_string(puncher))
         platform:show_properties(puncher)
     end
 })

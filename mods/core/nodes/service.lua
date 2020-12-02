@@ -56,9 +56,9 @@ function ServiceNode.mount(entity, player)
         return
     end
     minetest.chat_send_all(platform_string)
-
-    local cmdchan = platforms:get_cmdchan(platform_string)
-    local platform = platforms:get_platform(platform_string)
+    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local platform = player_graph:get_platform(platform_string)
+    local cmdchan = platform:get_cmdchan()
     local platform_path = platform:get_path()
 
     platform:set_external_handler_flag(true)

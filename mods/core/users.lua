@@ -3,6 +3,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
     if not user_addr or user_addr:gsub("%s+", "") == "" then
         root_cmdchan:write("echo -n " .. name .. " >> /n/9mine/user")
     end
+    connections:add_player(name)
 end)
 
 poll_regquery = function(name, counter, player, last_login)
@@ -27,6 +28,7 @@ minetest.register_on_joinplayer(function(player, last_login)
     root_cmdchan:execute("mkdir /n/" .. name)
     if root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name) == "" then
         minetest.chat_send_player(name, user_addr .. " mounted")
+        connections:add_player(name)
         minetest.after(2, spawn_root_platform, user_addr, player, last_login)
     else
         common.show_wait_notification(name, "Please, wait.\nThe namespace is creating.")

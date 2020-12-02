@@ -3,10 +3,11 @@ class 'mvcp'
 -- analyzes destination path to decide if needed to go 
 -- one level up on fs structure
 function mvcp:get_destination_platform()
+    local player_graph = graphs:get_player_graph(self.player_name)
     -- check if source only one 
     local source_entry
     if #self.sources == 1 and not self.globbed and not self.recursive then
-        source_entry = platforms:get_entry(self.addr .. self.sources[1])
+        source_entry = player_graph:get_entry(self.addr .. self.sources[1])
     end
     -- check if destination entry is spawned
     local result, stat =
@@ -16,11 +17,11 @@ function mvcp:get_destination_platform()
     -- parent directory of destination
     if result then
         if stat.qid.type ~= 128 or (source_entry and source_entry.stat.qid.type == 128) then
-            self.destination_platform = platforms:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
-        elseif self.recursive and not platforms:get_entry(self.addr .. self.destination) then
-            self.destination_platform = platforms:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
+            self.destination_platform = player_graph:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
+        elseif self.recursive and not player_graph:get_entry(self.addr .. self.destination) then
+            self.destination_platform = player_graph:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
         else
-            self.destination_platform = platforms:get_platform(self.addr .. self.destination)
+            self.destination_platform = player_graph:get_platform(self.addr .. self.destination)
         end
     end
     return self.destination_platform
@@ -28,6 +29,8 @@ end
 
 -- traverse changed files and find corresponding source entry
 function mvcp:map_changes(changes)
+    local player_graph = graphs:get_player_graph(self.player_name)
+
     -- if rename was intended, delete all other changes 
     -- that occured not by mv/cp command 
     if self.destination ~= self.destination_platform.path then
@@ -46,8 +49,8 @@ function mvcp:map_changes(changes)
         -- means destination file name was named directly 
         if self.destination ~= self.destination_platform.path then
             minetest.chat_send_all("Exact name found. Renaming . . .")
-            source_entry = platforms:get_entry(self.addr .. self.sources[1])
-            destination_entry = platforms:get_entry(self.addr .. self.destination)
+            source_entry = player_graph:get_entry(self.addr .. self.sources[1])
+            destination_entry = player_graph:get_entry(self.addr .. self.destination)
         else
             minetest.chat_send_all("No exact name provided, map by original entries name")
             source_entry = self.platform:get_entry_by_name(change.name)
@@ -87,7 +90,7 @@ function mvcp:map_changes(changes)
             self.destination_platform:inject_entry(directory_entry)
 
             -- update graph
-            platforms:add_directory_entry(self.destination_platform, directory_entry)
+            player_graph:add_entry(self.destination_platform, directory_entry)
             -- animate 
             common.flight(entity, directory_entry)
         end
@@ -97,8 +100,9 @@ end
 
 local move = function(player_name, command, params)
     if command == "mv" or command == "cp" then
-        local platform = platforms:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
-        local mvcp = mvcp(platform, command, params):parse_params()
+        local player_graph = graphs:get_player_graph(player_name)
+        local platform = player_graph:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
+        local mvcp = mvcp(platform, command, params, player_name):parse_params()
         local cmdchan = platform:get_cmdchan()
 
         -- execute mv/cp command and send output (if any) to the minetest console 
@@ -117,13 +121,13 @@ local move = function(player_name, command, params)
         -- reduce sources which are on same platform
         mvcp:reduce()
         for index, source in pairs(mvcp.reduced_sources) do
-            mvcp.platform = platforms:get_platform(mvcp.addr .. source)
+            mvcp.platform = player_graph:get_platform(mvcp.addr .. source)
             mvcp:map_changes(changes)
         end
 
         -- set external_handler flag to false for all sources and destination platforms
         for _, source in pairs(mvcp.reduced_sources) do
-            platforms:get_platform(platform:get_addr() .. source).external_handler = false
+            player_graph:get_platform(platform:get_addr() .. source).external_handler = false
         end
 
         mvcp.destination_platform.properties.external_handler = false
@@ -223,11 +227,12 @@ function mvcp.copy(stat_entity)
     return entity
 end
 
-function mvcp:mvcp(platform, command, params)
+function mvcp:mvcp(platform, command, params, player_name)
     self.command = command
     self.params = params
     self.recursive = false
     self.platform = platform
+    self.player_name = player_name
     self.addr = platform:get_addr()
     self.path = platform:get_path()
     self.attachment = platform:get_attachment()
