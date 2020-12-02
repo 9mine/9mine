@@ -30,8 +30,8 @@ end
 
 automount = function()
     -- get string in form of tcp!host!port from ENV or mod.conf
-    local attach_string = os.getenv("INFERNO_ADDRESS") ~= "" and os.getenv("INFERNO_ADDRESS") or
-                              core_conf:get("inferno_address")
+    local attach_string = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or
+                              core_conf:get("INFERNO_ADDR")
 
     -- establish 9p attachment
     local conn = connections:get_root_connection()
