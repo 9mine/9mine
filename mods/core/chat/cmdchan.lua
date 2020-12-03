@@ -4,7 +4,8 @@ minetest.register_on_chat_message(function(player_name, message)
     local platform = player_graph:get_platform(common.get_platform_string(player))
     if not platform then 
         minetest.chat_send_player(player_name, "No platform found nearby")
-        return end
+        return true
+    end
     local cmdchan = platform:get_cmdchan()
     if not cmdchan then
         return
