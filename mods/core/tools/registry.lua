@@ -16,7 +16,6 @@ function RegistryTool.handle_form(player, fields)
         player:get_inventory():add_item("main", item)
         common.show_info(player:get_player_name(), "Service " .. fields.service .. " was added to your inventory.")
     end
-    minetest.chat_send_all(dump(fields))
 end
 
 -- reads REGISTRY_PATH and returns all registries as comma-separated list
@@ -70,7 +69,7 @@ function RegistryTool.on_use(itemstack, player)
     local player_name = player:get_player_name()
     local registries_string = RegistryTool.get_registries_string(player)
     if not registries_string then
-        minetest.chat_send_all("Error getting list of registries")
+        minetest.chat_send_player(player_name, "Error getting list of registries")
         return
     end
     minetest.show_formspec(player_name, "core:registry", RegistryTool.get_form(registries_string))

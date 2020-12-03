@@ -19,6 +19,9 @@ end
 
 function common.get_platform_string(player)
     local node_pos = minetest.find_node_near(player:get_pos(), 6, {"core:platform"})
+    if not node_pos then
+        return
+    end
     local meta = minetest.get_meta(node_pos)
     return meta:get_string("platform_string")
 end
@@ -45,7 +48,7 @@ end
 function common.path_to_table(path)
     local i = 1
     local paths = {}
-    if path:match("^/") then 
+    if path:match("^/") then
         table.insert(paths, 1, "/")
     end
     while true do
