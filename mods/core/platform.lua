@@ -240,9 +240,9 @@ function platform:remove_entity(qid)
         })
         table.insert(self.slots, pos)
         self.directory_entries[qid] = nil
-        minetest.after(1.5, function(stat_entity)
+        minetest.after(1.5, function()
             stat_entity:remove()
-        end, stat_entity)
+        end)
     else
         minetest.chat_send_all("Removing stat entity with qid " .. qid .. " failed")
     end
@@ -294,17 +294,17 @@ function platform:spawn(root_point, player, color, paths)
     end
     self:load_readdir()
     local size = self:compute_size(content)
-    minetest.after(1, function(plt, content, root_point, size, player, color, paths)
-        plt:draw(root_point, size, color)
-        common.goto_platform(player, plt:get_root_point())
-        minetest.after(1, function(plt, content, root_point, size, player, paths)
-            plt:spawn_content(content)
+    minetest.after(1, function()
+        self:draw(root_point, size, color)
+        common.goto_platform(player, self:get_root_point())
+        minetest.after(1, function()
+            self:spawn_content(content)
             if paths then
-                minetest.after(0.6, platform.spawn_path_step, plt, paths, player)
+                minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
-            plt:update()
-        end, plt, content, root_point, size, player, paths)
-    end, self, content, root_point, size, player, color, paths)
+            self:update()
+        end)
+    end)
 end
 
 -- receives table with paths to spawn platform after platform

@@ -36,4 +36,3 @@ minetest.register_on_joinplayer(function(player, last_login)
         minetest.after(2, poll_regquery, name, counter, player, last_login)
     end
 end)
-

@@ -68,7 +68,7 @@ function ServiceNode.mount(entity, player)
         y = 9,
         z = 0
     })
-    minetest.after(1.5, function(entity, player, platform_path)
+    minetest.after(1.5, function()
         local item = ItemStack("core:service_node")
         local service = item:get_meta()
         service:set_string("service", entity:get_luaentity().service)
@@ -78,11 +78,11 @@ function ServiceNode.mount(entity, player)
         inventory:add_item("main", item)
         entity:remove()
 
-    end, entity, player, platform_path)
-    minetest.after(3, function(platform, conn, platform_path)
+    end)
+    minetest.after(3, function()
         platform.mount_point = platform_path
         platform:set_external_handler_flag(false)
-    end, platform, platform:get_attachment(), platform_path)
+    end)
 
 end
 

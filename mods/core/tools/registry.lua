@@ -16,7 +16,6 @@ function RegistryTool.handle_form(player, fields)
         player:get_inventory():add_item("main", item)
         common.show_info(player:get_player_name(), "Service " .. fields.service .. " was added to your inventory.")
     end
-    minetest.chat_send_all(dump(fields))
 end
 
 -- reads REGISTRY_PATH and returns all registries as comma-separated list
