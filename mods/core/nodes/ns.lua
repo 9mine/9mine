@@ -43,7 +43,8 @@ NsNode = {
 }
 
 function NsNode.newns(entity, player)
-    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local player_name = player:get_player_name()
+    local player_graph = graphs:get_player_graph(palyer_name)
     local platform_string = common.get_platform_string_near(entity, player)
     local platform = player_graph:get_platform(platform_string)
     local cmdchan = platform:get_cmdchan()
@@ -52,7 +53,7 @@ function NsNode.newns(entity, player)
     local platform_path = platform:get_path()
     cmdchan:execute("touch /tmp/ns")
     np_prot.file_write(attachment, "/tmp/ns", ns)
-    minetest.chat_send_all(cmdchan:execute("auth/newns -n /tmp/ns ns"))
+    minetest.chat_send_player(player_name, cmdchan:execute("auth/newns -n /tmp/ns ns"))
     entity:set_acceleration({
         x = 0,
         y = 9,

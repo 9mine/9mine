@@ -20,7 +20,7 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
     local player_graph = graphs:get_player_graph(player_name)
     local directory_entry = player_graph:get_entry(self.entry_string)
     if not directory_entry then
-        minetest.chat_send_all("No directory entry found")
+        minetest.chat_send_player(player_name, "No directory entry found")
         return
     end
     local platform = player_graph:get_platform(directory_entry:get_platform_string())

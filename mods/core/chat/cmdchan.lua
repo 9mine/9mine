@@ -23,7 +23,7 @@ minetest.register_on_chat_message(function(player_name, message)
             common.add_ns_to_inventory(player, result)
         else
             local result = cmdchan:execute(message, path)
-            minetest.chat_send_all(result .. "\n")
+            minetest.chat_send_player(player_name, result .. "\n")
             if result:match("^/") then
                 result = result:gsub("\n", "")
                 platform:spawn_path(result, player)

@@ -69,7 +69,7 @@ function RegistryTool.on_use(itemstack, player)
     local player_name = player:get_player_name()
     local registries_string = RegistryTool.get_registries_string(player)
     if not registries_string then
-        minetest.chat_send_all("Error getting list of registries")
+        minetest.chat_send_player(player_name, "Error getting list of registries")
         return
     end
     minetest.show_formspec(player_name, "core:registry", RegistryTool.get_form(registries_string))

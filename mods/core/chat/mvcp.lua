@@ -48,11 +48,11 @@ function mvcp:map_changes(changes)
         -- if destination path and destination platform path different 
         -- means destination file name was named directly 
         if self.destination ~= self.destination_platform.path then
-            minetest.chat_send_all("Exact name found. Renaming . . .")
+            minetest.chat_send_player(self.player_name, "Exact name found. Renaming . . .")
             source_entry = player_graph:get_entry(self.addr .. self.sources[1])
             destination_entry = player_graph:get_entry(self.addr .. self.destination)
         else
-            minetest.chat_send_all("No exact name provided, map by original entries name")
+            minetest.chat_send_player(self.player_name, "No exact name provided, map by original entries name")
             source_entry = self.platform:get_entry_by_name(change.name)
             destination_entry = self.destination_platform:get_entry_by_name(change.name)
         end
@@ -106,7 +106,7 @@ local move = function(player_name, command, params)
         local cmdchan = platform:get_cmdchan()
 
         -- execute mv/cp command and send output (if any) to the minetest console 
-        minetest.chat_send_all(cmdchan:execute(command .. " " .. params, platform:get_path()))
+        minetest.chat_send_player(player_name, cmdchan:execute(command .. " " .. params, platform:get_path()))
 
         -- if not destination platform was chosen, leave handling for platform refresh
         if not mvcp:get_destination_platform() then

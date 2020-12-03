@@ -55,14 +55,15 @@ function ServiceNode.mount(entity, player)
         entity:remove()
         return
     end
-    minetest.chat_send_all(platform_string)
-    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local player_name = player:get_player_name()
+    minetest.chat_send_player(player_name, platform_string)
+    local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(platform_string)
     local cmdchan = platform:get_cmdchan()
     local platform_path = platform:get_path()
 
     platform:set_external_handler_flag(true)
-    minetest.chat_send_all(cmdchan:execute("mount -c -A " .. entity:get_luaentity().service .. " " .. platform_path, "/"))
+    minetest.chat_send_player(player_name, cmdchan:execute("mount -c -A " .. entity:get_luaentity().service .. " " .. platform_path, "/"))
     entity:set_acceleration({
         x = 0,
         y = 9,

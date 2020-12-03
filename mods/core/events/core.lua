@@ -2,6 +2,7 @@ connect = function(player, fields)
     if not (fields.connect or fields.key_enter) then
         return
     end
+    local player_name = player:get_player_name()
     local attach_string, attach_path = split_connection_string(fields.connection_string)
     local conn = connections[attach_string]
     if not conn then
@@ -10,21 +11,21 @@ connect = function(player, fields)
             return
         end
     elseif conn:is_alive() then
-        minetest.chat_send_all("Already attached. Connection is alive")
+        minetest.chat_send_player(player_name, "Already attached. Connection is alive")
     elseif conn.tcp then
-        minetest.chat_send_all("Connection is not alive. Reconnecting")
+        minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
         conn:reattach()
     else
         conn:attach()
     end
-    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local player_graph = graphs:get_player_graph(player_name)
     local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(conn, cmdchan_path)
     if not root_cmdchan:is_present() then
-        minetest.chat_send_all("cmdchan at path " .. cmdchan_path .. " is not available")
+        minetest.chat_send_player(player_name, "cmdchan at path " .. cmdchan_path .. " is not available")
     else
-        minetest.chat_send_all("cmdchan is available")
+        minetest.chat_send_player(player_name, "cmdchan is available")
     end
 
     if player_graph:get_platform(attach_string .. "/") then

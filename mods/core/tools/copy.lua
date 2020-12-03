@@ -53,11 +53,11 @@ function CopyTool.on_drop(stat_entity, name, player_name, command)
     -- execute copy command 
     local cmdchan = platform:get_cmdchan()
     platform:set_external_handler_flag(true)
-    minetest.chat_send_all(cmdchan:execute(command .. " " .. directory_entry.path .. " " .. platform.path))
+    minetest.chat_send_player(player_name, cmdchan:execute(command .. " " .. directory_entry.path .. " " .. platform.path))
     local new_path = platform.path == "/" and platform.path .. directory_entry.stat.name or platform.path .. "/" ..
                          directory_entry.stat.name
     if player_graph:get_entry(platform.addr .. new_path) then
-        minetest.chat_send_all("Already exist. Replacing")
+        minetest.chat_send_player(player_name, "Already exist. Replacing")
         platform:remove_entity(player_graph:get_entry(platform.addr .. new_path):get_qid())
     end
     -- read stat of copied entry
