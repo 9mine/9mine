@@ -183,6 +183,7 @@ local Lstat = data.layout{
 }
 
 local function getstat(seg)
+  if seg == nil then return nil end
   local p = seg:segment():layout(Lstat)
   local st = {}
 
