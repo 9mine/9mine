@@ -12,7 +12,7 @@ require "socket"
 require "class"
 require 'readdir'
 md5 = require 'md5'
-require 'connection'
+require '9p_over_tcp'
 require 'cmdchan'
 require 'register'
 

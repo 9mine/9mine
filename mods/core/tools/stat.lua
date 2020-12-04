@@ -96,9 +96,9 @@ function StatTool.show_stat(entity, player, player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local directory_entry = player_graph:get_entry(entity.entry_string)
     local platform = player_graph:get_platform(directory_entry:get_platform_string())
-    local attachment = platform:get_attachment()
+    local conn = platform:get_conn()
 
-    local s = np_prot.stat_read(attachment, directory_entry:get_path())
+    local s = np_prot.stat_read(conn, directory_entry:get_path())
     local result = StatTool.parse_mode_bits(s.mode)
     local mode_bits = ""
     for k, v in ipairs(result["mode_bits"]) do

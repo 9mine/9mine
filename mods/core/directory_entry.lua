@@ -4,7 +4,7 @@ class 'directory_entry'
 function directory_entry:directory_entry(stat)
     -- stat record from readdir 
     self.stat = table.copy(stat)
-    -- attachment string, in form of prot!host!port
+    -- connection string, in form of prot!host!port
     self.addr = nil
     -- full path, starting with /, including entry name 
     self.path = nil

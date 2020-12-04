@@ -1,13 +1,13 @@
 class 'platform'
 -- platform object. Represents directory content. Holds reference to connection information
-function platform:platform(conn, path, cmdchan, parent_node)
+function platform:platform(connection, path, cmdchan, parent_node)
     local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
                                       core_conf:get("refresh_time"))
-    self.conn = conn
+    self.connection = connection
     self.cmdchan = cmdchan
-    self.addr = conn.addr
+    self.addr = connection.addr
     self.path = path
-    self.platform_string = conn.addr .. self.path
+    self.platform_string = connection.addr .. self.path
     self.directory_entries = {}
     self.properties = {
         -- name of the player, who have access to the platform
@@ -34,7 +34,7 @@ end
 -- methods
 -- reads content of directory using path, set during platform initialization
 function platform:readdir()
-    local result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
+    local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
     if not result then
         if self.conn:is_alive() then
             minetest.chat_send_player(self:get_player(),
@@ -42,7 +42,7 @@ function platform:readdir()
             return
         else
             if self.conn:reattach() then
-                result, content = pcall(readdir, self.conn.attachment, self.path == "/" and "../" or self.path)
+                result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
                 if result then
                     content = content or {}
                 end
@@ -317,10 +317,10 @@ function platform:spawn_path_step(paths, player)
     if not next then
         return
     end
-    if not player_graph:get_platform(self.conn.addr .. next) then
+    if not player_graph:get_platform(self.connection.addr .. next) then
         local child_platform = self:spawn_child(next, player, paths)
     else
-        local child_platform = player_graph:get_platform(self.conn.addr .. next)
+        local child_platform = player_graph:get_platform(self.connection.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
         minetest.after(0.5, platform.spawn_path_step, child_platform, paths, player)
     end
@@ -336,7 +336,7 @@ end
 -- spawn one one platform directory as a separate platform
 function platform:spawn_child(path, player, paths)
     local player_graph = graphs:get_player_graph(self:get_player())
-    local child_platform = platform(self.conn, path, self.cmdchan)
+    local child_platform = platform(self.connection, path, self.cmdchan)
     child_platform.node = (player_graph:add_platform(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
@@ -451,7 +451,7 @@ function platform:load_readdir()
     local lua_readdir = self.path == "/" and self.path:gsub("^/", "/.lua/readdir") or
                             self.path:gsub("^" .. self.mount_point,
                                 self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/readdir"
-    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_readdir)
+    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_readdir)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
         if not lua then
@@ -480,7 +480,7 @@ function platform:load_getattr(entry, entity)
     local player_name = self:get_player()
     local lua_getattr = entry.path:gsub("^" .. self.mount_point,
                             self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/getattr"
-    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_getattr)
+    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_getattr)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
         if not lua then
@@ -511,7 +511,7 @@ function platform:load_read_file(entry, entity, player)
     local player_name = self:get_player()
     local lua_read_file = entry.path:gsub("^" .. self.mount_point,
                               self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/read_file"
-    local result, include_string = pcall(np_prot.file_read, self.conn.attachment, lua_read_file)
+    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_read_file)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
         if not lua then
@@ -575,8 +575,12 @@ function platform:get_refresh_time()
     return self.properties.refresh_time
 end
 
-function platform:get_attachment()
-    return self.conn.attachment
+function platform:get_connection()
+    return self.connection
+end
+
+function platform:get_conn()
+    return self.connection.conn
 end
 
 function platform:get_cmdchan()
@@ -584,7 +588,7 @@ function platform:get_cmdchan()
 end
 
 function platform:get_addr()
-    return self.conn.addr
+    return self.connection.addr
 end
 
 function platform:get_path()
