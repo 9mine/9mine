@@ -69,6 +69,8 @@ function platform:draw(root_point, size, color)
         y = p1.y,
         z = p1.z + size
     }
+    local vm         = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -103,6 +105,8 @@ function platform:colorize(color)
         y = p1.y,
         z = p1.z + self.size
     }
+    local vm         = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -144,6 +148,8 @@ function platform:wipe()
         y = p1.y,
         z = p1.z + size
     }
+    local vm         = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -169,6 +175,8 @@ function platform:delete_nodes()
         y = p1.y,
         z = p1.z + size
     }
+    local vm         = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -396,6 +404,8 @@ function platform:enlarge()
         y = p1.y,
         z = p1.z + size
     }
+    local vm         = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
