@@ -1,41 +1,9 @@
---[[
-Copyright (c) 2014-2020 Iruatã M.S. Souza <iru.muzgo@gmail.com>
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. The name of the Author may not be used to endorse or promote products
-   derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGE.
-]]
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2014-2020 Iruatã Martins dos Santos Souza
 
 local data = require'data'
-require 'uint64'
 
 local np = {}
-
-function np:new() 
-    local obj = {}
-    setmetatable(obj, np)
-		return obj
-end
 
 -- message types
 local Tversion = 100
@@ -71,6 +39,8 @@ local HEADSZ   = 7
 local FIDSZ    = 4
 local QIDSZ    = 13
 local IOHEADSZ = 24  -- io (Twrite/Rread) header size, i.e. minimum msize
+
+
 function np.newfid(conn)
   local f = conn.fidfree
 
@@ -103,7 +73,7 @@ end
 
 -- Returns a 9P number in table format. Offset and size in bytes
 local function num9p(offset, size)
-  return {offset*8, size*8, 'number', 'little'}
+  return {offset*8, size*8, 'number', 'le'}
 end
 
 local function putstr(to, s)
@@ -129,23 +99,12 @@ local function getstr(from)
   return p.str or ""
 end
 
-local function readmsg(connection, type)
-  local rawsize, rawrest
-
-  if (connection ~= nil) then
-      rawsize = connection:receive(4)
-    else
-      rawsize = io.read(4)
-  end
-
+local function readmsg(conn, type)
+  local rawsize = conn.user.read(4)
   local bsize = data.new(rawsize):segment()
   local size = bsize:layout{size = num9p(0, 4)}.size
 
-  if (connection ~=  nil) then
-    rawrest = connection:receive(size - 4)
-    else
-    rawrest = io.read(size - 4)
-  end
+  local rawrest = conn.user.read(size - 4)
 
   local buf = data.new(rawsize .. rawrest):segment()
 
@@ -165,24 +124,17 @@ local function readmsg(connection, type)
   return buf
 end
 
-local function writemsg(connection, buf)
-  if (connection ~= nil) then
-    connection:send(tostring(buf)) 
-  else
-    io.write(tostring(buf))
-    io.output():flush()
-  end
-  
+local function writemsg(conn, buf)
+  conn.user.write(tostring(buf))
 end
 
 local LQid = data.layout{
   type    = num9p(0, 1),
   version = num9p(1, 4),
-  path = num9p(5, 8),
+  path    = num9p(5, 8),
   path_lo = num9p(5, 4),
   path_hi = num9p(9, 4)
 }
-
 
 local function getqid(from)
   if #from < QIDSZ then
@@ -194,7 +146,7 @@ local function getqid(from)
 
   qid.type    = p.type
   qid.version = p.version
-  qid.path = p.path
+  qid.path    = p.path
   qid.path_hex = i64_toStringNo0x(i64_ax(p.path_hi, p.path_lo))
   return qid
 end
@@ -222,13 +174,7 @@ local Lstat = data.layout{
   length = num9p(33, 8),
 }
 
-function np.getstat(connection, seg)
-  return getstat(seg)
-end
-
-
-function getstat(seg)
-  if seg == nil then return nil end
+local function getstat(seg)
   local p = seg:segment():layout(Lstat)
   local st = {}
 
@@ -248,7 +194,12 @@ function getstat(seg)
   st.uid    = getstr(seg:segment(41 + 2 + #st.name))
   st.gid    = getstr(seg:segment(41 + 2 + #st.name + 2 + #st.uid))
   st.muid   = getstr(seg:segment(41 + 2 + #st.name + 2 + #st.uid + 2 + #st.gid))
+
   return st
+end
+
+function np.getstat(connection, seg)
+  return getstat(seg)
 end
 
 local function putstat(to, st)
@@ -299,9 +250,9 @@ local function doversion(conn, msize)
 
   local n = putstr(buf:segment(HEADSZ + 4), "9P2000")
   n = putheader(buf, Tversion, 4 + n, tag(conn))
-  writemsg(conn.connection, buf)
+  writemsg(conn, buf)
 
-  local buf = readmsg(conn.connection, Rversion)
+  local buf = readmsg(conn, Rversion)
   buf:layout(LXversion)
 
   if buf.msize < IOHEADSZ then
@@ -327,9 +278,9 @@ local function doattach(conn, uname, aname)
   n = n + putstr(tx:segment(HEADSZ + FIDSZ + FIDSZ + n), aname)
   
   n = putheader(tx, Tattach, FIDSZ + FIDSZ + n, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  local rx = readmsg(conn.connection, Rattach)
+  local rx = readmsg(conn, Rattach)
 
   fid.qid = getqid(rx:segment(HEADSZ))
   if not fid.qid then
@@ -339,39 +290,23 @@ local function doattach(conn, uname, aname)
   return fid
 end
 
-function np.attach(connection, uname, aname, msize, endpoint)
-  local conn = np:new()
+function np.newconn(read, write)
+  local conn = np
   conn.curtag = 0xFFFF
-	conn.uname = uname
 
   conn.fidfree   = nil
   conn.fidactive = nil
   conn.nextfid   = 0
-  conn.connection = connection
 
-  -- WHY IT'S NOT WORKING???
-  -- if (sock ~= nil) then
-    --conn.socket = socket.tcp() 
-    --conn.socket:connect(endpoint["host"], endpoint["port"])
-    --printf("connect to tcp!" .. endpoint["host"] .. "!" .. endpoint["port"] .."\n") 
-       
-     -- io.close(io.stdin)
-     -- io.close(io.stdout)
+  conn.user = {read = read, write = write}
+  return conn
+end
 
-     -- posix.dup2(sock, 0)
-     -- posix.dup2(sock, 1)
-
-     -- posix.dup2(0, sock)
-     -- posix.dup2(1, sock)
-     -- print("Remap!")
-  -- end
-
-
+function np.attach(conn, uname, aname, msize)
   local msize = doversion(conn, msize)
   conn.txbuf = data.new(msize)
-
   conn.rootfid = doattach(conn, uname, aname)
-  return conn
+
 end
 
 
@@ -414,9 +349,9 @@ function np.walk(conn, ofid, nfid, path)
   end
 
   n = putheader(tx, Twalk, FIDSZ + FIDSZ + 2 + n, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  local rx = readmsg(conn.connection, Rwalk)
+  local rx = readmsg(conn, Rwalk)
   rx:layout{nwqid = num9p(HEADSZ, 2)}
 
   -- clone succeeded
@@ -448,9 +383,9 @@ function np.open(conn, fid, mode)
   tx.mode = mode
 
   local n = putheader(tx, Topen, 5, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  local rx = readmsg(conn.connection, Ropen)
+  local rx = readmsg(conn, Ropen)
 
   fid.qid = getqid(rx:segment(HEADSZ))
   if not fid.qid then
@@ -473,9 +408,9 @@ function np.create(conn, fid, name, perm, mode)
   tx.mode = mode
 
   local n = putheader(tx, Tcreate, n + 9, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  local rx = readmsg(conn.connection, Rcreate)
+  local rx = readmsg(conn, Rcreate)
 
   fid.qid = getqid(rx:segment(HEADSZ))
   if not fid.qid then
@@ -495,9 +430,9 @@ function np.read(conn, fid, offset, count)
   tx.count  = count
 
   local n = putheader(tx, Tread, FIDSZ + 8 + 4, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  local rx = readmsg(conn.connection, Rread)
+  local rx = readmsg(conn, Rread)
   rx:layout{count = num9p(HEADSZ, 4)}
   return rx:segment(HEADSZ + 4, rx.count)
 end
@@ -514,10 +449,10 @@ function np.write(conn, fid, offset, seg)
   tx.count  = #seg
 
   local n = putheader(tx, Twrite, FIDSZ + 8 + 4 + #seg, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n - #seg))
-  writemsg(conn.connection, seg:segment(0, #seg))
+  writemsg(conn, tx:segment(0, n - #seg))
+  writemsg(conn, seg:segment(0, #seg))
 
-  local rx = readmsg(conn.connection, Rwrite)
+  local rx = readmsg(conn, Rwrite)
   rx:layout{count = num9p(HEADSZ, 4)}
   return rx.count
 end
@@ -527,9 +462,9 @@ local function clunkrm(conn, type, fid)
   tx.fid = fid.fid
 
   local n = putheader(tx, type, FIDSZ, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
 
-  readmsg(conn.connection, type+1)
+  readmsg(conn, type+1)
   freefid(conn, fid)
 end
 
@@ -546,9 +481,9 @@ function np.stat(conn, fid)
   tx.fid = fid.fid
 
   local n = putheader(tx, Tstat, FIDSZ, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n))
+  writemsg(conn, tx:segment(0, n))
   
-  local rx = readmsg(conn.connection, Rstat)
+  local rx = readmsg(conn, Rstat)
   return getstat(rx:segment(HEADSZ + 2))
 end
 
@@ -562,7 +497,7 @@ function np.wstat(conn, fid, st)
   tx.stsize = st.size + 2
 
   local n = putheader(tx, Twstat, FIDSZ + 2 + tx.stsize, tag(conn))
-  writemsg(conn.connection, tx:segment(0, n - tx.stsize))
+  writemsg(conn, tx:segment(0, n - tx.stsize))
 
   local seg = conn.txbuf:segment(n - tx.stsize)
 
@@ -570,10 +505,8 @@ function np.wstat(conn, fid, st)
     error("tx buffer too small")
   end
 
-  writemsg(conn.connection, seg:segment(0, tx.stsize))
-  return readmsg(conn.connection, Rwstat)
+  writemsg(conn, seg:segment(0, tx.stsize))
+  return readmsg(conn, Rwstat)
 end
-
-np.__index = np
 
 return np
