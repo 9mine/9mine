@@ -6,6 +6,13 @@ require 'uint64'
 
 local np = {}
 
+
+function np:new() 
+  local obj = {}
+  setmetatable(obj, np)
+  return obj
+end
+
 -- message types
 local Tversion = 100
 local Rversion = 101
@@ -292,7 +299,7 @@ local function doattach(conn, uname, aname)
 end
 
 function np.newconn(read, write)
-  local conn = np
+  local conn = np:new()
   conn.curtag = 0xFFFF
 
   conn.fidfree   = nil
@@ -509,5 +516,7 @@ function np.wstat(conn, fid, st)
   writemsg(conn, seg:segment(0, tx.stsize))
   return readmsg(conn, Rwstat)
 end
+
+np.__index = np
 
 return np
