@@ -4,20 +4,7 @@ connect = function(player, fields)
     end
     local player_name = player:get_player_name()
     local attach_string, attach_path = split_connection_string(fields.connection_string)
-    local connection = connections:get_connection(player_name, attach_string)
-    if not connection then
-        connection = np_over_tcp(attach_string)
-        if not connection:attach() then
-            return
-        end
-    elseif connection:is_alive() then
-        minetest.chat_send_player(player_name, "Already attached. Connection is alive")
-    elseif connection.tcp then
-        minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
-        connection:reattach()
-    else
-        connection:attach()
-    end
+    local connection = connections:get_connection(player_name, attach_string, true)
     local player_graph = graphs:get_player_graph(player_name)
     local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))

@@ -72,21 +72,7 @@ end
 
 spawn_root_platform = function(attach_string, player, last_login)
     local player_name = player:get_player_name()
-    local connection = connections:get_connection(player_name, attach_string)
-    if not connection then
-        connection = np_over_tcp(attach_string)
-        connections:add_connection(player_name, connection)
-        if not connection:attach() then
-            return
-        end
-    elseif connection:is_alive() then
-        minetest.chat_send_player(player_name, "Already attached. Connection is alive")
-    elseif connection.tcp then
-        minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
-        connection:reattach()
-    else
-        connection:attach()
-    end
+    local connection = connections:get_connection(player_name, attach_string, true)
     local player_graph = graphs:get_player_graph(player_name) or
                              graphs:add_player_graph(player_graph(player_name), player_name)
     local player_host_node = player_graph:add_host(attach_string)
