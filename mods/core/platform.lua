@@ -209,7 +209,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity, self:load_getattr(directory_entry, stat_entity))
+    directory_entry:filter(stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]])
     return directory_entry
 end
 
@@ -318,7 +318,7 @@ function platform:spawn(root_point, player, color, paths)
     if not content then
         return nil
     end
-    self:load_readdir()
+    --self:load_readdir()
     local size = self:compute_size(content)
     minetest.after(1, function()
         self:draw(root_point, size, color)

@@ -24,7 +24,7 @@ function StatEntity:on_punch(puncher, dtime, tool, dir)
         return
     end
     local platform = player_graph:get_platform(directory_entry:get_platform_string())
-    platform:load_read_file(directory_entry, self, puncher)
+    --platform:load_read_file(directory_entry, self, puncher)
     if tool.damage_groups.stat == 1 then
         StatTool.show_stat(self, puncher, player_name,player_graph)
     end
