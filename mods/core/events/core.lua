@@ -22,8 +22,10 @@ connect = function(player, fields)
         local root_platform = platform(connection, "/", root_cmdchan, host_node)
         root_platform:set_player(player:get_player_name())
         root_platform.mount_point = "/"
+        local point = vector.round(player:get_pos())
+        root_platform.origin_point = point
         root_platform:set_node(player_graph:add_platform(root_platform, nil, host_node))
-        root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
+        root_platform:spawn(point, player, math.random(0, 255))
     end
 end
 
