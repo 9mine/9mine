@@ -7,8 +7,8 @@ local write = function(player, fields)
         return
     end
     local player_graph = graphs:get_player_graph(player_name)
-    local attachment = player_graph:get_platform(common.get_platform_string(player)):get_attachment()
-    local result, response = pcall(np_prot.file_write, attachment, file_path, content)
+    local conn = player_graph:get_platform(common.get_platform_string(player)):get_conn()
+    local result, response = pcall(np_prot.file_write, conn, file_path, content)
     if result then
         minetest.chat_send_player(player_name, "File successfully saved")
     else

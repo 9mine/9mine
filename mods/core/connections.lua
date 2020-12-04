@@ -32,11 +32,11 @@ function connections:get_connection(player_name, addr)
     return self.connections[player_name][addr]
 end
 
-function connections:add_connection(player_name, conn)
-    if not self.connections[player_name][conn.addr] then
-        self.connections[player_name][conn.addr] = conn
+function connections:add_connection(player_name, connection)
+    if not self.connections[player_name][connection.addr] then
+        self.connections[player_name][connection.addr] = connection
     end
-    return self.connections[player_name][conn.addr]
+    return self.connections[player_name][connection.addr]
 end
 
 function connections:add_player(player_name)

@@ -12,8 +12,8 @@ ReadTool = {
 
 function ReadTool.read(entity, player, player_name, player_graph)
     local directory_entry = player_graph:get_entry(entity.entry_string)
-    local attachment = player_graph:get_platform(common.get_platform_string(player)):get_attachment()
-    local response, content = pcall(np_prot.file_read, attachment, directory_entry.path)
+    local conn = player_graph:get_platform(common.get_platform_string(player)):get_conn()
+    local response, content = pcall(np_prot.file_read, conn, directory_entry.path)
     if not response then
         minetest.chat_send_player(player:get_player_name(), content)
         return

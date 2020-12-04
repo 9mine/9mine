@@ -12,7 +12,7 @@ poll_user_management = function(root_cmdchan)
 end
 
 mount_registry = function(root_cmdchan, registry_addr)
-    local response = root_cmdchan:execute("mount -A ".. registry_addr .. " /mnt/registry"):gsub("%s+", "")
+    local response = root_cmdchan:execute("mount -A " .. registry_addr .. " /mnt/registry"):gsub("%s+", "")
     if response == "" then
         local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
         if user_management:match(".*!.*!.*") then
@@ -30,31 +30,30 @@ end
 
 automount = function()
     -- get string in form of tcp!host!port from ENV or mod.conf
-    local attach_string = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or
-                              core_conf:get("INFERNO_ADDR")
+    local attach_string = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
 
-    -- establish 9p attachment
-    local conn = connections:get_root_connection()
-    if not conn then
-        conn = connection(attach_string)
-        connections:set_root_connection(conn)
-        if not conn:attach() then
+    -- establish 9p conn
+    local connection = connections:get_root_connection()
+    if not connection then
+        connection = np_over_tcp(attach_string)
+        connections:set_root_connection(connection)
+        if not connection:attach() then
             error("Failed connecting to the inferno os")
         end
-    elseif conn:is_alive() then
+    elseif connection:is_alive() then
         print("Already attached. Connection is alive")
-    elseif conn.tcp then
+    elseif connection.tcp then
         print("Connection is not alive. Reconnecting")
-        conn:reattach()
+        connection:reattach()
     else
-        if not conn:attach() then
+        if not connection:attach() then
             error("Failed connecting to the inferno os")
         end
     end
 
     -- check for presence of cmdchan
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
-    local root_cmdchan = cmdchan(conn, cmdchan_path)
+    local root_cmdchan = cmdchan(connection, cmdchan_path)
     connections:set_root_cmdchan(root_cmdchan)
     if not root_cmdchan:is_present() then
         error("cmdchan at path " .. cmdchan_path .. " is not available")
@@ -73,27 +72,27 @@ end
 
 spawn_root_platform = function(attach_string, player, last_login)
     local player_name = player:get_player_name()
-    local conn = connections:get_connection(player_name, attach_string)
-    if not conn then
-        conn = connection(attach_string)
-        connections:add_connection(player_name, conn)
-        if not conn:attach() then
+    local connection = connections:get_connection(player_name, attach_string)
+    if not connection then
+        connection = np_over_tcp(attach_string)
+        connections:add_connection(player_name, connection)
+        if not connection:attach() then
             return
         end
-    elseif conn:is_alive() then
+    elseif connection:is_alive() then
         minetest.chat_send_player(player_name, "Already attached. Connection is alive")
-    elseif conn.tcp then
+    elseif connection.tcp then
         minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
-        conn:reattach()
+        connection:reattach()
     else
-        conn:attach()
+        connection:attach()
     end
     local player_graph = graphs:get_player_graph(player_name) or
                              graphs:add_player_graph(player_graph(player_name), player_name)
     local player_host_node = player_graph:add_host(attach_string)
 
     local user_cmdchan_path = tostring(core_conf:get("user_cmdchan"))
-    local user_cmdchan = cmdchan(conn, user_cmdchan_path)
+    local user_cmdchan = cmdchan(connection, user_cmdchan_path)
     if not user_cmdchan:is_present() then
         minetest.chat_send_player(player_name, "cmdchan at path " .. user_cmdchan_path .. " is not available")
     else
@@ -110,14 +109,14 @@ spawn_root_platform = function(attach_string, player, last_login)
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
-            minetest.after(1.5, function(conn, user_cmdchan, player_host_node, player, player_name)
-                local root_platform = platform(conn, "/", user_cmdchan, player_host_node)
+            minetest.after(1.5, function()
+                local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
                 root_platform:set_player(player_name)
                 root_platform.mount_point = "/"
                 root_platform:set_node(player_graph:add_platform(root_platform, nil, player_host_node))
                 root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
                 minetest.show_formspec(player_name, "", "")
-            end, conn, user_cmdchan, player_host_node, player, player_name)
+            end)
         end
     end
 end

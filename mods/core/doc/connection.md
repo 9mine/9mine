@@ -12,4 +12,4 @@ in format of `tcp!localhost!1917`
 
 **port** - port of remote terminal
 
-**attachment** - return value of 9p.attach message
+**conn** - return value of np.newconn

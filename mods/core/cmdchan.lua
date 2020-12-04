@@ -1,12 +1,12 @@
 class 'cmdchan'
 
-function cmdchan:cmdchan(conn, cmdchan_path)
-    self.attachment = conn.attachment
+function cmdchan:cmdchan(connection, cmdchan_path)
+    self.connection = connection
     self.cmdchan_path = cmdchan_path
 end
 
 function cmdchan:is_present()
-    local conn = self.attachment
+    local conn = self.connection.conn
     local f = conn:newfid()
     local result = pcall(np.walk, conn, conn.rootfid, f, self.cmdchan_path)
     if result then
@@ -16,7 +16,7 @@ function cmdchan:is_present()
 end
 
 function cmdchan:write(command, location)
-    local conn = self.attachment
+    local conn = self.connection.conn
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, self.cmdchan_path)
     conn:open(f, 1)
@@ -28,7 +28,7 @@ function cmdchan:write(command, location)
 end
 
 function cmdchan:read()
-    local conn = self.attachment
+    local conn = self.connection.conn
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, self.cmdchan_path)
     conn:open(f, 0)

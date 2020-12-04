@@ -11,7 +11,7 @@ function mvcp:get_destination_platform()
     end
     -- check if destination entry is spawned
     local result, stat =
-        pcall(np_prot.stat_read, self.attachment, self.destination == "/" and "../" or self.destination)
+        pcall(np_prot.stat_read, self.conn, self.destination == "/" and "../" or self.destination)
 
     -- decide if destination itself should be tracked for changes or 
     -- parent directory of destination
@@ -235,6 +235,6 @@ function mvcp:mvcp(platform, command, params, player_name)
     self.player_name = player_name
     self.addr = platform:get_addr()
     self.path = platform:get_path()
-    self.attachment = platform:get_attachment()
+    self.conn = platform:get_conn()
     return self
 end

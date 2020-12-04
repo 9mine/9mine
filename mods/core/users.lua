@@ -8,7 +8,7 @@ end)
 
 poll_regquery = function(name, counter, player, last_login)
     if counter > 5 then
-        local result, ns_create_output = pcall(np_prot.file_read, root_cmdchan.attachment, "/n/9mine/user")
+        local result, ns_create_output = pcall(np_prot.file_read, root_cmdchan.conn, "/n/9mine/user")
         minetest.kick_player(name, "Error creating NS. Try again later. Log: \n" .. ns_create_output)
     end
     counter = counter + 1
