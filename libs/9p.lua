@@ -2,6 +2,7 @@
 -- Copyright (c) 2014-2020 Iruatã Martins dos Santos Souza
 
 local data = require'data'
+require 'uint64'
 
 local np = {}
 
