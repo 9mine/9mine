@@ -138,7 +138,31 @@ function platform:wipe()
     player_graph:delete_node(self.platform_string)
     local root_point = self.root_point
     local size = self.size
-    local slots = {}
+    local p1 = root_point
+    local p2 = {
+        x = p1.x + size,
+        y = p1.y,
+        z = p1.z + size
+    }
+    for z = p1.z, p2.z do
+        for y = p1.y, p2.y do
+            for x = p1.x, p2.x do
+                local p = {
+                    x = x,
+                    y = y,
+                    z = z
+                }
+                minetest.add_node(p, {
+                    name = "air"
+                })
+            end
+        end
+    end
+end
+
+function platform:delete_nodes()
+    local root_point = self.root_point
+    local size = self.size
     local p1 = root_point
     local p2 = {
         x = p1.x + size,
@@ -344,6 +368,7 @@ function platform:spawn_child(path, player, paths)
         return
     end
     child_platform.mount_point = self.mount_point
+    child_platform.origin_point = pos
     mounts:set_mount_points(self)
     child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()
@@ -352,6 +377,7 @@ end
 
 -- double the size of the platform. This make available free slots 
 function platform:enlarge()
+    local color = self:get_color()
     local root = self.root_point
     local slots = self.slots
     local old_size = self.size
@@ -381,7 +407,9 @@ function platform:enlarge()
                         z = z
                     }
                     minetest.add_node(p, {
-                        name = "core:platform"
+                        name = "core:platform",
+                        param1 = 0,
+                        param2 = color
                     })
                     local node = minetest.get_meta(p)
                     node:set_string("platform_string", self.platform_string)
@@ -416,11 +444,13 @@ function platform:update()
     local refresh_time = self:get_refresh_time()
     if refresh_time ~= 0 and (not self.properties.external_handler) then
         local stats = self.directory_entries
-        local new_content = common.qid_as_key(self:readdir())
+        local new_content = self:readdir()
         if not new_content then
             self:wipe()
             return
         end
+        local new_size = self:compute_size(new_content)
+        new_content = common.qid_as_key(new_content)
         local player_graph = graphs:get_player_graph(self.properties.player_name)
         for qid, st in pairs(new_content) do
             if not stats[qid] then
@@ -436,6 +466,10 @@ function platform:update()
                 directory_entry_node:delete()
                 self:remove_entity(qid)
             end
+        end
+        if self.size > 3 and common.table_length(new_content) == 0 then
+            self:delete_nodes()
+            self:draw(self.origin_point, new_size, self:get_color())
         end
     end
     minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
