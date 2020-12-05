@@ -1,12 +1,12 @@
 local data = require 'data'
 local np = require '9p'
-
+local pprint = require 'pprint'
 local ORDONLY = 0
 local OWRITE = 1
 local ORDWR = 2
 local OEXEC = 3 
 
-local READ_BUF_SIZ = 4096
+local READ_BUF_SIZ = 8096
 
 function _9p_readdir(ctx, path) 
   local f = ctx:newfid()
@@ -29,6 +29,7 @@ function _9p_readdir(ctx, path)
       break
     end
     dir = dir .. tostring(data)
+    pprint(dir)
     offset = offset + #(tostring(data))
   end
   ctx:clunk(f)
@@ -38,6 +39,7 @@ end
 function readdir(ctx, path) 
   local dir = {}
   local dirdata = _9p_readdir(ctx, path)
+  pprint(dirdata)
   while 1 do
     local st = ctx:getstat(data.new(dirdata)) 
     if st == nil then return nil end  

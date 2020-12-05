@@ -36,12 +36,12 @@ end
 function platform:readdir()
     local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
     if not result then
-        if self.conn:is_alive() then
+        if self.connection:is_alive() then
             minetest.chat_send_player(self:get_player(),
                 "Connection is alive, but error reading content of directory: " .. content)
             return
         else
-            if self.conn:reattach() then
+            if self.connection:reattach() then
                 result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
                 if result then
                     content = content or {}
@@ -69,27 +69,32 @@ function platform:draw(root_point, size, color)
         y = p1.y,
         z = p1.z + size
     }
-    local vm         = minetest.get_voxel_manip()
+    local core_platform_node = minetest.get_content_id("core:platform")
+    local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
-                minetest.add_node(p, {
-                    name = "core:platform",
-                    param1 = 0,
-                    param2 = color
-                })
-                local node = minetest.get_meta(p)
-                node:set_string("platform_string", self.platform_string)
-                table.insert(slots, p)
+                local vi = a:index(x, y, z)
+                data[vi] = core_platform_node
+                -- minetest.add_node(p, {
+                --     name = "core:platform",
+                --     param1 = 0,
+                --     param2 = color
+                -- })
+                -- local node = minetest.get_meta(p)
+                -- node:set_string("platform_string", self.platform_string)
+                table.insert(slots, {x = x, y = y, z = z})
             end
         end
     end
+    vm:set_data(data)
+    vm:write_to_map(true)
     table.shuffle(slots)
     self.slots = slots
     self.root_point = root_point
@@ -105,7 +110,7 @@ function platform:colorize(color)
         y = p1.y,
         z = p1.z + self.size
     }
-    local vm         = minetest.get_voxel_manip()
+    local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
@@ -148,7 +153,7 @@ function platform:wipe()
         y = p1.y,
         z = p1.z + size
     }
-    local vm         = minetest.get_voxel_manip()
+    local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
@@ -175,7 +180,7 @@ function platform:delete_nodes()
         y = p1.y,
         z = p1.z + size
     }
-    local vm         = minetest.get_voxel_manip()
+    local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
@@ -217,7 +222,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]])
+    directory_entry:filter(stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]]  --[[, self:load_getattr(directory_entry, stat_entity)]] )
     return directory_entry
 end
 
@@ -285,13 +290,25 @@ end
 -- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
     local player_graph = graphs:get_player_graph(self:get_player())
-    for _, stat in pairs(content) do
-        local directory_entry = self:spawn_stat(stat)
-        self.directory_entries[stat.qid.path_hex] = directory_entry
-        player_graph:add_entry(self, directory_entry)
-    end
+    self:process_content(content, player_graph)
+    -- for _, stat in pairs(content) do
+    --     local directory_entry = self:spawn_stat(stat)
+    --     self.directory_entries[stat.qid.path_hex] = directory_entry
+    --     player_graph:add_entry(self, directory_entry)
+    -- end
 end
 
+function platform:process_content(content, player_graph)
+    local index, stat = next(content)
+    if not stat then
+        return
+    end
+    local directory_entry = self:spawn_stat(stat)
+    self.directory_entries[stat.qid.path_hex] = directory_entry
+    player_graph:add_entry(self, directory_entry)
+    table.remove(content, index)
+    minetest.after(0.5, platform.process_content, self, content, player_graph)
+end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
 function platform:get_slot()
@@ -326,17 +343,17 @@ function platform:spawn(root_point, player, color, paths)
     if not content then
         return nil
     end
-    --self:load_readdir()
+    -- self:load_readdir()
     local size = self:compute_size(content)
     minetest.after(1, function()
         self:draw(root_point, size, color)
         common.goto_platform(player, self:get_root_point())
         minetest.after(1, function()
             self:spawn_content(content)
-            if paths then
-                minetest.after(0.6, platform.spawn_path_step, self, paths, player)
-            end
-            self:update()
+            -- if paths then
+            --     minetest.after(0.6, platform.spawn_path_step, self, paths, player)
+            -- end
+            -- self:update()
         end)
     end)
 end
@@ -404,7 +421,7 @@ function platform:enlarge()
         y = p1.y,
         z = p1.z + size
     }
-    local vm         = minetest.get_voxel_manip()
+    local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
