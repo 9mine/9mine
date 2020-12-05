@@ -36,12 +36,12 @@ end
 function platform:readdir()
     local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
     if not result then
-        if self.conn:is_alive() then
+        if self.connection:is_alive() then
             minetest.chat_send_player(self:get_player(),
                 "Connection is alive, but error reading content of directory: " .. content)
             return
         else
-            if self.conn:reattach() then
+            if self.connection:reattach() then
                 result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
                 if result then
                     content = content or {}
