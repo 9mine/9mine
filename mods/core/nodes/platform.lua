@@ -9,13 +9,14 @@ minetest.register_node("core:platform", {
     pointable = true,
     diggable = true,
     palette = "core_palette.png",
+    paramtype = "none",
     paramtype2 = "color",
     node_box = {
         type = "regular"
     },
     on_punch = function(pos, _, puncher)
         local player_graph = graphs:get_player_graph(puncher:get_player_name())
-        local platform = player_graph:get_platform(common.get_platform_string(puncher))
+        local platform = player_graph:get_platform()
         platform:show_properties(puncher)
     end
 })

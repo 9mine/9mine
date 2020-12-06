@@ -73,6 +73,7 @@ function platform:draw(root_point, size, color)
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local data = vm:get_data()
+    local param2 = vm:get_param2_data()
     local a = VoxelArea:new{
         MinEdge = emin,
         MaxEdge = emax
@@ -82,18 +83,13 @@ function platform:draw(root_point, size, color)
             for x = p1.x, p2.x do
                 local vi = a:index(x, y, z)
                 data[vi] = core_platform_node
-                -- minetest.add_node(p, {
-                --     name = "core:platform",
-                --     param1 = 0,
-                --     param2 = color
-                -- })
-                -- local node = minetest.get_meta(p)
-                -- node:set_string("platform_string", self.platform_string)
+                param2[vi] = color
                 table.insert(slots, {x = x, y = y, z = z})
             end
         end
     end
     vm:set_data(data)
+    vm:set_param2_data(param2)
     vm:write_to_map(true)
     table.shuffle(slots)
     self.slots = slots
