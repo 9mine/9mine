@@ -69,6 +69,7 @@ function platform:draw(root_point, size, color)
         y = p1.y,
         z = p1.z + size
     }
+    area_store:insert_area(p1, p2, self.platform_string)
     local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)

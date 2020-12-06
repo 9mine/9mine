@@ -79,3 +79,4 @@ crafts = {}
 form_handlers = {}
 
 root_cmdchan = automount()
+area_store = AreaStore()
