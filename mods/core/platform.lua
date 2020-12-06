@@ -34,7 +34,7 @@ end
 -- methods
 -- reads content of directory using path, set during platform initialization
 function platform:readdir()
-    local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
+    local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "./" or self.path)
     if not result then
         if self.connection:is_alive() then
             minetest.chat_send_player(self:get_player(),
