@@ -18,19 +18,20 @@ end
 function cmdchan:write(command, location)
     local conn = self.connection.conn
     local f = conn:newfid()
+    print("Write " .. command   .. " to " .. self.cmdchan_path)
     conn:walk(conn.rootfid, f, self.cmdchan_path)
     conn:open(f, 1)
-    local path = location and "cd " .. location .. " ; " or nil
-    local cmd = path and path .. command or command
-    local buf = data.new(cmd)
+    --local path = location and "cd " .. location .. " ; " or nil
+    -- local cmd = path and path .. command or command
+    local buf = data.new(command .. "\n")
     conn:write(f, 0, buf)
     conn:clunk(f)
 end
 
-function cmdchan:read()
+function cmdchan:read(path)
     local conn = self.connection.conn
     local f = conn:newfid()
-    conn:walk(conn.rootfid, f, self.cmdchan_path)
+    conn:walk(conn.rootfid, f, path)
     conn:open(f, 0)
 
     local buf_size = 8000
@@ -50,8 +51,12 @@ function cmdchan:read()
 end
 
 function cmdchan:execute(command, location)
+    local tmp_file = "/tmp/cmdchan_output"
+    command = command ..  "> " .. tmp_file .. " >[2=1]"
+    -- print("command: " .. command)
     local write_result, write_response = pcall(cmdchan.write, self, command, location)
-    local read_result, read_response = pcall(cmdchan.read, self)
+    -- local write_result, write_response = pcall(cmdchan.write, self, command, location)
+    local read_result, read_response = pcall(cmdchan.read, self, tmp_file)
     return read_response
 end
 
