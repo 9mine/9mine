@@ -21,9 +21,9 @@ function cmdchan:write(command, location)
     print("Write " .. command   .. " to " .. self.cmdchan_path)
     conn:walk(conn.rootfid, f, self.cmdchan_path)
     conn:open(f, 1)
-    --local path = location and "cd " .. location .. " ; " or nil
-    -- local cmd = path and path .. command or command
-    local buf = data.new(command .. "\n")
+    local path = location and "cd " .. location .. " ; " or nil
+    local cmd = path and path .. command or command
+    local buf = data.new(cmd .. "\n")
     conn:write(f, 0, buf)
     conn:clunk(f)
 end
