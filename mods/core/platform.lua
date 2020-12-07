@@ -31,27 +31,28 @@ function platform:platform(connection, path, cmdchan, parent_node)
     self.slots = nil
 end
 
-function platform:read_buf(offset, f)
-    local content = {}
+function platform:read_buf(offset, f, content)
+    local content = content or {}
     local conn = self:get_conn()
-    if offset == 0 then
+    if not f then
         f = conn:newfid()
         conn:walk(conn.rootfid, f, self.path == "/" and "./" or self.path)
         conn:open(f, 0)
     end
 
-    local buf_size = 8000
+    local buf_size = 4096
     local read_data = conn:read(f, offset, buf_size)
     local dir = tostring(read_data)
     if (read_data == nil) then
         conn:clunk(f)
-        return content
+        return content, nil, nil
     else
         offset = offset + #(tostring(read_data))
     end
     while true do
         local st = conn:getstat(data.new(dir))
         if st == nil then
+            print("THIS WAS RETURNED")
             return content
         end
         table.insert(content, st)
@@ -60,6 +61,7 @@ function platform:read_buf(offset, f)
             break
         end
     end
+    print("HERE was called")
     return content, offset, f
 end
 
@@ -305,33 +307,37 @@ function platform:remove_entity(qid)
 end
 
 -- takes results of readdir and spawn each directory entry from it
-function platform:spawn_content(content, buffer, fid)
+function platform:spawn_content(content, root_buffer)
     local player_graph = graphs:get_player_graph(self:get_player())
-    self:process_content(content, player_graph, #content, buffer, fid)
+    self:process_content(content, player_graph, #content, root_buffer)
 end
 
-function platform:process_content(content, player_graph, content_size, buffer, fid)
-    local index, stat = next(content)
-    if not stat then
-        local content, buffer, fid = self:read_buf(buffer, fid)
-        if next(content) then
-            content_size = content_size + #content
-            minetest.chat_send_player(self:get_player(),
-                "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
-                    " up to now")
-            minetest.after(0.05, platform.process_content, self, content, player_graph, content_size, buffer, fid)
-        else
-            minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
-                common.table_length(self.directory_entries) .. " entities.")
-            self:set_external_handler_flag(false)
-        end
-    else
+function platform:process_content(content, player_graph, content_size, root_buffer)
+    while next(content) do
+        local index, stat = next(content)
         local directory_entry = self:spawn_stat(stat)
+        print(stat.qid.path_hex)
         self.directory_entries[stat.qid.path_hex] = directory_entry
         player_graph:add_entry(self, directory_entry)
         table.remove(content, index)
-        minetest.after(0.05, platform.process_content, self, content, player_graph, content_size, buffer, fid)
     end
+    local content_raw = root_buffer:read_next()
+    if content_raw then
+        local content = root_buffer:parse_raw(content_raw)
+        content_size = content_size + #content
+        minetest.chat_send_player(self:get_player(),
+            "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
+                " up to now")
+        minetest.after(2, platform.process_content, self, content, player_graph, content_size, root_buffer)
+    else
+        minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
+            common.table_length(self.directory_entries) .. " entities.")
+        minetest.after(2, function()
+            self:set_external_handler_flag(false)
+            self:update()
+        end)
+    end
+
 end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
@@ -363,18 +369,23 @@ end
 
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
-    local content, offset, fid = self:read_buf(0)
+    local root_buffer = buffer(self:get_conn(), self.path)
+    local content_raw = root_buffer:read_next()
     -- self:load_readdir()
+    local content = root_buffer:parse_raw(content_raw)
     local size = self:compute_size(content)
     minetest.after(1, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
+        if not content_raw then
+            self:update()
+            return
+        end
         minetest.after(1.5, function()
-            self:spawn_content(content, offset, fid)
+            self:spawn_content(content, root_buffer)
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
-            self:update()
         end)
     end)
 end
@@ -496,30 +507,26 @@ function platform:show_properties(player)
                       "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
 end
 
--- reads directory content and spawn new entities if needed
--- and deletes entities, that are not present in new directory content  
-function platform:update()
-    local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) then
+function platform:update_with_buffer(update_buffer)
+    local content_raw = update_buffer:read_next()
+    if content_raw then
+        update_buffer:parse_raw(content_raw, true)
+        minetest.after(1, platform.update_with_buffer, self, update_buffer)
+    else
+        local content = update_buffer.content
+        local new_size = self:compute_size(content)
+        local new_content = common.qid_as_key(content)
+        print("IN UPDATE")
+        for k, v in pairs(new_content) do 
+            print(k)
+        end
         local stats = self.directory_entries
-        local new_content = self:readdir()
-        if not new_content then
-            self:wipe()
-            return
-        end
-        local new_size = self:compute_size(new_content)
-        new_content = common.qid_as_key(new_content)
-        if not new_content then
-            self:wipe()
-            return
-        end
         local player_graph = graphs:get_player_graph(self.properties.player_name)
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 local directory_entry = self:spawn_stat(st)
                 player_graph:add_entry(self, directory_entry)
                 self.directory_entries[qid] = directory_entry
-
             end
         end
         for qid in pairs(stats) do
@@ -534,8 +541,21 @@ function platform:update()
             area_store:remove_area(self.properties.area_id)
             self:draw(self.origin_point, new_size, self:get_color())
         end
+        local refresh_time = self:get_refresh_time()
+        minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
     end
-    minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+end
+
+-- reads directory content and spawn new entities if needed
+-- and deletes entities, that are not present in new directory content  
+function platform:update()
+    local refresh_time = self:get_refresh_time()
+    if refresh_time ~= 0 and (not self.properties.external_handler) then
+        local update_buffer = buffer(self:get_conn(), self.path)
+        minetest.after(0.1, platform.update_with_buffer, self, update_buffer)
+    else
+        minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+    end
 end
 
 -- check if something is present in correspoing 

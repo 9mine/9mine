@@ -7,7 +7,7 @@ function buffer:buffer(conn, path)
     self.fid = nil
     self.fid_open = false
     self.offset = 0
-    self.content = {}
+    self.content = nil
 end
 
 function buffer:open()
@@ -18,6 +18,7 @@ function buffer:open()
     conn:open(fid, 0)
     self.fid = fid
     self.offset = 0
+    self.content = {}
     self.fid_open = true
 end
 
@@ -66,10 +67,10 @@ function buffer:parse_raw(raw_content, append)
         if (#raw_content == 0) then
             break
         end
-        if append then
-            return self.content
-        else
-            return content_chunk
-        end
+    end
+    if append then
+        return self.content
+    else
+        return content_chunk
     end
 end
