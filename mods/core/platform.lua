@@ -333,7 +333,8 @@ end
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
     local root_buffer = buffer(self:get_conn(), self.path)
-    local content = root_buffer:process_next({})
+    local result, content = pcall(root_buffer.process_next, root_buffer, {})
+    if not result then return end 
     local size = self:compute_size(content)
     minetest.after(1, function()
         common.goto_platform(player, self:get_root_point())
