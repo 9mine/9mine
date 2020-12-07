@@ -14,7 +14,7 @@ function platform:platform(connection, path, cmdchan, parent_node)
         player_name = "",
         -- flag indicating that platform update will be mabe by some other function 
         -- than platform:update()
-        external_handler = false,
+        external_handler = true,
         -- period of time, on which readdir() occurs for current platform and if 
         -- new entries are there, they will be spawn and if some of present entities 
         -- are no more in new readdir() they will removed
@@ -85,7 +85,11 @@ function platform:draw(root_point, size, color)
                 local vi = a:index(x, y, z)
                 data[vi] = core_platform_node
                 param2[vi] = color
-                table.insert(slots, {x = x, y = y, z = z})
+                table.insert(slots, {
+                    x = x,
+                    y = y,
+                    z = z
+                })
             end
         end
     end
@@ -219,7 +223,8 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]]  --[[, self:load_getattr(directory_entry, stat_entity)]] )
+    directory_entry:filter(
+        stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]] --[[, self:load_getattr(directory_entry, stat_entity)]]  --[[, self:load_getattr(directory_entry, stat_entity)]] --[[, self:load_getattr(directory_entry, stat_entity)]] )
     return directory_entry
 end
 
@@ -298,13 +303,14 @@ end
 function platform:process_content(content, player_graph)
     local index, stat = next(content)
     if not stat then
+        self:set_external_handler_flag(false)
         return
     end
     local directory_entry = self:spawn_stat(stat)
     self.directory_entries[stat.qid.path_hex] = directory_entry
     player_graph:add_entry(self, directory_entry)
     table.remove(content, index)
-    minetest.after(0.5, platform.process_content, self, content, player_graph)
+    minetest.after(0.2, platform.process_content, self, content, player_graph)
 end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
@@ -347,10 +353,10 @@ function platform:spawn(root_point, player, color, paths)
         common.goto_platform(player, self:get_root_point())
         minetest.after(1, function()
             self:spawn_content(content)
-            -- if paths then
-            --     minetest.after(0.6, platform.spawn_path_step, self, paths, player)
-            -- end
-            -- self:update()
+            if paths then
+                minetest.after(0.1, platform.spawn_path_step, self, paths, player)
+            end
+            self:update()
         end)
     end)
 end
