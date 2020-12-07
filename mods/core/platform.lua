@@ -112,8 +112,14 @@ function platform:colorize(color)
         y = p1.y,
         z = p1.z + self.size
     }
+    local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
+    local param2 = vm:get_param2_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -122,16 +128,13 @@ function platform:colorize(color)
                     y = y,
                     z = z
                 }
-                minetest.add_node(p, {
-                    name = "core:platform",
-                    param1 = 0,
-                    param2 = color
-                })
-                local node = minetest.get_meta(p)
-                node:set_string("platform_string", self.platform_string)
+                local vi = a:index(x, y, z)
+                param2[vi] = color
             end
         end
     end
+    vm:set_param2_data(param2)
+    vm:write_to_map(true)
     self.properties.color = color
 end
 
@@ -147,30 +150,8 @@ function platform:wipe()
     self:wipe_top()
     local player_graph = graphs:get_player_graph(self:get_player())
     player_graph:delete_node(self.platform_string)
-    local root_point = self.root_point
-    local size = self.size
-    local p1 = root_point
-    local p2 = {
-        x = p1.x + size,
-        y = p1.y,
-        z = p1.z + size
-    }
-    local vm = minetest.get_voxel_manip()
-    local emin, emax = vm:read_from_map(p1, p2)
-    for z = p1.z, p2.z do
-        for y = p1.y, p2.y do
-            for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
-                minetest.add_node(p, {
-                    name = "air"
-                })
-            end
-        end
-    end
+    self:delete_nodes()
+    area_store:remove_area(self.properties.area_id)
 end
 
 function platform:delete_nodes()
@@ -182,22 +163,24 @@ function platform:delete_nodes()
         y = p1.y,
         z = p1.z + size
     }
+    local air_node = minetest.get_content_id("air")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
-                minetest.add_node(p, {
-                    name = "air"
-                })
+                local vi = a:index(x, y, z)
+                data[vi] = air_node
             end
         end
     end
+    vm:set_data(data)
+    vm:write_to_map(true)
 end
 
 -- returns copy of platform root (corner) node position
@@ -493,6 +476,10 @@ function platform:update()
         end
         local new_size = self:compute_size(new_content)
         new_content = common.qid_as_key(new_content)
+        if not new_content then
+            self:wipe()
+            return
+        end
         local player_graph = graphs:get_player_graph(self.properties.player_name)
         for qid, st in pairs(new_content) do
             if not stats[qid] then
@@ -511,6 +498,7 @@ function platform:update()
         end
         if self.size > 3 and common.table_length(new_content) == 0 then
             self:delete_nodes()
+            area_store:remove_area(self.properties.area_id)
             self:draw(self.origin_point, new_size, self:get_color())
         end
     end
