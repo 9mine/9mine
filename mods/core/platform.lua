@@ -31,40 +31,6 @@ function platform:platform(connection, path, cmdchan, parent_node)
     self.slots = nil
 end
 
-function platform:read_buf(offset, f, content)
-    local content = content or {}
-    local conn = self:get_conn()
-    if not f then
-        f = conn:newfid()
-        conn:walk(conn.rootfid, f, self.path == "/" and "./" or self.path)
-        conn:open(f, 0)
-    end
-
-    local buf_size = 4096
-    local read_data = conn:read(f, offset, buf_size)
-    local dir = tostring(read_data)
-    if (read_data == nil) then
-        conn:clunk(f)
-        return content, nil, nil
-    else
-        offset = offset + #(tostring(read_data))
-    end
-    while true do
-        local st = conn:getstat(data.new(dir))
-        if st == nil then
-            print("THIS WAS RETURNED")
-            return content
-        end
-        table.insert(content, st)
-        dir = dir:sub(st.size + 3)
-        if (#dir == 0) then
-            break
-        end
-    end
-    print("HERE was called")
-    return content, offset, f
-end
-
 -- methods
 -- reads content of directory using path, set during platform initialization
 function platform:readdir()
@@ -316,7 +282,6 @@ function platform:process_content(content, player_graph, content_size, root_buff
     while next(content) do
         local index, stat = next(content)
         local directory_entry = self:spawn_stat(stat)
-        print(stat.qid.path_hex)
         self.directory_entries[stat.qid.path_hex] = directory_entry
         player_graph:add_entry(self, directory_entry)
         table.remove(content, index)
@@ -510,9 +475,6 @@ function platform:update_with_buffer(update_buffer)
     else
         local new_size = self:compute_size(content)
         local new_content = common.qid_as_key(content)
-        for k, v in pairs(new_content) do
-            print(k)
-        end
         local stats = self.directory_entries
         local player_graph = graphs:get_player_graph(self:get_player())
         for qid, st in pairs(new_content) do
