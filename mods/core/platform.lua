@@ -14,7 +14,7 @@ function platform:platform(connection, path, cmdchan, parent_node)
         player_name = "",
         -- flag indicating that platform update will be mabe by some other function 
         -- than platform:update()
-        external_handler = false,
+        external_handler = true,
         -- period of time, on which readdir() occurs for current platform and if 
         -- new entries are there, they will be spawn and if some of present entities 
         -- are no more in new readdir() they will removed
@@ -56,7 +56,8 @@ end
 
 -- computes acceptable size for platform to hold content of directory freely
 function platform:compute_size(content)
-    local dir_size = math.ceil(math.sqrt((#content / 15) * 100))
+    local sqrt = math.sqrt(#content)
+    local dir_size = math.ceil(sqrt + math.sqrt(sqrt) + 3)
     return dir_size < 3 and 3 or dir_size
 end
 
@@ -69,25 +70,33 @@ function platform:draw(root_point, size, color)
         y = p1.y,
         z = p1.z + size
     }
+    self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
+    local core_platform_node = minetest.get_content_id("core:platform")
+    local vm = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local param2 = vm:get_param2_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                local p = {
+                local vi = a:index(x, y, z)
+                data[vi] = core_platform_node
+                param2[vi] = color
+                table.insert(slots, {
                     x = x,
                     y = y,
                     z = z
-                }
-                minetest.add_node(p, {
-                    name = "core:platform",
-                    param1 = 0,
-                    param2 = color
                 })
-                local node = minetest.get_meta(p)
-                node:set_string("platform_string", self.platform_string)
-                table.insert(slots, p)
             end
         end
     end
+    vm:set_data(data)
+    vm:set_param2_data(param2)
+    vm:write_to_map(true)
     table.shuffle(slots)
     self.slots = slots
     self.root_point = root_point
@@ -103,6 +112,14 @@ function platform:colorize(color)
         y = p1.y,
         z = p1.z + self.size
     }
+    local core_platform_node = minetest.get_content_id("core:platform")
+    local vm = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
+    local param2 = vm:get_param2_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -111,16 +128,13 @@ function platform:colorize(color)
                     y = y,
                     z = z
                 }
-                minetest.add_node(p, {
-                    name = "core:platform",
-                    param1 = 0,
-                    param2 = color
-                })
-                local node = minetest.get_meta(p)
-                node:set_string("platform_string", self.platform_string)
+                local vi = a:index(x, y, z)
+                param2[vi] = color
             end
         end
     end
+    vm:set_param2_data(param2)
+    vm:write_to_map(true)
     self.properties.color = color
 end
 
@@ -136,28 +150,8 @@ function platform:wipe()
     self:wipe_top()
     local player_graph = graphs:get_player_graph(self:get_player())
     player_graph:delete_node(self.platform_string)
-    local root_point = self.root_point
-    local size = self.size
-    local p1 = root_point
-    local p2 = {
-        x = p1.x + size,
-        y = p1.y,
-        z = p1.z + size
-    }
-    for z = p1.z, p2.z do
-        for y = p1.y, p2.y do
-            for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
-                minetest.add_node(p, {
-                    name = "air"
-                })
-            end
-        end
-    end
+    self:delete_nodes()
+    area_store:remove_area(self.properties.area_id)
 end
 
 function platform:delete_nodes()
@@ -169,20 +163,24 @@ function platform:delete_nodes()
         y = p1.y,
         z = p1.z + size
     }
+    local air_node = minetest.get_content_id("air")
+    local vm = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
-                minetest.add_node(p, {
-                    name = "air"
-                })
+                local vi = a:index(x, y, z)
+                data[vi] = air_node
             end
         end
     end
+    vm:set_data(data)
+    vm:write_to_map(true)
 end
 
 -- returns copy of platform root (corner) node position
@@ -209,7 +207,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]])
+    directory_entry:filter(stat_entity)
     return directory_entry
 end
 
@@ -275,15 +273,35 @@ function platform:remove_entity(qid)
 end
 
 -- takes results of readdir and spawn each directory entry from it
-function platform:spawn_content(content)
+function platform:spawn_content(content, root_buffer)
     local player_graph = graphs:get_player_graph(self:get_player())
-    for _, stat in pairs(content) do
+    self:process_content(content, player_graph, #content, root_buffer)
+end
+
+function platform:process_content(content, player_graph, content_size, root_buffer)
+    while next(content) do
+        local index, stat = next(content)
         local directory_entry = self:spawn_stat(stat)
         self.directory_entries[stat.qid.path_hex] = directory_entry
         player_graph:add_entry(self, directory_entry)
+        table.remove(content, index)
+    end
+    local content = root_buffer:process_next({})
+    if next(content) then
+        content_size = content_size + #content
+        minetest.chat_send_player(self:get_player(),
+            "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
+                " up to now")
+        minetest.after(2, platform.process_content, self, content, player_graph, content_size, root_buffer)
+    else
+        minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
+            common.table_length(self.directory_entries) .. " entities.")
+        minetest.after(2, function()
+            self:set_external_handler_flag(false)
+            self:update()
+        end)
     end
 end
-
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
 function platform:get_slot()
@@ -314,21 +332,18 @@ end
 
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
-    local content = self:readdir()
-    if not content then
-        return nil
-    end
-    --self:load_readdir()
+    local root_buffer = buffer(self:get_conn(), self.path)
+    local result, content = pcall(root_buffer.process_next, root_buffer, {})
+    if not result then return end 
     local size = self:compute_size(content)
     minetest.after(1, function()
-        self:draw(root_point, size, color)
         common.goto_platform(player, self:get_root_point())
-        minetest.after(1, function()
-            self:spawn_content(content)
+        self:draw(root_point, size, color)
+        minetest.after(1.5, function()
+            self:spawn_content(content, root_buffer)
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
-            self:update()
         end)
     end)
 end
@@ -369,6 +384,7 @@ function platform:spawn_child(path, player, paths)
     end
     child_platform.mount_point = self.mount_point
     child_platform.origin_point = pos
+    child_platform.root_point = pos
     mounts:set_mount_points(self)
     child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()
@@ -377,6 +393,7 @@ end
 
 -- double the size of the platform. This make available free slots 
 function platform:enlarge()
+    area_store:remove_area(self.properties.area_id)
     local color = self:get_color()
     local root = self.root_point
     local slots = self.slots
@@ -396,6 +413,16 @@ function platform:enlarge()
         y = p1.y,
         z = p1.z + size
     }
+    self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
+    local core_platform_node = minetest.get_content_id("core:platform")
+    local vm = minetest.get_voxel_manip()
+    local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local param2 = vm:get_param2_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -406,18 +433,18 @@ function platform:enlarge()
                         y = y,
                         z = z
                     }
-                    minetest.add_node(p, {
-                        name = "core:platform",
-                        param1 = 0,
-                        param2 = color
-                    })
-                    local node = minetest.get_meta(p)
-                    node:set_string("platform_string", self.platform_string)
+                    local vi = a:index(x, y, z)
+                    data[vi] = core_platform_node
+                    param2[vi] = color
+
                     table.insert(slots, p)
                 end
             end
         end
     end
+    vm:set_data(data)
+    vm:set_param2_data(param2)
+    vm:write_to_map(true)
     self.size = size
     self.root_point = p1
     table.shuffle(slots)
@@ -438,26 +465,24 @@ function platform:show_properties(player)
                       "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
 end
 
--- reads directory content and spawn new entities if needed
--- and deletes entities, that are not present in new directory content  
-function platform:update()
-    local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) then
+function platform:update_with_buffer(update_buffer)
+    local result, content = pcall(update_buffer.process_next,update_buffer)
+    if not result then 
+        self:wipe()
+        return
+    end
+    if update_buffer:is_open() then
+        minetest.after(1, platform.update_with_buffer, self, update_buffer)
+    else
+        local new_size = self:compute_size(content)
+        local new_content = common.qid_as_key(content)
         local stats = self.directory_entries
-        local new_content = self:readdir()
-        if not new_content then
-            self:wipe()
-            return
-        end
-        local new_size = self:compute_size(new_content)
-        new_content = common.qid_as_key(new_content)
-        local player_graph = graphs:get_player_graph(self.properties.player_name)
+        local player_graph = graphs:get_player_graph(self:get_player())
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 local directory_entry = self:spawn_stat(st)
                 player_graph:add_entry(self, directory_entry)
                 self.directory_entries[qid] = directory_entry
-
             end
         end
         for qid in pairs(stats) do
@@ -469,10 +494,24 @@ function platform:update()
         end
         if self.size > 3 and common.table_length(new_content) == 0 then
             self:delete_nodes()
+            area_store:remove_area(self.properties.area_id)
             self:draw(self.origin_point, new_size, self:get_color())
         end
+        local refresh_time = self:get_refresh_time()
+        minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
     end
-    minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+end
+
+-- reads directory content and spawn new entities if needed
+-- and deletes entities, that are not present in new directory content  
+function platform:update()
+    local refresh_time = self:get_refresh_time()
+    if refresh_time ~= 0 and (not self.properties.external_handler) then
+        local update_buffer = buffer(self:get_conn(), self.path)
+        minetest.after(0.1, platform.update_with_buffer, self, update_buffer)
+    else
+        minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+    end
 end
 
 -- check if something is present in correspoing 

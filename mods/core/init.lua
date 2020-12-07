@@ -57,6 +57,7 @@ require 'common'
 require 'np_prot'
 require 'texture'
 require 'mounts'
+require 'buffer'
 
 -- entities
 require 'entities.stat'
@@ -79,3 +80,4 @@ crafts = {}
 form_handlers = {}
 
 root_cmdchan = automount()
+area_store = AreaStore()

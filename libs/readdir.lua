@@ -1,12 +1,12 @@
 local data = require 'data'
 local np = require '9p'
-
+local pprint = require 'pprint'
 local ORDONLY = 0
 local OWRITE = 1
 local ORDWR = 2
 local OEXEC = 3 
 
-local READ_BUF_SIZ = 4096
+local READ_BUF_SIZ = 8096
 
 function _9p_readdir(ctx, path) 
   local f = ctx:newfid()

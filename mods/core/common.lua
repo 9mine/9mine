@@ -22,8 +22,13 @@ function common.get_platform_string(player)
     if not node_pos then
         return
     end
-    local meta = minetest.get_meta(node_pos)
-    return meta:get_string("platform_string")
+    local area = area_store:get_areas_for_pos(node_pos, false, true)
+        local index, value = next(area)
+        if not value then
+            minetest.chat_send_player(player_name, "No platform for this position in AreaStore")
+            return
+        end
+   return value.data
 end
 
 function common.qid_as_key(dir)
