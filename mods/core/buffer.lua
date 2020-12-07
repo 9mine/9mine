@@ -7,18 +7,17 @@ function buffer:buffer(conn, path)
     self.fid = nil
     self.fid_open = false
     self.offset = 0
-    self.content = nil
+    self.content = {}
 end
 
 function buffer:open()
     local conn = self.conn
     local path = self.path
     local fid = conn:newfid()
-    conn:walk(conn.rootfid, fid, self.path == "/" and "./" or self.path)
+    conn:walk(conn.rootfid, fid, path == "/" and "./" or path)
     conn:open(fid, 0)
     self.fid = fid
     self.offset = 0
-    self.content = {}
     self.fid_open = true
 end
 
@@ -35,42 +34,35 @@ function buffer:read_next()
     if not self:is_open() then
         self:open()
     end
-    local buf_size = 4096
+    local buf_size = 8000
     local read_data = self.conn:read(self.fid, self.offset, buf_size)
     local dir = tostring(read_data)
     if not read_data then
         self:close()
         return nil
     else
-        self.offset = self.offset + #(tostring(read_data))
+        self.offset = self.offset + #dir
         return dir
     end
 end
 
-function buffer:parse_raw(raw_content, append)
-    local content_chunk = {}
+function buffer:parse_raw(raw_content, tbl)
+    local cont = tbl or self.content
     while true do
         local st = self.conn:getstat(data.new(raw_content))
         if st == nil then
-            if append then
-                return self.content
-            else
-                return content_chunk
-            end
+            return nil
         end
-        if append then
-            table.insert(self.content, st)
-        else
-            table.insert(content_chunk, st)
-        end
+        table.insert(cont, st)
         raw_content = raw_content:sub(st.size + 3)
         if (#raw_content == 0) then
             break
         end
     end
-    if append then
-        return self.content
-    else
-        return content_chunk
-    end
+end
+
+function buffer:process_next(tbl)
+    local content = self:read_next()
+    self:parse_raw(content, tbl)
+    return tbl or self.content
 end

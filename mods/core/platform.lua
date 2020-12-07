@@ -321,9 +321,8 @@ function platform:process_content(content, player_graph, content_size, root_buff
         player_graph:add_entry(self, directory_entry)
         table.remove(content, index)
     end
-    local content_raw = root_buffer:read_next()
-    if content_raw then
-        local content = root_buffer:parse_raw(content_raw)
+    local content = root_buffer:process_next({})
+    if next(content) then
         content_size = content_size + #content
         minetest.chat_send_player(self:get_player(),
             "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
@@ -337,7 +336,6 @@ function platform:process_content(content, player_graph, content_size, root_buff
             self:update()
         end)
     end
-
 end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
@@ -370,17 +368,11 @@ end
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
     local root_buffer = buffer(self:get_conn(), self.path)
-    local content_raw = root_buffer:read_next()
-    -- self:load_readdir()
-    local content = root_buffer:parse_raw(content_raw)
+    local content = root_buffer:process_next({})
     local size = self:compute_size(content)
     minetest.after(1, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
-        if not content_raw then
-            self:update()
-            return
-        end
         minetest.after(1.5, function()
             self:spawn_content(content, root_buffer)
             if paths then
@@ -508,20 +500,21 @@ function platform:show_properties(player)
 end
 
 function platform:update_with_buffer(update_buffer)
-    local content_raw = update_buffer:read_next()
-    if content_raw then
-        update_buffer:parse_raw(content_raw, true)
+    local result, content = pcall(update_buffer.process_next,update_buffer)
+    if not result then 
+        self:wipe()
+        return
+    end
+    if update_buffer:is_open() then
         minetest.after(1, platform.update_with_buffer, self, update_buffer)
     else
-        local content = update_buffer.content
         local new_size = self:compute_size(content)
         local new_content = common.qid_as_key(content)
-        print("IN UPDATE")
-        for k, v in pairs(new_content) do 
+        for k, v in pairs(new_content) do
             print(k)
         end
         local stats = self.directory_entries
-        local player_graph = graphs:get_player_graph(self.properties.player_name)
+        local player_graph = graphs:get_player_graph(self:get_player())
         for qid, st in pairs(new_content) do
             if not stats[qid] then
                 local directory_entry = self:spawn_stat(st)
