@@ -56,7 +56,8 @@ end
 
 -- computes acceptable size for platform to hold content of directory freely
 function platform:compute_size(content)
-    local dir_size = math.ceil(math.sqrt((#content / 15) * 100))
+    local sqrt = math.sqrt(#content)
+    local dir_size = math.ceil(sqrt + math.sqrt(sqrt) + 3)
     return dir_size < 3 and 3 or dir_size
 end
 
@@ -291,7 +292,8 @@ end
 -- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
     local player_graph = graphs:get_player_graph(self:get_player())
-    self:process_content(content, player_graph)
+
+    self:process_content(content, player_graph, #content)
     -- for _, stat in pairs(content) do
     --     local directory_entry = self:spawn_stat(stat)
     --     self.directory_entries[stat.qid.path_hex] = directory_entry
@@ -299,17 +301,22 @@ function platform:spawn_content(content)
     -- end
 end
 
-function platform:process_content(content, player_graph)
+function platform:process_content(content, player_graph, content_size)
     local index, stat = next(content)
+    local spawned_entity_count = common.table_length(self.directory_entries)
     if not stat then
+        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " .. spawned_entity_count .. "/" .. content_size)
         self:set_external_handler_flag(false)
         return
+    end
+    if spawned_entity_count % 100 == 0 and spawned_entity_count ~= 0 then
+        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " .. spawned_entity_count .. "/" .. content_size)
     end
     local directory_entry = self:spawn_stat(stat)
     self.directory_entries[stat.qid.path_hex] = directory_entry
     player_graph:add_entry(self, directory_entry)
     table.remove(content, index)
-    minetest.after(0.2, platform.process_content, self, content, player_graph)
+    minetest.after(0.05, platform.process_content, self, content, player_graph, content_size)
 end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
@@ -350,7 +357,7 @@ function platform:spawn(root_point, player, color, paths)
     minetest.after(1, function()
         self:draw(root_point, size, color)
         common.goto_platform(player, self:get_root_point())
-        minetest.after(1, function()
+        minetest.after(1.5, function()
             self:spawn_content(content)
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
