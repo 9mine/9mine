@@ -31,6 +31,38 @@ function platform:platform(connection, path, cmdchan, parent_node)
     self.slots = nil
 end
 
+function platform:read_buf(offset, f)
+    local content = {}
+    local conn = self:get_conn()
+    if offset == 0 then
+        f = conn:newfid()
+        conn:walk(conn.rootfid, f, self.path == "/" and "./" or self.path)
+        conn:open(f, 0)
+    end
+
+    local buf_size = 8000
+    local read_data = conn:read(f, offset, buf_size)
+    local dir = tostring(read_data)
+    if (read_data == nil) then
+        conn:clunk(f)
+        return content
+    else
+        offset = offset + #(tostring(read_data))
+    end
+    while true do
+        local st = conn:getstat(data.new(dir))
+        if st == nil then
+            return content
+        end
+        table.insert(content, st)
+        dir = dir:sub(st.size + 3)
+        if (#dir == 0) then
+            break
+        end
+    end
+    return content, offset, f
+end
+
 -- methods
 -- reads content of directory using path, set during platform initialization
 function platform:readdir()
@@ -273,29 +305,33 @@ function platform:remove_entity(qid)
 end
 
 -- takes results of readdir and spawn each directory entry from it
-function platform:spawn_content(content)
+function platform:spawn_content(content, buffer, fid)
     local player_graph = graphs:get_player_graph(self:get_player())
-    self:process_content(content, player_graph, #content)
+    self:process_content(content, player_graph, #content, buffer, fid)
 end
 
-function platform:process_content(content, player_graph, content_size)
+function platform:process_content(content, player_graph, content_size, buffer, fid)
     local index, stat = next(content)
-    local spawned_entity_count = common.table_length(self.directory_entries)
     if not stat then
-        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " ..
-            spawned_entity_count .. "/" .. content_size)
-        self:set_external_handler_flag(false)
-        return
+        local content, buffer, fid = self:read_buf(buffer, fid)
+        if next(content) then
+            content_size = content_size + #content
+            minetest.chat_send_player(self:get_player(),
+                "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
+                    " up to now")
+            minetest.after(0.05, platform.process_content, self, content, player_graph, content_size, buffer, fid)
+        else
+            minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
+                common.table_length(self.directory_entries) .. " entities.")
+            self:set_external_handler_flag(false)
+        end
+    else
+        local directory_entry = self:spawn_stat(stat)
+        self.directory_entries[stat.qid.path_hex] = directory_entry
+        player_graph:add_entry(self, directory_entry)
+        table.remove(content, index)
+        minetest.after(0.05, platform.process_content, self, content, player_graph, content_size, buffer, fid)
     end
-    if spawned_entity_count % 100 == 0 and spawned_entity_count ~= 0 then
-        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " ..
-            spawned_entity_count .. "/" .. content_size)
-    end
-    local directory_entry = self:spawn_stat(stat)
-    self.directory_entries[stat.qid.path_hex] = directory_entry
-    player_graph:add_entry(self, directory_entry)
-    table.remove(content, index)
-    minetest.after(0.05, platform.process_content, self, content, player_graph, content_size)
 end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
@@ -327,17 +363,14 @@ end
 
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
-    local content = self:readdir()
-    if not content or type(content) ~= "table" then
-        return nil
-    end
+    local content, offset, fid = self:read_buf(0)
     -- self:load_readdir()
     local size = self:compute_size(content)
     minetest.after(1, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
         minetest.after(1.5, function()
-            self:spawn_content(content)
+            self:spawn_content(content, offset, fid)
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
