@@ -57,6 +57,7 @@ require 'common'
 require 'np_prot'
 require 'texture'
 require 'mounts'
+require 'buffer'
 
 -- entities
 require 'entities.stat'
