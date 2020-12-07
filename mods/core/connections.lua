@@ -37,10 +37,10 @@ function connections:get_connection(player_name, addr, create)
         local connection = self.connections[player_name][addr]
         if not connection then
             connection = np_over_tcp(addr)
-            self:add_connection(player_name, connection)
             if not connection:attach() then
-                return connection
+                return nil
             end
+            self:add_connection(player_name, connection)
             return connection
         elseif connection:is_alive() then
             minetest.chat_send_player(player_name, "Already attached. Connection is alive")

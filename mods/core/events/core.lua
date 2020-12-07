@@ -5,6 +5,9 @@ connect = function(player, fields)
     local player_name = player:get_player_name()
     local attach_string, attach_path = split_connection_string(fields.connection_string)
     local connection = connections:get_connection(player_name, attach_string, true)
+    if not connection then
+        return
+    end
     local player_graph = graphs:get_player_graph(player_name)
     local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
