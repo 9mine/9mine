@@ -69,7 +69,7 @@ function platform:draw(root_point, size, color)
         y = p1.y,
         z = p1.z + size
     }
-    area_store:insert_area(p1, p2, self.platform_string)
+    self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
     local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
@@ -223,8 +223,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(
-        stat_entity --[[, self:load_getattr(directory_entry, stat_entity)]] --[[, self:load_getattr(directory_entry, stat_entity)]]  --[[, self:load_getattr(directory_entry, stat_entity)]] --[[, self:load_getattr(directory_entry, stat_entity)]] )
+    directory_entry:filter(stat_entity)
     return directory_entry
 end
 
@@ -354,7 +353,7 @@ function platform:spawn(root_point, player, color, paths)
         minetest.after(1, function()
             self:spawn_content(content)
             if paths then
-                minetest.after(0.1, platform.spawn_path_step, self, paths, player)
+                minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
             self:update()
         end)
@@ -405,6 +404,7 @@ end
 
 -- double the size of the platform. This make available free slots 
 function platform:enlarge()
+    area_store:remove_area(self.properties.area_id)
     local color = self:get_color()
     local root = self.root_point
     local slots = self.slots
@@ -424,8 +424,16 @@ function platform:enlarge()
         y = p1.y,
         z = p1.z + size
     }
+    self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
+    local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
+    local data = vm:get_data()
+    local param2 = vm:get_param2_data()
+    local a = VoxelArea:new{
+        MinEdge = emin,
+        MaxEdge = emax
+    }
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -436,18 +444,18 @@ function platform:enlarge()
                         y = y,
                         z = z
                     }
-                    minetest.add_node(p, {
-                        name = "core:platform",
-                        param1 = 0,
-                        param2 = color
-                    })
-                    local node = minetest.get_meta(p)
-                    node:set_string("platform_string", self.platform_string)
+                    local vi = a:index(x, y, z)
+                    data[vi] = core_platform_node
+                    param2[vi] = color
+
                     table.insert(slots, p)
                 end
             end
         end
     end
+    vm:set_data(data)
+    vm:set_param2_data(param2)
+    vm:write_to_map(true)
     self.size = size
     self.root_point = p1
     table.shuffle(slots)
