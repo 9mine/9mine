@@ -292,25 +292,21 @@ end
 -- takes results of readdir and spawn each directory entry from it
 function platform:spawn_content(content)
     local player_graph = graphs:get_player_graph(self:get_player())
-
     self:process_content(content, player_graph, #content)
-    -- for _, stat in pairs(content) do
-    --     local directory_entry = self:spawn_stat(stat)
-    --     self.directory_entries[stat.qid.path_hex] = directory_entry
-    --     player_graph:add_entry(self, directory_entry)
-    -- end
 end
 
 function platform:process_content(content, player_graph, content_size)
     local index, stat = next(content)
     local spawned_entity_count = common.table_length(self.directory_entries)
     if not stat then
-        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " .. spawned_entity_count .. "/" .. content_size)
+        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " ..
+            spawned_entity_count .. "/" .. content_size)
         self:set_external_handler_flag(false)
         return
     end
     if spawned_entity_count % 100 == 0 and spawned_entity_count ~= 0 then
-        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " .. spawned_entity_count .. "/" .. content_size)
+        minetest.chat_send_player(self:get_player(), "Entities spawned at " .. self.platform_string .. ": " ..
+            spawned_entity_count .. "/" .. content_size)
     end
     local directory_entry = self:spawn_stat(stat)
     self.directory_entries[stat.qid.path_hex] = directory_entry
@@ -349,14 +345,14 @@ end
 -- read directory and spawn platform with directory content 
 function platform:spawn(root_point, player, color, paths)
     local content = self:readdir()
-    if not content then
+    if not content or type(content) ~= "table" then
         return nil
     end
     -- self:load_readdir()
     local size = self:compute_size(content)
     minetest.after(1, function()
-        self:draw(root_point, size, color)
         common.goto_platform(player, self:get_root_point())
+        self:draw(root_point, size, color)
         minetest.after(1.5, function()
             self:spawn_content(content)
             if paths then
@@ -403,6 +399,7 @@ function platform:spawn_child(path, player, paths)
     end
     child_platform.mount_point = self.mount_point
     child_platform.origin_point = pos
+    child_platform.root_point = pos
     mounts:set_mount_points(self)
     child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()

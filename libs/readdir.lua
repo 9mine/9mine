@@ -29,7 +29,6 @@ function _9p_readdir(ctx, path)
       break
     end
     dir = dir .. tostring(data)
-    pprint(dir)
     offset = offset + #(tostring(data))
   end
   ctx:clunk(f)
@@ -39,7 +38,6 @@ end
 function readdir(ctx, path) 
   local dir = {}
   local dirdata = _9p_readdir(ctx, path)
-  pprint(dirdata)
   while 1 do
     local st = ctx:getstat(data.new(dirdata)) 
     if st == nil then return nil end  

@@ -101,7 +101,9 @@ spawn_root_platform = function(attach_string, player, last_login)
                 root_platform.mount_point = "/"
                 root_platform.origin_point = result
                 root_platform:set_node(player_graph:add_platform(root_platform, nil, player_host_node))
-                root_platform:spawn(vector.round(player:get_pos()), player, math.random(0, 255))
+                local point = vector.round(player:get_pos())
+                root_platform.root_point = point
+                root_platform:spawn(point, player, math.random(0, 255))
                 minetest.show_formspec(player_name, "", "")
             end)
         end
