@@ -12,8 +12,19 @@ function connections:connections()
     self.connections = {}
 end
 
-function connections:make_new(player_name, attach_string)
-
+function connections:make_new(player_name, addr)
+    local connection = self.connections[player_name][addr]
+    if not connection then
+        connection = np_over_tcp(addr)
+        if connection:attach() then
+            self:add_connection(player_name, connection)
+            return connection
+        else
+            return nil
+        end
+    else
+        return connection
+    end
 end
 
 function connections:set_root_connection(connection)
@@ -33,29 +44,11 @@ function connections:get_root_cmdchan()
 end
 
 function connections:get_connection(player_name, addr, create)
-    if create then
-        local connection = self.connections[player_name][addr]
-        if not connection then
-            connection = np_over_tcp(addr)
-            self:add_connection(player_name, connection)
-            if not connection:attach() then
-                return connection
-            end
-            return connection
-        elseif connection:is_alive() then
-            minetest.chat_send_player(player_name, "Already attached. Connection is alive")
-            return connection
-        elseif connection.tcp then
-            minetest.chat_send_player(player_name, "Connection is not alive. Reconnecting")
-            connection:reattach()
-            return connection
-        else
-            connection:attach()
-            return connection
-        end
-    else
-        return self.connections[player_name][addr]
+    local connection = self.connections[player_name][addr]
+    if not connection and create then
+        connection = self:make_new(player_name, addr)
     end
+    return connection
 end
 
 function connections:add_connection(player_name, connection)
