@@ -25,15 +25,24 @@ end
 minetest.register_on_joinplayer(function(player, last_login)
     minetest.after(3, common.update_path_hud, player)
     local name = player:get_player_name()
-    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
-    root_cmdchan:execute("mkdir /n/" .. name)
-    if root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name) == "" then
-        minetest.chat_send_player(name, user_addr .. " mounted")
-        connections:add_player(name)
-        minetest.after(2, spawn_root_platform, user_addr, player, last_login)
-    else
-        common.show_wait_notification(name, "Please, wait.\nThe namespace is creating.")
-        local counter = 1
-        minetest.after(2, poll_regquery, name, counter, player, last_login)
+    local service_list = {}
+    local registry = root_cmdchan:execute("cat /mnt/registry/index")
+    print(dump(registry))
+    for server in registry:gmatch("[^\n]+") do 
+        table.insert(service_list, server)
     end
+    local service_string = ""
+    for index, service in pairs(service_list) do 
+        service_string = service_string == "" and service or service_string .. "," .. service
+    end
+    minetest.show_formspec(name, "core:global_registry",
+        table.concat({  "formspec_version[4]", 
+                        "size[19.5,11,false]", 
+                        "hypertext[0.0,0.0;19.5,1;;<big><center>Select 9p service from the list <center><big>]",
+                        "field[0.5,0.5;0,0;server_list;;", minetest.serialize(service_list), "]",
+                        "tablecolumns[text]",
+                        "table[0.5,1.5;9,9;9p_server;", service_string, ";2]",
+                        "image[10,1.5;9,4;core_kubernetes.png]",
+                        "textarea[10,6;9,4.5;description;;]"
+    }, ""))
 end)
