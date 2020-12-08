@@ -73,6 +73,9 @@ end
 spawn_root_platform = function(attach_string, player, last_login)
     local player_name = player:get_player_name()
     local connection = connections:get_connection(player_name, attach_string, true)
+    if not connection:attach() then
+        return
+    end
     local player_graph = graphs:get_player_graph(player_name) or
                              graphs:add_player_graph(player_graph(player_name), player_name)
     local player_host_node = player_graph:add_host(attach_string)
