@@ -292,11 +292,11 @@ function platform:process_content(content, player_graph, content_size, root_buff
         minetest.chat_send_player(self:get_player(),
             "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
                 " up to now")
-        minetest.after(2, platform.process_content, self, content, player_graph, content_size, root_buffer)
+        minetest.after(1, platform.process_content, self, content, player_graph, content_size, root_buffer)
     else
         minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
             common.table_length(self.directory_entries) .. " entities.")
-        minetest.after(2, function()
+        minetest.after(1, function()
             self:set_external_handler_flag(false)
             self:update()
         end)
@@ -336,10 +336,10 @@ function platform:spawn(root_point, player, color, paths)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
     if not result then return end 
     local size = self:compute_size(content)
-    minetest.after(1, function()
+    minetest.after(0.1, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
-        minetest.after(1.5, function()
+        minetest.after(0.5, function()
             self:spawn_content(content, root_buffer)
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)

@@ -24,7 +24,7 @@ function EditTool.edit(entity, player, player_name)
                 table.concat({"formspec_version[4]", "size[13,13,false]",
                               "field[0,0;0,0;file_path;;" .. directory_entry.path .. "]",
                               "textarea[0.5,0.5;12.0,10.6;content;;", minetest.formspec_escape(content), "]",
-                              "button_exit[7,11.6;2.5,0.9;write;write]", "button[10,11.6;2.5,0.9;execute;execute]"}, ""))
+                              "button_exit[7,11.6;2.5,0.9;edit;edit]", "button[10,11.6;2.5,0.9;execute;execute]"}, ""))
         else
             minetest.show_formspec(player_name, "stat:edit",
                 table.concat({"formspec_version[3]", "size[13,13,false]",
