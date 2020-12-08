@@ -35,10 +35,13 @@ local write_rc = function(player, formname, fields)
         minetest.chat_send_player(player_name, "Editing file failed: " .. response)
     end
     if fields.execute then
-        local execute_result = cmdchan:execute("rc " .. file_path)
-        minetest.show_formspec(player:get_player_name(), "core:file_content",
-            table.concat({"formspec_version[3]", "size[13,13,false]", "textarea[0.5,0.5;12.0,12.0;;;",
-                          minetest.formspec_escape(execute_result), "]"}, ""))
+        local execute_result = cmdchan:execute("sh -n " .. file_path)
+
+        minetest.show_formspec(player_name, formname,
+            table.concat({"formspec_version[4]", "size[13,13,false]", "field[0,0;0,0;file_path;;" .. file_path .. "]",
+                          "textarea[0.5,0.5;12.0,5;content;;", formname == "stat:edit_rc" and minetest.formspec_escape(content) or "", "]",
+                          "textarea[0.5,6.2;12.0,5;;;", minetest.formspec_escape(execute_result), "]",
+                          "button_exit[7,11.6;2.5,0.9;write;write]", "button[10,11.6;2.5,0.9;execute;execute]"}, ""))
     end
 end
 

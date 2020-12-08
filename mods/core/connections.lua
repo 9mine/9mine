@@ -13,12 +13,14 @@ function connections:connections()
 end
 
 function connections:make_new(player_name, addr)
-        local connection = self.connections[player_name][addr]
-        if not connection then
-            connection = np_over_tcp(addr)
+    local connection = self.connections[player_name][addr]
+    if not connection then
+        connection = np_over_tcp(addr)
+        if connection:attach() then
             self:add_connection(player_name, connection)
         end
-        return connection
+    end
+    return connection
 end
 
 function connections:set_root_connection(connection)
@@ -38,11 +40,11 @@ function connections:get_root_cmdchan()
 end
 
 function connections:get_connection(player_name, addr, create)
-        local connection = self.connections[player_name][addr]
-        if not connection and create then 
-            connection = self:make_new(player_name, addr)
-        end
-        return connection
+    local connection = self.connections[player_name][addr]
+    if not connection and create then
+        connection = self:make_new(player_name, addr)
+    end
+    return connection
 end
 
 function connections:add_connection(player_name, connection)
