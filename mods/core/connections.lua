@@ -18,9 +18,13 @@ function connections:make_new(player_name, addr)
         connection = np_over_tcp(addr)
         if connection:attach() then
             self:add_connection(player_name, connection)
+            return connection
+        else
+            return nil
         end
+    else
+        return connection
     end
-    return connection
 end
 
 function connections:set_root_connection(connection)
