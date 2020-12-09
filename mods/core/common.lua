@@ -187,10 +187,10 @@ function common.update_path_hud(player, id)
         end
     else
         if id then
-            player:hud_change(id, "text", platform.path)
+            player:hud_change(id, "text", platform.path .. "\n" .. platform.addr)
             player:hud_change(id, "offset", {
-                x = -(#platform.path * 10),
-                y = -30
+                x = -(#platform.path * 10) < -(#platform.addr * 10) and -(#platform.path * 10) or -(#platform.addr * 10),
+                y = -60
             })
         else
             id = player:hud_add({
@@ -200,11 +200,11 @@ function common.update_path_hud(player, id)
                     y = 1
                 },
                 offset = {
-                    x = -(#platform.path * 10),
-                    y = -30
+                    x = -(#platform.path * 10) < -(#platform.addr * 10) and -(#platform.path * 10) or -(#platform.addr * 10),
+                    y = -60
                 },
-                text = platform.path,
-                number = 0x00FF00,
+                text = platform.path .. "\n" .. platform.addr,
+                number = 0x228B22,
                 alignment = {
                     x = 1,
                     y = 1
