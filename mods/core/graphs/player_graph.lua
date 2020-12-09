@@ -34,6 +34,11 @@ function player_graph:get_node(platform_string)
     end
 end
 
+-- returns root node of the garph 
+function player_graph:get_root_node()
+    return self.root_node
+end
+
 -- provided with platform string returns platform object
 function player_graph:get_platform(platform_string)
     local platform_node = self:get_node(platform_string)
