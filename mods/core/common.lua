@@ -258,14 +258,6 @@ function common.update_path_hud(player, id, addr_id, bg_id)
                     x = 45, 
                     y = 85
                 },
-                -- scale = {
-                --     x = 1,
-                --     y = 1
-                -- },
-                -- alignment = {
-                --     x = 1,
-                --     y = 0
-                -- },
                 text = "core_hud_bg.png"
             })
         end
