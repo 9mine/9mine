@@ -23,6 +23,7 @@ poll_regquery = function(name, counter, player, last_login)
 end
 
 minetest.register_on_joinplayer(function(player, last_login)
+    minetest.after(3, common.update_path_hud(player))
     local name = player:get_player_name()
     local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name):gsub("\n", "")
     root_cmdchan:execute("mkdir /n/" .. name)
