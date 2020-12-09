@@ -204,6 +204,7 @@ function common.update_path_hud(player, id)
                     y = -30
                 },
                 text = platform.path,
+                number = 0x00FF00,
                 alignment = {
                     x = 1,
                     y = 1
