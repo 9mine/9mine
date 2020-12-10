@@ -3,7 +3,6 @@ local global_registry = function(player, formname, fields)
         spawn_root_platform(fields.selected_server, player)
         return
     end
-    print(dump(fields))
     if fields.quit == "true" and not fields.connect == "connect" then
         return
     end
@@ -43,7 +42,6 @@ local global_registry = function(player, formname, fields)
         for index, service in pairs(filtered_services) do 
             service_string = service_string == "" and service.service_addr or service_string .. "," .. service.service_addr
         end
-        print(event.row)
     end
 
     -- if search fields was used without entering text then restore full list 
