@@ -31,6 +31,7 @@ function texture.exists(name, directory)
 end
 
 function texture.download(url, secure, name, directory)
+    if url == nil then return false, "No URL" end 
     local path = directory and texture.path .. directory .. "/" or texture.path
     lfs.mkdir(path)
     local http = secure and require("ssl.https") or require('socket.http')
