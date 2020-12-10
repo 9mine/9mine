@@ -42,9 +42,19 @@ end
 -- returns formspec. If provided with search parameter, filters 
 -- registries list just to those who match
 function RegistryTool.get_form(registries_string, search)
+    local resp
+    if registries_string then
+        for service in registries_string:gmatch("[^\n]+") do
+            if resp then
+                resp = resp .. "," .. service:match("[^ ]+")
+            else
+                resp = service:match("[^ ]+")
+            end
+        end
+    end
     local new_registries_string = ""
     if search and search ~= "" then
-        for registry in registries_string:gmatch("[^,]+") do
+        for registry in resp:gmatch("[^,]+") do
             if registry:match(search) then
                 if new_registries_string == "" then
                     new_registries_string = registry
@@ -54,7 +64,7 @@ function RegistryTool.get_form(registries_string, search)
             end
         end
     else
-        new_registries_string = registries_string
+        new_registries_string = resp
     end
 
     return table.concat({"formspec_version[4]", "size[15,8,false]", "label[5,0.5;Add registry to inventory]",
@@ -66,13 +76,7 @@ function RegistryTool.get_form(registries_string, search)
 end
 
 function RegistryTool.on_use(itemstack, player)
-    local player_name = player:get_player_name()
-    local registries_string = RegistryTool.get_registries_string(player)
-    if not registries_string then
-        minetest.chat_send_player(player_name, "Error getting list of registries")
-        return
-    end
-    minetest.show_formspec(player_name, "core:registry", RegistryTool.get_form(registries_string))
+    draw_welcome_screen(player)
 end
 
 minetest.register_tool("core:registry", RegistryTool)
