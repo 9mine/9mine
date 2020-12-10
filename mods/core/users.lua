@@ -34,6 +34,7 @@ draw_welcome_screen = function(player)
         {   "formspec_version[4]", 
             "size[19,11,false]",
             "hypertext[0.0,0.0;19.5,1;;<big><center>Select 9p service from the list <center><big>]",
+            "field[0.5,0.5;0,0;original_services;;", minetest.formspec_escape(minetest.serialize(services)), "]", 
             "field[0.5,0.5;0,0;services;;", minetest.formspec_escape(minetest.serialize(services)), "]", 
             "field[0.5,0.5;0,0;service_string;;", service_string, "]", 
             "tablecolumns[text]", "field[0.5,1;6.5,1;search;;]", 
