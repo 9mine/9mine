@@ -21,7 +21,12 @@ local global_registry = function(player, formname, fields)
     local event = core.explode_table_event(fields["9p_server"])
     local filtered_services = minetest.deserialize(fields.services)
     local service_string = fields.service_string
-
+    if event.row ~= 0 then 
+        local service = filtered_services[event.row]
+        if not texture.exists(service.service_addr .. ".png", "registry") then 
+            texture.download(service.url, false, service.service_addr .. ".png", "registry")
+        end
+    end
     -- is search field is not empty then use just those fields, that match
     if fields.search ~= "" then 
         service_string = ""
@@ -63,7 +68,7 @@ local global_registry = function(player, formname, fields)
                       "field_close_on_enter[search;false]",
                       "button[7,1;2.5,1;button_search;search]", 
                       "table[0.5,2.2;9,8.3;9p_server;", service_string, ";", event.row or "", "]", 
-                      "image[10,1;8.5,4;", event.row ~= 0 and images[event.row % 7 == 0 and 7 or event.row % 7] or "core_logo.png", "]",
+                      "image[10,1;8.5,4;", event.row ~= 0 and filtered_services[event.row].service_addr .. ".png" or "core_logo.png", "]",
                       "textarea[10,5.5;8.5,4.1;desc;;", event.row ~= 0 and filtered_services[event.row].description or "No description provided. Look at dump of service: \n" .. dump(event.row ~= 0 and filtered_services[event.row] or ""), "]",
                       "button_exit[16,9.8;2.5,0.7;connect;connect]"}, ""))
 
