@@ -180,7 +180,7 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         return
     end
     local player_graph = graphs:get_player_graph(player:get_player_name())
-    if not player_graph then 
+    if not player_graph then
         minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
         return
     end
@@ -195,7 +195,8 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         end
     else
         if id then
-            player:hud_change(bg_id, "number", (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path))
+            player:hud_change(bg_id, "number",
+                (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path))
             player:hud_change(addr_id, "text", platform.addr)
             player:hud_change(addr_id, "offset", {
                 x = -(#platform.addr * 10),
@@ -252,14 +253,14 @@ function common.update_path_hud(player, id, addr_id, bg_id)
             bg_id = player:hud_add({
                 hud_elem_type = "statbar",
                 z_index = -400,
-                direction = 1, 
+                direction = 1,
                 number = (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path),
                 position = {
                     x = 1,
                     y = 0
                 },
                 size = {
-                    x = 45, 
+                    x = 45,
                     y = 85
                 },
                 text = "core_hud_bg.png"
@@ -267,4 +268,38 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         end
     end
     minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
+end
+
+function common.parse_registry_index(registry_index)
+    local services = {}
+    for token in registry_index:gmatch("[^\n]+") do
+        local service = {}
+        service.service_addr = token:match("[^ ]+")
+        local args = token:gsub(token:match("[^ ]+"):gsub("%-", "%%%-"), ""):gsub("^%s+", ""):gsub("''", "$_/\\@")
+        local key = true
+        local previous
+        while (#args > 0) do
+            if args:sub(1, 1):match("^'") then
+                if key then
+                    previous = args:match("^'[^']+'"):gsub("'", ""):gsub("$_/\\@", "'")
+                    key = false
+                else
+                    service[previous] = args:match("^'[^']+'"):gsub("'", ""):gsub("$_/\\@", "'")
+                    key = true
+                end
+                args = args:gsub(args:match("^'[^']+'"):gsub("%-", "%%%-"), ""):gsub("^%s+", "")
+            else
+                if key then
+                    previous = args:match("^[^ ]+")
+                    key = false
+                else
+                    service[previous] = args:match("^[^ ]+")
+                    key = true
+                end
+                args = args:gsub(args:match("^[^ ]+"):gsub("%-", "%%%-"), ""):gsub("^%s+", "")
+            end
+        end
+        table.insert(services, service)
+    end
+    return services
 end
