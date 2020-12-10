@@ -1,11 +1,10 @@
 local global_registry = function(player, formname, fields)
-    if fields.connect == "connect" then
-        local event = core.explode_table_event(fields["9p_server"])
-        local services = minetest.deserialize(fields.services)
+    if fields.connect == "connect" and fields.selected_server ~= "" then
         spawn_root_platform(fields.selected_server, player)
         return
     end
-    if fields.quit == "true" then
+    print(dump(fields))
+    if fields.quit == "true" and not fields.connect == "connect" then
         return
     end
     local images = {}
