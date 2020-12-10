@@ -180,6 +180,10 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         return
     end
     local player_graph = graphs:get_player_graph(player:get_player_name())
+    if not player_graph then 
+        minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
+        return
+    end
     local platform = player_graph:get_platform(platform_string)
     local root_node = player_graph:get_root_node()
     if not platform_string then
