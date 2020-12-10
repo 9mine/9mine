@@ -6,15 +6,6 @@ local global_registry = function(player, formname, fields)
     if fields.quit == "true" and not fields.connect == "connect" then
         return
     end
-    local images = {}
-    table.insert(images, "core_fileserver.png")
-    table.insert(images, "core_platforms.png")
-    table.insert(images, "core_mendel.png")
-    table.insert(images, "core_console.png")
-    table.insert(images, "core_ns.png")
-    table.insert(images, "core_kubernetes.png")
-    table.insert(images, "core_registry.png")
-
     if not fields.services then
         return
     end
