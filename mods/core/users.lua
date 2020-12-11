@@ -46,6 +46,8 @@ end
          "hypertext[0,0.1;30,1;;<bigger><center>Welcome to 9mine<center><bigger>]",
 
          "field[0,0;0,0;parsed_registry;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
+         "field[0,0;0,0;raw_registries;;", minetest.formspec_escape(minetest.serialize(filtered_registries)), "]",
+         "field[0,0;0,0;raw_services;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
          "field[0,0;0,0;filtered_registries;;", minetest.formspec_escape(minetest.serialize(filtered_registries)), "]",
          "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
          
@@ -57,13 +59,13 @@ end
          "hypertext[0.5, 0.8; 9, 1;;<big><center>Registries<center><big>]",        
          "field[0.5, 1.5; 6.5, 1;search_registries;;]", "field_close_on_enter[search_registries;false]", 
 
-         "button[7, 1.5; 2.5, 1;button_search_registries; search]",
+         "button[7, 1.5; 2.5, 1;button_search_registries;search]",
          "table[0.5, 2.7; 9, 8.3;registries;", registries_string, ";]",
 
          "hypertext[10, 0.8; 9, 1;;<big><center>Services<center><big>]",   
          "field[10, 1.5; 6.5, 1;search_services;;]", "field_close_on_enter[search_services;false]", 
 
-         "button[16.5, 1.5; 2.5, 1;button_search_services; search]",     
+         "button[16.5, 1.5; 2.5, 1;button_search_services;search]",     
          "table[10, 2.7; 9, 8.3;services;", services_string, ";]", 
 
          "image[19.5, 1; 9, 4;core_logo.png]",
