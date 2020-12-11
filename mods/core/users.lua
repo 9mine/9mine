@@ -21,7 +21,7 @@ end
 draw_welcome_screen = function(player)
     local name = player:get_player_name()
     local registry = common.read_registry_index(os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
-                                                    core_conf:get("REGISTRY_ADDR"))
+                                                    core_conf:get("REGISTRY_ADDR"), name)
 local parsed_registry = common.parse_registry_index(registry)
 local filtered_registries = {}
 local filtered_services = {}

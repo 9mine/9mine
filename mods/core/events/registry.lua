@@ -1,4 +1,5 @@
 local global_registry = function(player, formname, fields)
+    local player_name = player:get_player_name()
     if fields.quit == "true" then
         return
     end
@@ -41,7 +42,7 @@ local global_registry = function(player, formname, fields)
         registries_idx = event.row
         local service = filtered_registries[event.row]
         selected_entry = service.service_addr
-        local registry = common.read_registry_index(service.service_addr)
+        local registry = common.read_registry_index(service.service_addr, player_name)
         registry = common.parse_registry_index(registry)
         local obj, str = common.filter_registry_by_keyword(registry, "")
         raw_services = minetest.serialize(obj)
@@ -78,7 +79,7 @@ local global_registry = function(player, formname, fields)
         description = service.description or dump(service)
     end
 
-    minetest.show_formspec(player:get_player_name(), "core:global_registry",
+    minetest.show_formspec(player_name, "core:global_registry",
     table.concat({"formspec_version[4]", "size[29,11.5,false]",
                   "hypertext[0,0.1;30,1;;<bigger><center>Welcome to 9mine<center><bigger>]",
 

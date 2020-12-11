@@ -36,7 +36,7 @@ function np_over_tcp:attach()
     conn:attach("root", "")
     minetest.chat_send_all("Attached to " .. self.addr)
     print("Attached to " .. self.addr)
-    return true
+    return self
 end
 
 function np_over_tcp:reattach()

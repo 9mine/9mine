@@ -270,12 +270,16 @@ function common.update_path_hud(player, id, addr_id, bg_id)
     minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
 end
 
-function common.read_registry_index(connection_string)
-    local connection = np_over_tcp(connection_string)
-    if connection:attach() then 
-    local registry = np_prot.file_read(connection.conn, "index")
-    connection:close()
-    return registry
+function common.read_registry_index(connection_string, player_name)
+    local connection
+    if player_name then 
+        connection = connections:get_connection(player_name, connection_string, true)
+    else 
+        connection = np_over_tcp(connection_string)
+        connection = connection:attach()
+    end
+    if connection then 
+    return np_prot.file_read(connection.conn, "index")
     end
 end
 
