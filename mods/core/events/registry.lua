@@ -2,6 +2,14 @@ local global_registry = function(player, formname, fields)
     if fields.quit == "true" then
         return
     end
+    local selected_entry = fields.selected_entry
+
+    if fields.connect then 
+        minetest.show_formspec(player:get_player_name(), "core:global_registry", "")
+        spawn_root_platform(fields.selected_entry, player)
+        return
+    end
+
     local parsed_registry = fields.parsed_registry
     local raw_registries = fields.raw_registries
     local raw_services = fields.raw_services
@@ -16,12 +24,14 @@ local global_registry = function(player, formname, fields)
         filtered_registries, registries_string = common.filter_registry_by_keyword(minetest.deserialize(raw_registries),
                                                      fields.search_registries)
         filtered_registries = minetest.serialize(filtered_registries)
+        selected_entry = nil
     end
 
     if fields.button_search_services or fields.key_enter_field == "search_services" then
         filtered_services, services_string = common.filter_registry_by_keyword(minetest.deserialize(raw_services),
                                                  fields.search_services)
         filtered_services = minetest.serialize(filtered_services)
+        selected_entry = nil
     end
 
     -- handle click in registry table 
@@ -30,6 +40,7 @@ local global_registry = function(player, formname, fields)
         local filtered_registries = minetest.deserialize(filtered_registries)
         registries_idx = event.row
         local service = filtered_registries[event.row]
+        selected_entry = service.service_addr
         local registry = common.read_registry_index(service.service_addr)
         registry = common.parse_registry_index(registry)
         local obj, str = common.filter_registry_by_keyword(registry, "")
@@ -54,6 +65,7 @@ local global_registry = function(player, formname, fields)
         local filtered_services = minetest.deserialize(filtered_services)
         services_idx = event.row
         local service = filtered_services[event.row]
+        selected_entry = service.service_addr
         if service.icon then
             if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
                 texture.download(service.icon, service.icon:match("https://") and true or false,
@@ -75,7 +87,7 @@ local global_registry = function(player, formname, fields)
                   "field[0,0;0,0;raw_services;;", minetest.formspec_escape(raw_services), "]",             
                   "field[0,0;0,0;filtered_registries;;", minetest.formspec_escape(filtered_registries), "]",
                   "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(filtered_services), "]",
-
+                  selected_entry and "field[0,0;0,0;selected_entry;;" .. minetest.formspec_escape(selected_entry) .. "]" or "",
                   "field[0,0;0,0;registries_string;;", registries_string, "]", 
                   "field[0,0;0,0;services_string;;", services_string, "]", 
                   
@@ -95,8 +107,9 @@ local global_registry = function(player, formname, fields)
                   "button[16.5, 1.5; 2.5, 1;button_search_services;search]", 
                   "table[10, 2.7; 9, 8.3;services;", services_string, ";]", 
                   "image[19.5, 1; 9, 4;", icon or "core_logo.png", "]",
-                  "textarea[19.5, 5.5; 9, 5.5;;;", minetest.formspec_escape(description) or "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style",
-                  "]"}, ""))
+                  "textarea[19.5, 5.5; 9, 4.5;;;", minetest.formspec_escape(description) or "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style", "]", 
+                  selected_entry and "button[26, 10.3; 2.5, 0.7;connect;connect]" or ""
+            }, ""))
 
 end
 
