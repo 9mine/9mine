@@ -45,6 +45,10 @@ function np_over_tcp:reattach()
     self:attach()
 end
 
+function np_over_tcp:close()
+    self.tcp:close()
+end
+
 function np_over_tcp:is_alive()
     local conn = self.conn
     local f = conn:newfid()
