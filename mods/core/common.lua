@@ -351,3 +351,36 @@ function common.parse_registry_index(registry_index)
     end
     return services
 end
+
+function common.filter_registry_by_type(object, type)
+    local formspec_table_string = ""
+    local objects = {}
+    for index, entry in pairs(object) do
+        if entry.type == type then
+            formspec_table_string =
+                formspec_table_string == "" and entry.service_addr or formspec_table_string .. "," .. entry.service_addr
+            table.insert(objects, entry)
+        end
+    end
+    return objects, formspec_table_string
+end
+
+
+function common.filter_registry_by_keyword(object, keyword)
+    local formspec_table_string = ""
+    local objects = {}
+    for index, entry in pairs(object) do
+        local flag = false
+        for key, value in pairs(entry) do
+            if key:match(keyword) or value:match(keyword) then
+                flag = true
+            end
+        end
+        if flag then
+            formspec_table_string =
+                formspec_table_string == "" and entry.service_addr or formspec_table_string .. "," .. entry.service_addr
+            table.insert(objects, entry)
+        end
+    end
+    return objects, formspec_table_string
+end
