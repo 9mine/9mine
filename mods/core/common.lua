@@ -275,7 +275,20 @@ function common.parse_registry_index(registry_index)
     for token in registry_index:gmatch("[^\n]+") do
         local service = {}
         service.service_addr = token:match("[^ ]+")
-        local args = token:gsub(token:match("[^ ]+"):gsub("%-", "%%%-"), ""):gsub("^%s+", ""):gsub("''", "$_/\\@")
+        local args = token:gsub(token:match("[^ ]+")
+        :gsub("%%", "%%%%")
+        :gsub("%-", "%%%-")
+        :gsub("%(", "%%%(")
+        :gsub("%)", "%%%)")
+        :gsub("%.", "%%%.")
+        :gsub("%?", "%%%?")
+        :gsub("%*", "%%%*")
+        :gsub("%+", "%%%+")
+        :gsub("%[", "%%%[")
+        :gsub("%]", "%%%]")
+        :gsub("%^", "%%%^")
+        :gsub("%$", "%%%$")
+        , "", 1):gsub("^%s+", ""):gsub("''", "$_/\\@")
         local key = true
         local previous
         while (#args > 0) do
@@ -287,7 +300,20 @@ function common.parse_registry_index(registry_index)
                     service[previous] = args:match("^'[^']+'"):gsub("'", ""):gsub("$_/\\@", "'")
                     key = true
                 end
-                args = args:gsub(args:match("^'[^']+'"):gsub("%-", "%%%-"), ""):gsub("^%s+", "")
+                args = args:gsub(args:match("^'[^']+'")
+                :gsub("%%", "%%%%")
+                :gsub("%-", "%%%-")
+                :gsub("%(", "%%%(")
+                :gsub("%)", "%%%)")
+                :gsub("%.", "%%%.")
+                :gsub("%?", "%%%?")
+                :gsub("%*", "%%%*")
+                :gsub("%+", "%%%+")
+                :gsub("%[", "%%%[")
+                :gsub("%]", "%%%]")
+                :gsub("%^", "%%%^")
+                :gsub("%$", "%%%$")
+                , "", 1):gsub("^%s+", "")
             else
                 if key then
                     previous = args:match("^[^ ]+")
@@ -296,7 +322,20 @@ function common.parse_registry_index(registry_index)
                     service[previous] = args:match("^[^ ]+")
                     key = true
                 end
-                args = args:gsub(args:match("^[^ ]+"):gsub("%-", "%%%-"), ""):gsub("^%s+", "")
+                args = args:gsub(args:match("^[^ ]+")
+                :gsub("%%", "%%%%")
+                :gsub("%-", "%%%-")
+                :gsub("%(", "%%%(")
+                :gsub("%)", "%%%)")
+                :gsub("%.", "%%%.")
+                :gsub("%?", "%%%?")
+                :gsub("%*", "%%%*")
+                :gsub("%+", "%%%+")
+                :gsub("%[", "%%%[")
+                :gsub("%]", "%%%]")
+                :gsub("%^", "%%%^")
+                :gsub("%$", "%%%$")
+                , "", 1):gsub("^%s+", "")
             end
         end
         table.insert(services, service)
