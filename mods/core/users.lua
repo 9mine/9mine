@@ -47,9 +47,9 @@ end
 
          "field[0,0;0,0;parsed_registry;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
          "field[0,0;0,0;raw_registries;;", minetest.formspec_escape(minetest.serialize(filtered_registries)), "]",
-         "field[0,0;0,0;raw_services;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
+         "field[0,0;0,0;raw_services;;", minetest.formspec_escape(minetest.serialize(filtered_services)), "]",
          "field[0,0;0,0;filtered_registries;;", minetest.formspec_escape(minetest.serialize(filtered_registries)), "]",
-         "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(minetest.serialize(parsed_registry)), "]",
+         "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(minetest.serialize(filtered_services)), "]",
          
          "field[0,0;0,0;registries_string;;", registries_string, "]", 
          "field[0,0;0,0;services_string;;", services_string, "]", 
