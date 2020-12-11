@@ -270,6 +270,15 @@ function common.update_path_hud(player, id, addr_id, bg_id)
     minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
 end
 
+function common.read_registry_index(connection_string)
+    local connection = np_over_tcp(connection_string)
+    if connection:attach() then 
+    local registry = np_prot.file_read(connection.conn, "index")
+    connection:close()
+    return registry
+    end
+end
+
 function common.parse_registry_index(registry_index)
     local services = {}
     for token in registry_index:gmatch("[^\n]+") do

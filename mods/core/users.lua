@@ -1,8 +1,4 @@
 minetest.register_on_prejoinplayer(function(name, ip)
-    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. name)
-    if not user_addr or user_addr:gsub("%s+", "") == "" then
-        root_cmdchan:write("echo -n " .. name .. " >> /n/9mine/user")
-    end
     connections:add_player(name)
 end)
 
@@ -24,25 +20,25 @@ end
 
 draw_welcome_screen = function(player)
     local name = player:get_player_name()
-    local registry = root_cmdchan:execute("cat /mnt/registry/index")
+    local registry = common.read_registry_index(os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
+                                      core_conf:get("REGISTRY_ADDR"))
     local services = common.parse_registry_index(registry)
     local service_string = ""
     for index, service in pairs(services) do
-        service_string = service_string == "" and service.service_addr or service_string .. "," .. service.service_addr
+        if service.type == "registry" then
+            service_string = service_string == "" and service.service_addr or service_string .. "," ..
+                                 service.service_addr
+        end
     end
     minetest.show_formspec(name, "core:global_registry", table.concat(
-        {   "formspec_version[4]", 
-            "size[19,11,false]",
-            "hypertext[0.0,0.0;19.5,1;;<big><center>Select 9p service from the list <center><big>]",
-            "field[0.5,0.5;0,0;original_services;;", minetest.formspec_escape(minetest.serialize(services)), "]", 
-            "field[0.5,0.5;0,0;services;;", minetest.formspec_escape(minetest.serialize(services)), "]", 
-            "field[0.5,0.5;0,0;service_string;;", service_string, "]", 
-            "tablecolumns[text]", "field[0.5,1;6.5,1;search;;]", 
-            "field_close_on_enter[search;false]",
-            "button[7,1;2.5,1;button_search;search]", 
-            "table[0.5,2.2;9,8.3;9p_server;", service_string, ";]",
-            "image[10,1;8.5,4;core_logo.png]",
-            "textarea[10,5.5;9,4.5;;;Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style]"},
+        {"formspec_version[4]", "size[30,11,false]",
+         "hypertext[0.0,0.0;30,1;;<big><center>Select 9p service from the list <center><big>]",
+         "field[0.5,0.5;0,0;original_services;;", minetest.formspec_escape(minetest.serialize(services)), "]",
+         "field[0.5,0.5;0,0;services;;", minetest.formspec_escape(minetest.serialize(services)), "]",
+         "field[0.5,0.5;0,0;service_string;;", service_string, "]", "tablecolumns[text]", "field[0.5,1;6.5,1;search;;]",
+         "field_close_on_enter[search;false]", "button[7,1;2.5,1;button_search;search]",
+         "table[0.5,2.2;9,8.3;9p_server;", service_string, ";]", "image[19.5,1;8.5,4;core_logo.png]",
+         "textarea[19.5,5.5;9,4.5;;;Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style]"},
         ""))
 end
 
