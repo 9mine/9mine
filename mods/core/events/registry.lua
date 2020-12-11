@@ -7,23 +7,49 @@ local global_registry = function(player, formname, fields)
     local registries_idx = ""
     local services_idx = ""
     local icon, description
-    local event = core.explode_table_event(fields["registries"])
-    if event.row ~= 0 then
-        local filtered_registries = minetest.deserialize(filtered_registries)
-        registries_idx = event.row
-        local service = filtered_registries[event.row]
-        local registry = common.read_registry_index(service.service_addr)
-        registry = common.parse_registry_index(registry)
-        local obj, str = common.filter_registry_by_keyword(registry, "")
-        filtered_services = minetest.serialize(obj)
-        services_string = str
+
+    -- handle click in registry table 
+local event = core.explode_table_event(fields["registries"])
+if event.row ~= 0 then
+    local filtered_registries = minetest.deserialize(filtered_registries)
+    registries_idx = event.row
+    local service = filtered_registries[event.row]
+    local registry = common.read_registry_index(service.service_addr)
+    registry = common.parse_registry_index(registry)
+    local obj, str = common.filter_registry_by_keyword(registry, "")
+    filtered_services = minetest.serialize(obj)
+    services_string = str
+    if service.icon then
         if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
             texture.download(service.icon, service.icon:match("https://") and true or false,
                 common.hex(service.service_addr) .. ".png", "registry")
         end
         icon = common.hex(service.service_addr) .. ".png"
-        description = service.description
+    else 
+        icon = "core_ns.png"
     end
+    description = service.description or dump(service)
+end
+
+
+-- handle click in service table 
+local event = core.explode_table_event(fields["services"])
+if event.row ~= 0 then
+    local filtered_services = minetest.deserialize(filtered_services)
+    services_idx = event.row
+    local service = filtered_services[event.row]
+    if service.icon then
+        if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
+            texture.download(service.icon, service.icon:match("https://") and true or false,
+                common.hex(service.service_addr) .. ".png", "registry")
+        end
+        icon = common.hex(service.service_addr) .. ".png"
+    else 
+        icon = "core_ns.png"
+    end
+    description = service.description or  dump(service)
+end
+
 
     minetest.show_formspec(player:get_player_name(), "core:global_registry",
         table.concat({"formspec_version[4]", "size[29,11.5,false]",
@@ -52,7 +78,7 @@ local global_registry = function(player, formname, fields)
                       "button[16.5, 1.5; 2.5, 1;button_search_services; search]", 
                       "table[10, 2.7; 9, 8.3;services;", services_string, ";]", 
                       "image[19.5, 1; 9, 4;", icon or "core_logo.png", "]",
-                      "textarea[19.5, 5.5; 9, 5.5;;;", description or "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style",
+                      "textarea[19.5, 5.5; 9, 5.5;;;", minetest.formspec_escape(description) or "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style",
                       "]"}, ""))
 end
 
