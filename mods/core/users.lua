@@ -1,5 +1,7 @@
-minetest.register_on_prejoinplayer(function(name, ip)
-    connections:add_player(name)
+minetest.register_on_prejoinplayer(function(player_name, ip)
+    local player_graph = graphs:get_player_graph(player_name) or
+    graphs:add_player_graph(player_graph(player_name), player_name)
+    connections:add_player(player_name)
 end)
 
 poll_regquery = function(name, counter, player, last_login)
