@@ -1,7 +1,7 @@
 class 'np_over_tcp'
 
 -- initialize connection object with basic connection information
-function np_over_tcp:np_over_tcp(attach_string)
+function np_over_tcp:np_over_tcp(attach_string, player_name)
     local addr, prot, host, port = parse_attach_string(attach_string)
     -- tcp socket on which 9p messages are transmitted
     self.tcp = nil
@@ -11,15 +11,24 @@ function np_over_tcp:np_over_tcp(attach_string)
     self.prot = prot
     self.host = host
     self.port = port
+    self.player_name = player_name
 end
 
 function np_over_tcp:attach()
     local tcp = socket:tcp()
     self.tcp = tcp
+    if not self.host or not self.port then
+        if self.player_name then
+            minetest.chat_send_player(self.player_name, "No host or port provided")
+        end
+        return false
+    end
     local result, err = tcp:connect(self.host, self.port)
     if not result then
         print("Connection error to " .. self.addr .. ": " .. err)
-        minetest.chat_send_all("Connection error to " .. self.addr .. ": " .. err)
+        if self.player_name then
+            minetest.chat_send_player(self.player_name, "Connection error to " .. self.addr .. ": " .. err)
+        end
         return false
     end
     local conn = np.newconn(function(size)
@@ -34,7 +43,9 @@ function np_over_tcp:attach()
     end)
     self.conn = conn
     conn:attach("root", "")
-    minetest.chat_send_all("Attached to " .. self.addr)
+    if self.player_name then
+        minetest.chat_send_player(self.player_name, "Attached to " .. self.addr)
+    end
     print("Attached to " .. self.addr)
     return self
 end

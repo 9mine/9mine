@@ -275,7 +275,7 @@ function common.read_registry_index(connection_string, player_name)
     if player_name then 
         connection = connections:get_connection(player_name, connection_string, true)
     else 
-        connection = np_over_tcp(connection_string)
+        connection = np_over_tcp(connection_string, player_name)
         connection = connection:attach()
     end
     if connection then 
