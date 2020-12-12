@@ -70,7 +70,7 @@ automount = function()
     return root_cmdchan
 end
 
-spawn_root_platform = function(attach_string, player, last_login)
+spawn_root_platform = function(attach_string, player, last_login, random)
     local player_name = player:get_player_name()
     local connection = connections:get_connection(player_name, attach_string, true)
     if not connection then
@@ -93,11 +93,16 @@ spawn_root_platform = function(attach_string, player, last_login)
             local root_platform = player_graph:get_platform(attach_string .. "/")
             common.goto_platform(player, root_platform:get_root_point())
         else
-            local result = player:set_pos({
-                x = math.random(-30000, 30000),
-                y = math.random(-30000, 30000),
-                z = math.random(-30000, 30000)
-            })
+            local result
+            if random then
+                local result = player:set_pos({
+                    x = math.random(-30000, 30000),
+                    y = math.random(-30000, 30000),
+                    z = math.random(-30000, 30000)
+                })
+            else
+                local result = player:get_pos()
+            end
             minetest.after(1.5, function()
                 local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
                 root_platform:set_player(player_name)

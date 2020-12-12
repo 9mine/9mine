@@ -14,7 +14,7 @@ poll_regquery = function(name, counter, player, last_login)
     local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. name)
     if response == "" then
         minetest.chat_send_player(name, user_addr .. " mounted")
-        minetest.after(2, spawn_root_platform, user_addr, player, last_login)
+        minetest.after(2, spawn_root_platform, user_addr, player, last_login, true)
     else
         minetest.after(2, poll_regquery, name, counter, player, last_login)
     end
