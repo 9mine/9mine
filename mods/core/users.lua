@@ -57,7 +57,7 @@ end
          "field[0,0;0,0;services_string;;", services_string, "]", 
          
          "tablecolumns[text]", 
-
+         "style[search_registries,search_services;textcolor=black]", 
          "hypertext[0.5, 0.8; 9, 1;;<big><center>Registries<center><big>]",        
          "field[0.5, 1.5; 6.5, 1;search_registries;;]", "field_close_on_enter[search_registries;false]", 
 
