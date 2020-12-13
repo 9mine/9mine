@@ -7,22 +7,22 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@v0.0.8
+        uses: satackey/action-docker-layer-caching@v0.0.10
 
       - name: build image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
+        run: docker build -t ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/} .
 
       - name: login to hub.docker.com
         run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: push image to registry
-        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/}
+        run: docker image push ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/}
 
-      - name: build client image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/} -f Dockerfile.client .
+      # - name: build client image
+      #   run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/} -f Dockerfile.client .
 
-      - name: push image to registry
-        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/}
+      # - name: push image to registry
+      #   run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest-client:${GITHUB_REF##*/}
 
       - name: Notify Telegram
         uses: yanzay/notify-telegram@v0.1.0
