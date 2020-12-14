@@ -39,6 +39,7 @@ require 'events.stat'
 require 'events.platform'
 require 'crafts.ns'
 require 'users'
+require 'home_platform'
 
 -- nodes
 require 'nodes.dir'

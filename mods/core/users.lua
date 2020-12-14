@@ -26,23 +26,24 @@ end
 
 minetest.register_on_joinplayer(function(player, last_login)
     minetest.after(3, common.update_path_hud, player)
+    register.call_onjoin_funcs(player)
     -- draw_welcome_screen(player)
-    local player_name = player:get_player_name()
-    common.show_wait_notification(player_name, "Please, wait.\nThe namespace is creating.")
-    minetest.after(2, function()
-        local user_addr = root_cmdchan:read("/tmp/cmdchan_output"):gsub("\n", "")
-        if not user_addr or user_addr:gsub("%s+", "") == "" then
-            root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/user")
-            local counter = 1
-            minetest.after(2, poll_regquery, player_name, counter, player, last_login)
-        else
-           local result = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. player_name)
-           if result == "" then 
-                minetest.chat_send_player(player_name, user_addr .. " mounted")
-                minetest.after(2, spawn_root_platform, user_addr, player, last_login)
-           else
-            minetest.kick_player(player_name, "Error mounting NS. Try again later. Log: \n" .. result)
-           end
-        end
-    end)
+    -- local player_name = player:get_player_name()
+    -- common.show_wait_notification(player_name, "Please, wait.\nThe namespace is creating.")
+    -- minetest.after(2, function()
+    --     local user_addr = root_cmdchan:read("/tmp/cmdchan_output"):gsub("\n", "")
+    --     if not user_addr or user_addr:gsub("%s+", "") == "" then
+    --         root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/user")
+    --         local counter = 1
+    --         minetest.after(2, poll_regquery, player_name, counter, player, last_login)
+    --     else
+    --        local result = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. player_name)
+    --        if result == "" then 
+    --             minetest.chat_send_player(player_name, user_addr .. " mounted")
+    --             minetest.after(2, spawn_root_platform, user_addr, player, last_login)
+    --        else
+    --         minetest.kick_player(player_name, "Error mounting NS. Try again later. Log: \n" .. result)
+    --        end
+    --     end
+    -- end)
 end)
