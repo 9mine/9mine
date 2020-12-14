@@ -272,14 +272,14 @@ end
 
 function common.read_registry_index(connection_string, player_name)
     local connection
-    if player_name then 
+    if player_name then
         connection = connections:get_connection(player_name, connection_string, true)
-    else 
+    else
         connection = np_over_tcp(connection_string, player_name)
         connection = connection:attach()
     end
-    if connection then 
-    return np_prot.file_read(connection.conn, "index")
+    if connection then
+        return np_prot.file_read(connection.conn, "index")
     end
 end
 
@@ -288,20 +288,21 @@ function common.parse_registry_index(registry_index)
     for token in registry_index:gmatch("[^\n]+") do
         local service = {}
         service.service_addr = token:match("[^ ]+")
-        local args = token:gsub(token:match("[^ ]+")
-        :gsub("%%", "%%%%")
-        :gsub("%-", "%%%-")
-        :gsub("%(", "%%%(")
-        :gsub("%)", "%%%)")
-        :gsub("%.", "%%%.")
-        :gsub("%?", "%%%?")
-        :gsub("%*", "%%%*")
-        :gsub("%+", "%%%+")
-        :gsub("%[", "%%%[")
-        :gsub("%]", "%%%]")
-        :gsub("%^", "%%%^")
-        :gsub("%$", "%%%$")
-        , "", 1):gsub("^%s+", ""):gsub("''", "$_/\\@")
+        local args = token:gsub(
+                         token:match("[^ ]+")
+                         :gsub("%%", "%%%%")
+                         :gsub("%-", "%%%-")
+                         :gsub("%(", "%%%(")
+                         :gsub("%)", "%%%)")
+                         :gsub("%.", "%%%.")
+                         :gsub("%?", "%%%?")
+                         :gsub("%*", "%%%*")
+                         :gsub("%+", "%%%+")
+                         :gsub("%[", "%%%[")
+                         :gsub("%]", "%%%]")
+                         :gsub("%^", "%%%^")
+                         :gsub("%$", "%%%$"),
+                         "", 1):gsub("^%s+", ""):gsub("''", "$_/\\@")
         local key = true
         local previous
         while (#args > 0) do
@@ -325,8 +326,8 @@ function common.parse_registry_index(registry_index)
                 :gsub("%[", "%%%[")
                 :gsub("%]", "%%%]")
                 :gsub("%^", "%%%^")
-                :gsub("%$", "%%%$")
-                , "", 1):gsub("^%s+", "")
+                :gsub("%$", "%%%$"),
+                "", 1):gsub("^%s+", "")
             else
                 if key then
                     previous = args:match("^[^ ]+")
@@ -347,8 +348,8 @@ function common.parse_registry_index(registry_index)
                 :gsub("%[", "%%%[")
                 :gsub("%]", "%%%]")
                 :gsub("%^", "%%%^")
-                :gsub("%$", "%%%$")
-                , "", 1):gsub("^%s+", "")
+                :gsub("%$", "%%%$"),
+                           "", 1):gsub("^%s+", "")
             end
         end
         table.insert(services, service)
@@ -369,7 +370,6 @@ function common.filter_registry_by_type(object, type)
     return objects, formspec_table_string
 end
 
-
 function common.filter_registry_by_keyword(object, keyword)
     local formspec_table_string = ""
     local objects = {}
@@ -387,4 +387,24 @@ function common.filter_registry_by_keyword(object, keyword)
         end
     end
     return objects, formspec_table_string
+end
+
+function common.icon_from_url(service)
+    if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
+        texture.download(service.icon, service.icon:match("https://") and true or false,
+            common.hex(service.service_addr) .. ".png", "registry")
+    end
+    return common.hex(service.service_addr) .. ".png"
+end
+
+function common.icon_from_9p(service, player_name)
+    local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
+                           os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
+    if connection then
+        local result = texture.download_from_9p(connection.conn, '/9mine/registry/logo/' .. service.service_addr,
+                           common.hex(service.service_addr) .. ".png", "registry")
+        if result then
+            return common.hex(service.service_addr) .. ".png"
+        end
+    end
 end

@@ -49,25 +49,10 @@ local global_registry = function(player, formname, fields)
         filtered_services = raw_services
         services_string = str
         if service.icon then
-            if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
-                texture.download(service.icon, service.icon:match("https://") and true or false,
-                    common.hex(service.service_addr) .. ".png", "registry")
-            end
-            icon = common.hex(service.service_addr) .. ".png"
+            icon = common.icon_from_url(service)
         else
-            local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
-                                   os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
-            if connection then
-                local result = texture.download_from_9p(connection.conn,
-                                   '/9mine/registry/logo/' .. service.service_addr,
-                                   common.hex(service.service_addr) .. ".png", "registry")
-                minetest.chat_send_player(player_name, "THIS IS AFTER RESULT IS OBJTAINER")
-                if result then
-                    icon = common.hex(service.service_addr) .. ".png"
-                else
-                    icon = "core_ns.png"
-                end
-            else
+            icon = common.icon_from_9p(service)
+            if not icon then 
                 icon = "core_ns.png"
             end
         end
@@ -82,24 +67,10 @@ local global_registry = function(player, formname, fields)
         local service = filtered_services[event.row]
         selected_entry = service.service_addr
         if service.icon then
-            if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
-                texture.download(service.icon, service.icon:match("https://") and true or false,
-                    common.hex(service.service_addr) .. ".png", "registry")
-            end
-            icon = common.hex(service.service_addr) .. ".png"
+            icon = common.icon_from_url(service)
         else
-            local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
-                                   os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
-            if connection then
-                local result = texture.download_from_9p(connection.conn,
-                                   '/9mine/registry/logo/' .. service.service_addr,
-                                   common.hex(service.service_addr) .. ".png", "registry")
-                if result then
-                    icon = common.hex(service.service_addr) .. ".png"
-                else
-                    icon = "core_ns.png"
-                end
-            else
+            icon = common.icon_from_9p(service, player_name)
+            if not icon then 
                 icon = "core_ns.png"
             end
         end
