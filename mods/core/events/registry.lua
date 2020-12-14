@@ -5,7 +5,7 @@ local global_registry = function(player, formname, fields)
     end
     local selected_entry = fields.selected_entry
 
-    if fields.connect then 
+    if fields.connect then
         minetest.show_formspec(player:get_player_name(), "core:global_registry", "")
         spawn_root_platform(fields.selected_entry, player, nil, false)
         return
@@ -55,7 +55,21 @@ local global_registry = function(player, formname, fields)
             end
             icon = common.hex(service.service_addr) .. ".png"
         else
-            icon = "core_ns.png"
+            local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
+                                   os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
+            if connection then
+                local result = texture.download_from_9p(connection.conn,
+                                   '/9mine/registry/logo/' .. service.service_addr,
+                                   common.hex(service.service_addr) .. ".png", "registry")
+                minetest.chat_send_player(player_name, "THIS IS AFTER RESULT IS OBJTAINER")
+                if result then
+                    icon = common.hex(service.service_addr) .. ".png"
+                else
+                    icon = "core_ns.png"
+                end
+            else
+                icon = "core_ns.png"
+            end
         end
         description = service.description or dump(service)
     end
@@ -74,43 +88,55 @@ local global_registry = function(player, formname, fields)
             end
             icon = common.hex(service.service_addr) .. ".png"
         else
-            icon = "core_ns.png"
+            local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
+                                   os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
+            if connection then
+                local result = texture.download_from_9p(connection.conn,
+                                   '/9mine/registry/logo/' .. service.service_addr,
+                                   common.hex(service.service_addr) .. ".png", "registry")
+                if result then
+                    icon = common.hex(service.service_addr) .. ".png"
+                else
+                    icon = "core_ns.png"
+                end
+            else
+                icon = "core_ns.png"
+            end
         end
         description = service.description or dump(service)
     end
 
     minetest.show_formspec(player_name, "core:global_registry",
-    table.concat({"formspec_version[4]", "size[29,11.5,false]",
-                  "hypertext[0,0.1;30,1;;<bigger><center>Welcome to 9mine<center><bigger>]",
+        table.concat({"formspec_version[4]", "size[29,11.5,false]",
+                      "hypertext[0,0.1;30,1;;<bigger><center>Welcome to 9mine<center><bigger>]",
 
-                  "field[0,0;0,0;parsed_registry;;", minetest.formspec_escape(parsed_registry), "]",
-                  "field[0,0;0,0;raw_registries;;", minetest.formspec_escape(raw_registries), "]",
-                  "field[0,0;0,0;raw_services;;", minetest.formspec_escape(raw_services), "]",             
-                  "field[0,0;0,0;filtered_registries;;", minetest.formspec_escape(filtered_registries), "]",
-                  "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(filtered_services), "]",
-                  selected_entry and "field[0,0;0,0;selected_entry;;" .. minetest.formspec_escape(selected_entry) .. "]" or "",
-                  "field[0,0;0,0;registries_string;;", registries_string, "]", 
-                  "field[0,0;0,0;services_string;;", services_string, "]", 
-                  
-                  "tablecolumns[text]",
-                  "style[search_registries,search_services;textcolor=black]", 
-                  "hypertext[0.5, 0.8; 9, 1;;<big><center>Registries<center><big>]",
-                  "field[0.5, 1.5; 6.5, 1;search_registries;;]", 
-                  "field_close_on_enter[search_registries;false]",
+                      "field[0,0;0,0;parsed_registry;;", minetest.formspec_escape(parsed_registry), "]",
+                      "field[0,0;0,0;raw_registries;;", minetest.formspec_escape(raw_registries), "]",
+                      "field[0,0;0,0;raw_services;;", minetest.formspec_escape(raw_services), "]",
+                      "field[0,0;0,0;filtered_registries;;", minetest.formspec_escape(filtered_registries), "]",
+                      "field[0,0;0,0;filtered_services;;", minetest.formspec_escape(filtered_services), "]",
+                      selected_entry and "field[0,0;0,0;selected_entry;;" .. minetest.formspec_escape(selected_entry) .. "]" or "", "field[0,0;0,0;registries_string;;", registries_string, "]", 
+                      "field[0,0;0,0;services_string;;", services_string, "]", 
+                      
+                      "tablecolumns[text]",
+                      "style[search_registries,search_services;textcolor=black]",
+                      "hypertext[0.5, 0.8; 9, 1;;<big><center>Registries<center><big>]",
+                      "field[0.5, 1.5; 6.5, 1;search_registries;;]", 
+                      "field_close_on_enter[search_registries;false]",
 
-                  "button[7, 1.5; 2.5, 1;button_search_registries;search]", 
-                  "table[0.5, 2.7; 9, 8.3;registries;", registries_string, ";", registries_idx, "]",
+                      "button[7, 1.5; 2.5, 1;button_search_registries;search]", 
+                      "table[0.5, 2.7; 9, 8.3;registries;", registries_string, ";", registries_idx, "]",
 
-                  "hypertext[10, 0.8; 9, 1;;<big><center>Services<center><big>]",
-                  "field[10, 1.5; 6.5, 1;search_services;;]", 
-                  "field_close_on_enter[search_services;false]",
+                      "hypertext[10, 0.8; 9, 1;;<big><center>Services<center><big>]",
+                      "field[10, 1.5; 6.5, 1;search_services;;]", 
+                      "field_close_on_enter[search_services;false]",
 
-                  "button[16.5, 1.5; 2.5, 1;button_search_services;search]", 
-                  "table[10, 2.7; 9, 8.3;services;", services_string, ";]", 
-                  "image[19.5, 1; 9, 4;", icon or "core_logo.png", "]",
-                  "textarea[19.5, 5.5; 9, 4.5;;;", minetest.formspec_escape(description) or "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style", "]", 
-                  selected_entry and "button[26, 10.3; 2.5, 0.7;connect;connect]" or ""
-            }, ""))
+                      "button[16.5, 1.5; 2.5, 1;button_search_services;search]", 
+                      "table[10, 2.7; 9, 8.3;services;", services_string, ";]", 
+                      "image[19.5, 1; 9, 4;", icon or "core_logo.png", "]",
+                      "textarea[19.5, 5.5; 9, 4.5;;;", minetest.formspec_escape(description) or 
+                      "Welcome to 9mine Proof of Concept. This project aims to visualize 9p fileservers and interact with them in minecraft-style", "]", 
+                      selected_entry and "button[26, 10.3; 2.5, 0.7;connect;connect]" or ""}, ""))
 
 end
 

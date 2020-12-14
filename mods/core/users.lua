@@ -1,5 +1,6 @@
 minetest.register_on_prejoinplayer(function(player_name, ip)
     local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. player_name)
+    print(user_addr .. " USER WHERE IT IS NNEEDED TO BE")
     if not user_addr or user_addr:gsub("%s+", "") == "" then
         root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/user")
     end
@@ -27,9 +28,9 @@ poll_regquery = function(name, counter, player, last_login)
 end
 
 draw_welcome_screen = function(player)
-    local name = player:get_player_name()
+    local player_name = player:get_player_name()
     local registry = common.read_registry_index(os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
-                                                    core_conf:get("REGISTRY_ADDR"), name)
+                                                    core_conf:get("REGISTRY_ADDR"), player_name)
 local parsed_registry = common.parse_registry_index(registry)
 local filtered_registries = {}
 local filtered_services = {}
@@ -47,8 +48,7 @@ for index, entry in pairs(parsed_registry) do
 
     end
 end
-
-    minetest.show_formspec(name, "core:global_registry", table.concat(
+    minetest.show_formspec(player_name, "core:global_registry", table.concat(
         {"formspec_version[4]", 
         "size[29,11.5,false]",
          "hypertext[0,0.1;30,1;;<bigger><center>Welcome to 9mine<center><bigger>]",

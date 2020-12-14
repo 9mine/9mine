@@ -48,6 +48,7 @@ end
 function texture.download_from_9p(conn, source_path, destination_name, destination_directory)
     if not texture.exists(destination_name, destination_directory) then
         local result, texture_string = pcall(np_prot.file_read, conn, source_path)
+        if not result then return false end 
         if destination_directory then
             lfs.mkdir(texture.path .. destination_directory)
         end
@@ -57,5 +58,6 @@ function texture.download_from_9p(conn, source_path, destination_name, destinati
         file:write(texture_string)
         file:close()
         minetest.dynamic_add_media(path)
+        return true 
     end
 end
