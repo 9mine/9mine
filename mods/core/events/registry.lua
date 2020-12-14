@@ -7,7 +7,7 @@ local global_registry = function(player, formname, fields)
 
     if fields.connect then 
         minetest.show_formspec(player:get_player_name(), "core:global_registry", "")
-        spawn_root_platform(fields.selected_entry, player, nil, true)
+        spawn_root_platform(fields.selected_entry, player, nil, false)
         return
     end
 

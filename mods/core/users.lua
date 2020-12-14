@@ -1,8 +1,14 @@
 minetest.register_on_prejoinplayer(function(player_name, ip)
-    local player_graph = graphs:get_player_graph(player_name) or
-    graphs:add_player_graph(player_graph(player_name), player_name)
+    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. player_name)
+    if not user_addr or user_addr:gsub("%s+", "") == "" then
+        root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/user")
+    end
+    if not graphs:get_player_graph(player_name) then
+        graphs:add_player_graph(player_graph(player_name), player_name)
+    end
     connections:add_player(player_name)
 end)
+
 
 poll_regquery = function(name, counter, player, last_login)
     if counter > 5 then
@@ -77,5 +83,17 @@ end
 
 minetest.register_on_joinplayer(function(player, last_login)
     minetest.after(3, common.update_path_hud, player)
-    draw_welcome_screen(player)
+    --draw_welcome_screen(player)
+    local player_name = player:get_player_name()
+    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. player_name):gsub("\n", "")
+    root_cmdchan:execute("mkdir /n/" .. player_name)
+    if root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. player_name) == "" then
+        minetest.chat_send_player(player_name, user_addr .. " mounted")
+        connections:add_player(player_name)
+        minetest.after(2, spawn_root_platform, user_addr, player, last_login)
+    else
+        common.show_wait_notification(player_name, "Please, wait.\nThe namespace is creating.")
+        local counter = 1
+        minetest.after(2, poll_regquery, player_name, counter, player, last_login)
+    end
 end)
