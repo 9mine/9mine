@@ -3,6 +3,7 @@ class 'register'
 register.form_handlers = {}
 register.texture_handlers = {}
 register.craft_handlers = {}
+register.on_join_funcs = {}
 
 -- form handler
 function register.add_form_handler(formname, f)
@@ -48,5 +49,21 @@ end
 function register.call_craft_handlers(itemstack, player, old_craft_grid, craft_inv)
     for index, handler in pairs(register.craft_handlers) do 
         handler(itemstack, player, old_craft_grid, craft_inv)
+    end
+end
+
+-- on_join funcs 
+-- craft handlers
+function register.add_onjoin_func(func_name, f)
+    register.on_join_funcs[func_name] = f
+end
+
+function register.delete_onjoin_func(func_name) 
+    register.on_join_funcs[func_name] = nil
+end
+
+function register.call_onjoin_funcs(player)
+    for index, func in pairs(register.on_join_funcs) do 
+        func(player)
     end
 end
