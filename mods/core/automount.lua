@@ -115,6 +115,8 @@ spawn_root_platform = function(attach_string, player, last_login, random)
                 minetest.show_formspec(player_name, "", "")
             end)
         end
+    else 
+        minetest.show_formspec(player_name, "", "")
     end
 end
 
