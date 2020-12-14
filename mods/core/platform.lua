@@ -292,7 +292,7 @@ function platform:process_content(content, player_graph, content_size, root_buff
         minetest.chat_send_player(self:get_player(),
             "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
                 " up to now")
-        minetest.after(1, platform.process_content, self, content, player_graph, content_size, root_buffer)
+        minetest.after(2, platform.process_content, self, content, player_graph, content_size, root_buffer)
     else
         minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
             common.table_length(self.directory_entries) .. " entities.")
@@ -434,6 +434,9 @@ function platform:enlarge()
                         z = z
                     }
                     local vi = a:index(x, y, z)
+                    if data[vi] == minetest.CONTENT_IGNORE then 
+                        print("IGNORED WAS FOUND at " .. dump(p))
+                    end
                     data[vi] = core_platform_node
                     param2[vi] = color
 

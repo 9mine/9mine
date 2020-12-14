@@ -180,9 +180,13 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         return
     end
     local player_graph = graphs:get_player_graph(player:get_player_name())
+    if not player_graph then
+        minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
+        return
+    end
     local platform = player_graph:get_platform(platform_string)
     local root_node = player_graph:get_root_node()
-    if not platform_string then
+    if not platform_string or not platform then
         if id then
             player:hud_remove(bg_id)
             player:hud_remove(id)
@@ -191,7 +195,8 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         end
     else
         if id then
-            player:hud_change(bg_id, "number", (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path))
+            player:hud_change(bg_id, "number",
+                (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path))
             player:hud_change(addr_id, "text", platform.addr)
             player:hud_change(addr_id, "offset", {
                 x = -(#platform.addr * 10),
@@ -248,14 +253,14 @@ function common.update_path_hud(player, id, addr_id, bg_id)
             bg_id = player:hud_add({
                 hud_elem_type = "statbar",
                 z_index = -400,
-                direction = 1, 
+                direction = 1,
                 number = (#platform.addr) > (#platform.path) and (#platform.addr) or (#platform.path),
                 position = {
                     x = 1,
                     y = 0
                 },
                 size = {
-                    x = 45, 
+                    x = 45,
                     y = 85
                 },
                 text = "core_hud_bg.png"
@@ -263,4 +268,147 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         end
     end
     minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
+end
+
+function common.read_registry_index(connection_string, player_name)
+    local connection
+    if player_name then
+        connection = connections:get_connection(player_name, connection_string, true)
+    else
+        connection = np_over_tcp(connection_string, player_name)
+        connection = connection:attach()
+    end
+    if connection then
+        return np_prot.file_read(connection.conn, "index")
+    end
+end
+
+function common.parse_registry_index(registry_index)
+    local services = {}
+    for token in registry_index:gmatch("[^\n]+") do
+        local service = {}
+        service.service_addr = token:match("[^ ]+")
+        local args = token:gsub(
+                         token:match("[^ ]+")
+                         :gsub("%%", "%%%%")
+                         :gsub("%-", "%%%-")
+                         :gsub("%(", "%%%(")
+                         :gsub("%)", "%%%)")
+                         :gsub("%.", "%%%.")
+                         :gsub("%?", "%%%?")
+                         :gsub("%*", "%%%*")
+                         :gsub("%+", "%%%+")
+                         :gsub("%[", "%%%[")
+                         :gsub("%]", "%%%]")
+                         :gsub("%^", "%%%^")
+                         :gsub("%$", "%%%$"),
+                         "", 1):gsub("^%s+", ""):gsub("''", "$_/\\@")
+        local key = true
+        local previous
+        while (#args > 0) do
+            if args:sub(1, 1):match("^'") then
+                if key then
+                    previous = args:match("^'[^']+'"):gsub("'", ""):gsub("$_/\\@", "'")
+                    key = false
+                else
+                    service[previous] = args:match("^'[^']+'"):gsub("'", ""):gsub("$_/\\@", "'")
+                    key = true
+                end
+                args = args:gsub(args:match("^'[^']+'")
+                :gsub("%%", "%%%%")
+                :gsub("%-", "%%%-")
+                :gsub("%(", "%%%(")
+                :gsub("%)", "%%%)")
+                :gsub("%.", "%%%.")
+                :gsub("%?", "%%%?")
+                :gsub("%*", "%%%*")
+                :gsub("%+", "%%%+")
+                :gsub("%[", "%%%[")
+                :gsub("%]", "%%%]")
+                :gsub("%^", "%%%^")
+                :gsub("%$", "%%%$"),
+                "", 1):gsub("^%s+", "")
+            else
+                if key then
+                    previous = args:match("^[^ ]+")
+                    key = false
+                else
+                    service[previous] = args:match("^[^ ]+")
+                    key = true
+                end
+                args = args:gsub(args:match("^[^ ]+")
+                :gsub("%%", "%%%%")
+                :gsub("%-", "%%%-")
+                :gsub("%(", "%%%(")
+                :gsub("%)", "%%%)")
+                :gsub("%.", "%%%.")
+                :gsub("%?", "%%%?")
+                :gsub("%*", "%%%*")
+                :gsub("%+", "%%%+")
+                :gsub("%[", "%%%[")
+                :gsub("%]", "%%%]")
+                :gsub("%^", "%%%^")
+                :gsub("%$", "%%%$"),
+                           "", 1):gsub("^%s+", "")
+            end
+        end
+        table.insert(services, service)
+    end
+    return services
+end
+
+function common.filter_registry_by_type(object, type)
+    local formspec_table_string = ""
+    local objects = {}
+    for index, entry in pairs(object) do
+        if entry.type == type then
+            formspec_table_string =
+                formspec_table_string == "" and entry.service_addr or formspec_table_string .. "," .. entry.service_addr
+            table.insert(objects, entry)
+        end
+    end
+    return objects, formspec_table_string
+end
+
+function common.filter_registry_by_keyword(object, keyword)
+    local formspec_table_string = ""
+    local objects = {}
+    for index, entry in pairs(object) do
+        local flag = false
+        for key, value in pairs(entry) do
+            if key:match(keyword) or value:match(keyword) then
+                flag = true
+            end
+        end
+        if flag then
+            formspec_table_string =
+                formspec_table_string == "" and entry.service_addr or formspec_table_string .. "," .. entry.service_addr
+            table.insert(objects, entry)
+        end
+    end
+    return objects, formspec_table_string
+end
+
+function common.icon_from_url(service)
+    if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
+        texture.download(service.icon, service.icon:match("https://") and true or false,
+            common.hex(service.service_addr) .. ".png", "registry")
+    end
+    return common.hex(service.service_addr) .. ".png"
+end
+
+function common.icon_from_9p(service, player_name)
+    if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
+    local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
+                           os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
+    if connection then
+        local result = texture.download_from_9p(connection.conn, '/9mine/registry/logo/' .. service.service_addr,
+                           common.hex(service.service_addr) .. ".png", "registry")
+        if result then
+            return common.hex(service.service_addr) .. ".png"
+        end
+    end
+else 
+    return common.hex(service.service_addr) .. ".png"
+end
 end

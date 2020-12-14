@@ -37,6 +37,7 @@ require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
+require 'events.registry'
 require 'crafts.ns'
 require 'users'
 
@@ -78,6 +79,5 @@ functions = {}
 filters = {}
 crafts = {}
 form_handlers = {}
-
 root_cmdchan = automount()
 area_store = AreaStore()
