@@ -186,7 +186,7 @@ function common.update_path_hud(player, id, addr_id, bg_id)
     end
     local platform = player_graph:get_platform(platform_string)
     local root_node = player_graph:get_root_node()
-    if not platform_string then
+    if not platform_string or not platform then
         if id then
             player:hud_remove(bg_id)
             player:hud_remove(id)
