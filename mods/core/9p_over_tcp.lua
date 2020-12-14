@@ -72,8 +72,9 @@ end
 
 -- parses string in form of '<protocol>!<hostname>!<port_number>'
 parse_attach_string = function(attach_string)
+    if not attach_string then return end 
     local info = {}
-    for token in string.gmatch(attach_string, "[^!]+") do
+    for token in attach_string:gmatch("[^!]+") do
         table.insert(info, token)
     end
     local prot = info[1]
