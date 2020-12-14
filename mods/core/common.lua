@@ -398,6 +398,7 @@ function common.icon_from_url(service)
 end
 
 function common.icon_from_9p(service, player_name)
+    if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
     local connection = connections:get_connection(player_name, os.getenv("GRIDFILES_ADDR") ~= "" and
                            os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
     if connection then
@@ -407,4 +408,7 @@ function common.icon_from_9p(service, player_name)
             return common.hex(service.service_addr) .. ".png"
         end
     end
+else 
+    return common.hex(service.service_addr) .. ".png"
+end
 end
