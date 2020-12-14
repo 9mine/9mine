@@ -37,7 +37,6 @@ require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
-require 'events.registry'
 require 'crafts.ns'
 require 'users'
 
