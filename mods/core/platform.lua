@@ -205,9 +205,9 @@ function platform:spawn_stat(stat)
     local slot = table.copy(self:get_slot())
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
-    slot.y = slot.y + 1
+    slot.y = slot.y + 7 + math.random(5, 12)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity)
+    directory_entry:filter(stat_entity, nil, self:get_player())
     return directory_entry
 end
 

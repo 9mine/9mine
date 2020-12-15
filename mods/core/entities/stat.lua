@@ -1,6 +1,6 @@
 local StatEntity = {
     initial_properties = {
-        physical = false,
+        physical = true,
         pointable = true,
         visual = "sprite",
         collide_with_objects = true,
@@ -53,6 +53,7 @@ function StatEntity:get_staticdata()
     local attributes = self.object:get_nametag_attributes()
     local properties = self.object:get_properties()
     local data = {
+        player_name = self.player_name,
         visual = properties.visual,
         textures = properties.textures,
         entry_string = self.entry_string,
@@ -66,11 +67,13 @@ function StatEntity:on_activate(staticdata, dtime_s)
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)
         self.entry_string = data.entry_string
+        self.player_name = data.player_name
         self.object:set_properties({
             visual = data.visual,
             textures = data.textures
         })
     end
+
 end
 
 minetest.register_entity("core:stat", StatEntity)
