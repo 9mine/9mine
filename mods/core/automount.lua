@@ -1,4 +1,52 @@
-poll_user_management = function(root_cmdchan)
+class 'automount'
+
+function automount:automount() 
+    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or core_conf:get("REGISTRY_ADDR")
+    self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
+end
+
+function automount:connect_to_root()
+    local connection = connections:get_root_connection(self.inferno_addr)
+    if not connection then
+        error("Failed connecting to the inferno os")
+    end
+
+    -- check for presence of cmdchan
+    local root_cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
+    connections:set_root_cmdchan(root_cmdchan)
+    if not root_cmdchan:is_present() then
+        error("cmdchan is not present")
+    end
+
+    -- mount registry
+    root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry")
+    automount.root_cmdchan = root_cmdchan
+    automount:mount_registry()
+    return root_cmdchan
+end
+
+
+function automount:mount_registry()
+    local root_cmdchan = self.root_cmdchan
+    local response = root_cmdchan:execute("mount -A " .. self.registry_addr .. " /mnt/registry"):gsub("%s+", "")
+    if response == "" then
+        local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
+        if user_management:match(".*!.*!.*") then
+            print(user_management)
+            print("mount -A " .. user_management .. " /n/9mine")
+            print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
+        else
+            minetest.after(1, automount.poll_user_management, self)
+        end
+    else
+        print("Registry mount failed. Retry")
+        minetest.after(1, automount.mount_registry, self)
+    end
+end
+
+
+function automount:poll_user_management()
+    local root_cmdchan = self.root_cmdchan
     print("Polling user management . . .")
     print(root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry"))
     local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
@@ -7,67 +55,8 @@ poll_user_management = function(root_cmdchan)
         print("mount -A " .. user_management .. " /n/9mine")
         print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
     else
-        minetest.after(3, poll_user_management, root_cmdchan)
+        minetest.after(1, automount.poll_user_management)
     end
-end
-
-mount_registry = function(root_cmdchan, registry_addr)
-    local response = root_cmdchan:execute("mount -A " .. registry_addr .. " /mnt/registry"):gsub("%s+", "")
-    if response == "" then
-        local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
-        if user_management:match(".*!.*!.*") then
-            print(user_management)
-            print("mount -A " .. user_management .. " /n/9mine")
-            print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
-        else
-            minetest.after(3, poll_user_management, root_cmdchan)
-        end
-    else
-        print("Registry mount failed. Retry")
-        minetest.after(3, mount_registry, root_cmdchan, registry_addr)
-    end
-end
-
-automount = function()
-    -- get string in form of tcp!host!port from ENV or mod.conf
-    local attach_string = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
-
-    -- establish 9p conn
-    local connection = connections:get_root_connection()
-    if not connection then
-        connection = np_over_tcp(attach_string)
-        connections:set_root_connection(connection)
-        if not connection:attach() then
-            error("Failed connecting to the inferno os")
-        end
-    elseif connection:is_alive() then
-        print("Already attached. Connection is alive")
-    elseif connection.tcp then
-        print("Connection is not alive. Reconnecting")
-        connection:reattach()
-    else
-        if not connection:attach() then
-            error("Failed connecting to the inferno os")
-        end
-    end
-
-    -- check for presence of cmdchan
-    local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
-    local root_cmdchan = cmdchan(connection, cmdchan_path)
-    connections:set_root_cmdchan(root_cmdchan)
-    if not root_cmdchan:is_present() then
-        error("cmdchan at path " .. cmdchan_path .. " is not available")
-    else
-        print("cmdchan is available")
-    end
-
-    -- mount registry
-    print(root_cmdchan:execute("mkdir -p /n/9mine /mnt/registry"))
-    local registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
-                              core_conf:get("REGISTRY_ADDR")
-    mount_registry(root_cmdchan, registry_addr)
-
-    return root_cmdchan
 end
 
 spawn_root_platform = function(attach_string, player, last_login, random)
@@ -115,7 +104,7 @@ spawn_root_platform = function(attach_string, player, last_login, random)
                 minetest.show_formspec(player_name, "", "")
             end)
         end
-    else 
+    else
         minetest.show_formspec(player_name, "", "")
     end
 end

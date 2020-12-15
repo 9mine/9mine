@@ -70,6 +70,7 @@ require 'chat.graph'
 require 'chat.commands'
 require 'chat.mvcp'
 connections = connections()
+automount = automount()
 graphs = graphs()
 np_prot = np_prot()
 mounts = mounts()
@@ -79,5 +80,5 @@ functions = {}
 filters = {}
 crafts = {}
 form_handlers = {}
-root_cmdchan = automount()
+root_cmdchan = automount:connect_to_root()
 area_store = AreaStore()
