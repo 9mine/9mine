@@ -52,7 +52,7 @@ end
 
 function cmdchan:execute(command, location)
     local tmp_file = "/tmp/cmdchan_output"
-    command = command ..  "> " .. tmp_file .. " >[2=1]"
+    command = command ..  " > " .. tmp_file .. " >[2=1]"
     -- print("command: " .. command)
     local write_result, write_response = pcall(cmdchan.write, self, command, location)
     -- local write_result, write_response = pcall(cmdchan.write, self, command, location)

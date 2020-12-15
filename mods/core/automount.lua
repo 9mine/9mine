@@ -1,7 +1,8 @@
 class 'automount'
 
-function automount:automount() 
-    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or core_conf:get("REGISTRY_ADDR")
+function automount:automount()
+    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
+                             core_conf:get("REGISTRY_ADDR")
     self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
 end
 
@@ -25,7 +26,6 @@ function automount:connect_to_root()
     return root_cmdchan
 end
 
-
 function automount:mount_registry()
     local root_cmdchan = self.root_cmdchan
     local response = root_cmdchan:execute("mount -A " .. self.registry_addr .. " /mnt/registry"):gsub("%s+", "")
@@ -44,7 +44,6 @@ function automount:mount_registry()
     end
 end
 
-
 function automount:poll_user_management()
     local root_cmdchan = self.root_cmdchan
     print("Polling user management . . .")
@@ -56,6 +55,27 @@ function automount:poll_user_management()
         print(root_cmdchan:execute("mount -A " .. user_management .. " /n/9mine"))
     else
         minetest.after(1, automount.poll_user_management)
+    end
+end
+
+function automount:poll_regquery(player, counter, last_login)
+    local player_name = player:get_player_name()
+    if counter > 10 then
+        local result, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/user")
+        minetest.kick_player(player_name, "Error creating NS. Try again later. Log: \n" .. ns_create_output)
+        return
+    end
+    counter = counter + 1
+    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. player_name):gsub("\n", "")
+    local response = root_cmdchan:execute("mount -A " .. user_addr .. " /n/" .. player_name)
+    if response == "" then
+        minetest.chat_send_player(player_name, user_addr .. " mounted")
+        minetest.show_formspec(player_name, "core:some_form",
+        table.concat({"formspec_version[4]", "size[15, 1.2,false]",
+                      "hypertext[0, 0.2; 15, 1;; <big><center>User addr ", user_addr, " mounted.<center><big>]"}, ""))
+    
+    else
+        minetest.after(2, automount.poll_regquery, self, player, counter, last_login)
     end
 end
 
