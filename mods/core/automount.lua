@@ -70,8 +70,8 @@ function automount:poll_regquery(player, counter, last_login)
     if user_addr:match(".*!.*!.*") then
         minetest.chat_send_player(player_name, user_addr .. " mounted")
         minetest.show_formspec(player_name, "core:some_form",
-        table.concat({"formspec_version[4]", "size[15, 1.2,false]",
-                      "hypertext[0, 0.2; 15, 1;; <big><center>User addr ", user_addr, " found.<center><big>]"}, ""))
+            table.concat({"formspec_version[4]", "size[15, 1.2,false]",
+                          "hypertext[0, 0.2; 15, 1;; <big><center>User addr ", user_addr, " found.<center><big>]"}, ""))
         self:spawn_root_platform(user_addr, player, last_login, true)
     else
         minetest.after(2, automount.poll_regquery, self, player, counter, last_login)
@@ -96,34 +96,33 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
         minetest.chat_send_player(player_name, "cmdchan is available")
     end
 
-    if not last_login or last_login == "" then
-        if player_graph:get_node(attach_string .. "/") then
-            local root_platform = player_graph:get_platform(attach_string .. "/")
-            common.goto_platform(player, root_platform:get_root_point())
-        else
-            local result
-            if random then
-                local result = player:set_pos({
-                    x = math.random(-30000, 30000),
-                    y = math.random(-30000, 30000),
-                    z = math.random(-30000, 30000)
-                })
-            else
-                local result = player:get_pos()
-            end
-            minetest.after(1.5, function()
-                local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
-                root_platform:set_player(player_name)
-                root_platform.mount_point = "/"
-                root_platform.origin_point = result
-                root_platform:set_node(player_graph:add_platform(root_platform, nil, player_host_node))
-                local point = vector.round(player:get_pos())
-                root_platform.root_point = point
-                root_platform:spawn(point, player, math.random(0, 255))
-            end)
-        end
-    else
+    if player_graph:get_node(attach_string .. "/") then
+        local root_platform = player_graph:get_platform(attach_string .. "/")
+        print(dump(root_platform))
         minetest.show_formspec(player_name, "", "")
+        common.goto_platform(player, root_platform:get_root_point())
+    else
+        local result
+        if random then
+            local result = player:set_pos({
+                x = math.random(-30000, 30000),
+                y = math.random(-30000, 30000),
+                z = math.random(-30000, 30000)
+            })
+        else
+            local result = player:get_pos()
+        end
+        minetest.after(1.5, function()
+            local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
+            root_platform:set_player(player_name)
+            root_platform.mount_point = "/"
+            root_platform.origin_point = result
+            root_platform:set_node(player_graph:add_platform(root_platform, nil, player_host_node))
+            local point = vector.round(player:get_pos())
+            root_platform.root_point = point
+            root_platform:spawn(point, player, math.random(0, 255))
+        end)
     end
+
 end
 
