@@ -94,11 +94,11 @@ function directory_entry:filter(stat_entity, lua)
     end
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.entry_string = self:get_entry_string()
-    stat_entity:set_acceleration({
-        x = 0,
-        y = -9.81,
-        z = 0
-    })
+    -- stat_entity:set_acceleration({
+    --     x = 0,
+    --     y = -9.81,
+    --     z = 0
+    -- })
     return self
 end
 

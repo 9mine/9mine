@@ -98,7 +98,6 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
 
     if player_graph:get_node(attach_string .. "/") then
         local root_platform = player_graph:get_platform(attach_string .. "/")
-        print(dump(root_platform))
         minetest.show_formspec(player_name, "", "")
         common.goto_platform(player, root_platform:get_root_point())
     else

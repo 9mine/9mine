@@ -1,6 +1,6 @@
 local StatEntity = {
     initial_properties = {
-        physical = true,
+        physical = false,
         pointable = true,
         visual = "sprite",
         collide_with_objects = true,

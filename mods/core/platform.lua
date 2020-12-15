@@ -205,7 +205,7 @@ function platform:spawn_stat(stat)
     local slot = table.copy(self:get_slot())
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
-    slot.y = slot.y + 7 + math.random(5)
+    slot.y = slot.y + 1
     local stat_entity = minetest.add_entity(slot, "core:stat")
     directory_entry:filter(stat_entity)
     return directory_entry
@@ -397,7 +397,7 @@ function platform:enlarge()
     area_store:remove_area(self.properties.area_id)
     local color = self:get_color()
     local root = self.root_point
-    local slots = self.slots
+    local slots = {}
     local old_size = self.size
     local size = old_size * 2
     local size_diff = (size - old_size)
@@ -452,6 +452,7 @@ function platform:enlarge()
     self.size = size
     self.root_point = p1
     table.shuffle(slots)
+    self.slots = slots
 end
 
 -- when platform node punched, formspec show with table properties
