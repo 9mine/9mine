@@ -435,9 +435,9 @@ function platform:enlarge()
                         z = z
                     }
                     local vi = a:index(x, y, z)
-                    if data[vi] == minetest.CONTENT_IGNORE then 
-                        print("IGNORED WAS FOUND at " .. dump(p))
-                    end
+                    -- if data[vi] == minetest.CONTENT_IGNORE then 
+                    --     print("IGNORED WAS FOUND at " .. dump(p))
+                    -- end
                     data[vi] = core_platform_node
                     param2[vi] = color
 
