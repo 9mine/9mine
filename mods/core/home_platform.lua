@@ -1,7 +1,8 @@
-local show_home_platform_formspec = function(player)
+local show_home_platform_formspec = function(player, last_login)
     local player_name = player:get_player_name()
     minetest.show_formspec(player_name, "core:home_platform",
         table.concat({"formspec_version[4]", "size[20.5,9.7,false]",
+                      "field[0, 0; 0, 0;last_login;;", last_login or "", "]",
                       "hypertext[0.5, 0.2; 19.5, 1;;<big><center>Select Home Platform<center><big>]",
                       "style[inferno,nfront;textcolor=red;font=bold;font_size=+59]",
                       "image_button[0.5, 1.2; 9.5, 8;core_infernoos.png;inferno;INFERNO OS;false;true]",
@@ -24,11 +25,13 @@ local home_platform_event = function(player, formname, fields)
                 minetest.show_formspec(player:get_player_name(), "core:some_form",
                     table.concat({"formspec_version[4]", "size[15, 1.2,false]",
                                   "hypertext[0, 0.2; 15, 1;; <big><center>Request sent for new user create. Please, wait...<center><big>]"}, ""))
-                minetest.after(3, automount.poll_regquery, automount, player, 0)
+                minetest.after(3, automount.poll_regquery, automount, player, 0, fields.last_login)
             else
                 minetest.show_formspec(player:get_player_name(), "core:some_form",
                 table.concat({"formspec_version[4]", "size[15, 1.2,false]",
                               "hypertext[0, 0.2; 15, 1;; <big><center>User addr is: ", user_addr, "<center><big>]"}, ""))
+                automount.spawn_root_platform(automount, user_addr, player, fields.last_login, true)
+
             end
         end
     end

@@ -341,6 +341,7 @@ function platform:spawn(root_point, player, color, paths)
         self:draw(root_point, size, color)
         minetest.after(0.5, function()
             self:spawn_content(content, root_buffer)
+            minetest.show_formspec(player:get_player_name(), "", "")
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end

@@ -62,8 +62,8 @@ function register.delete_onjoin_func(func_name)
     register.on_join_funcs[func_name] = nil
 end
 
-function register.call_onjoin_funcs(player)
+function register.call_onjoin_funcs(player, last_login)
     for index, func in pairs(register.on_join_funcs) do 
-        func(player)
+        func(player, last_login)
     end
 end
