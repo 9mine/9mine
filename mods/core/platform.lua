@@ -306,7 +306,7 @@ end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
 function platform:get_slot()
-    if common.table_length(self.slots) / (self.size ^ 2) < 0.70 then
+    if common.table_length(self.slots) / (self.size ^ 2) < 0.50 then
         self:enlarge()
     end
     local index, slot = next(self.slots)
