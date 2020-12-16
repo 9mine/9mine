@@ -5,14 +5,17 @@ minetest.register_tool("core:console", {
 
     on_use = function(itemstack, player, pointed_thing)
         minetest.show_formspec(player:get_player_name(), "core:spawn_console",
-            table.concat({"formspec_version[3]size[10,3,false]", "field[0.5,0.5;9,1;addr;Remote host;]",
-                          "button_exit[7,1.8;2.5,0.9;connect;connect]"}, ""))
+            table.concat({
+                "formspec_version[3]size[10,3,false]", 
+                "field[0.5,0.5;9,1;addr;Remote host if form of tcp!host!port;]",
+                "button_exit[7,1.8;2.5,0.9;connect;connect]"}, ""))
     end
 })
 
 local function spawn_console(player, formname, fields)
     if formname == "core:spawn_console" then
         local attach_string = split_connection_string(fields.addr)
+        local tx = "core_console.png"
         local connection = connections:get_connection(player:get_player_name(), attach_string, true)
         if not connection then
             return
@@ -29,7 +32,10 @@ local function spawn_console(player, formname, fields)
         fp.y = fp.y + 2
         local entity = minetest.add_entity(fp, "core:console")
         entity:set_properties({
-            nametag = attach_string
+            nametag = attach_string,
+            textures = {
+                tx, tx, tx, tx, tx, tx
+            }
         })
         entity:get_luaentity().addr = attach_string
     end
@@ -46,11 +52,7 @@ local function console(player, formname, fields)
         local pos = minetest.deserialize(fields.entity_pos)
         local index, entity = next(minetest.get_objects_inside_radius(pos, 0.5))
         local lua_entity = entity:get_luaentity()
-        local addr = lua_entity.addr
-        local inpt = fields.input:gsub("; ", "")
-        local connection = connections:get_connection(player_name, addr)
-        local cmdchan = connection:get_cmdchan()
-        local response = cmdchan:execute(fields.input)
+        local response = connections:get_connection(player_name, lua_entity.addr):get_cmdchan():execute(fields.input:gsub("; ", ""))
         lua_entity.output = fields.input .. ": " .. response .. "\n" .. lua_entity.output
         minetest.show_formspec(player_name, "core:console", table.concat({
             "formspec_version[4]", 
