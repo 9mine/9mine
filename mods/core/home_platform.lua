@@ -17,19 +17,22 @@ local home_platform_event = function(player, formname, fields)
         local player_name = player:get_player_name()
         automount.root_cmdchan:execute("mkdir /n/" .. player_name)
         local home_platform = fields.inferno ~= nil and "INFERNO" or "9FRONT"
+        minetest.show_formspec(player:get_player_name(), "core:some_form",
+        table.concat({"formspec_version[4]", "size[20, 1.2,false]",
+                      "hypertext[0, 0.3; 20, 1;; <bigger><center>Executing requests. Please, wait...<center><bigger>]"}, ""))
         if fields.inferno then
             local user_addr = automount.root_cmdchan:execute("ndb/regquery -n user " .. player_name):gsub(
                                   "\n", "")
             if not user_addr  or user_addr == "" then
                 automount.root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/user")
                 minetest.show_formspec(player:get_player_name(), "core:some_form",
-                    table.concat({"formspec_version[4]", "size[15, 1.2,false]",
-                                  "hypertext[0, 0.2; 15, 1;; <big><center>Request sent for new user create. Please, wait...<center><big>]"}, ""))
+                    table.concat({"formspec_version[4]", "size[20, 1.2,false]",
+                                  "hypertext[0, 0.3; 20, 1;; <bigger><center>Request sent for new user create. Please, wait...<center><bigger>]"}, ""))
                 minetest.after(3, automount.poll_regquery, automount, player, 0, fields.last_login)
             else
                 minetest.show_formspec(player:get_player_name(), "core:some_form",
-                table.concat({"formspec_version[4]", "size[15, 1.2,false]",
-                              "hypertext[0, 0.2; 15, 1;; <big><center>User addr is: ", user_addr, "<center><big>]"}, ""))
+                table.concat({"formspec_version[4]", "size[20, 1.2,false]",
+                              "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr is: ", user_addr, "<center><bigger>]"}, ""))
                 automount.spawn_root_platform(automount, user_addr, player, fields.last_login, true)
 
             end

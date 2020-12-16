@@ -336,10 +336,10 @@ function platform:spawn(root_point, player, color, paths)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
     if not result then return end 
     local size = self:compute_size(content)
-    minetest.after(0.1, function()
+    minetest.after(0.5, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
-        minetest.after(0.5, function()
+        minetest.after(1, function()
             self:spawn_content(content, root_buffer)
             minetest.show_formspec(player:get_player_name(), "", "")
             if paths then

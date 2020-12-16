@@ -70,8 +70,8 @@ function automount:poll_regquery(player, counter, last_login)
     if user_addr:match(".*!.*!.*") then
         minetest.chat_send_player(player_name, user_addr .. " mounted")
         minetest.show_formspec(player_name, "core:some_form",
-            table.concat({"formspec_version[4]", "size[15, 1.2,false]",
-                          "hypertext[0, 0.2; 15, 1;; <big><center>User addr ", user_addr, " found.<center><big>]"}, ""))
+            table.concat({"formspec_version[4]", "size[20, 1.2,false]",
+                          "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ", user_addr, " found.<center><bigger>]"}, ""))
         self:spawn_root_platform(user_addr, player, last_login, true)
     else
         minetest.after(2, automount.poll_regquery, self, player, counter, last_login)
@@ -84,8 +84,7 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
     if not connection then
         return
     end
-    local player_graph = graphs:get_player_graph(player_name) or
-                             graphs:add_player_graph(player_graph(player_name), player_name)
+    local player_graph = graphs:get_player_graph(player_name)
     local player_host_node = player_graph:add_host(attach_string)
 
     local user_cmdchan_path = tostring(core_conf:get("user_cmdchan"))
@@ -103,15 +102,15 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
     else
         local result
         if random then
-            local result = player:set_pos({
+            result = player:set_pos({
                 x = math.random(-30000, 30000),
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
         else
-            local result = player:get_pos()
+            result = player:get_pos()
         end
-        minetest.after(1.5, function()
+        minetest.after(2, function()
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
             root_platform.mount_point = "/"
