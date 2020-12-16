@@ -70,6 +70,13 @@ function np_over_tcp:is_alive()
     return result
 end
 
+function np_over_tcp:set_cmdchan(cmdchan)
+    self.cmdchan = cmdchan
+end
+
+function np_over_tcp:get_cmdchan()
+    return self.cmdchan
+end
 -- parses string in form of '<protocol>!<hostname>!<port_number>'
 parse_attach_string = function(attach_string)
     if not attach_string then return end 

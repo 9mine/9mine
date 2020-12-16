@@ -17,6 +17,11 @@ local function spawn_console(player, formname, fields)
         if not connection then
             return
         end
+        if not connection.cmdchan then
+            local cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
+            connection:set_cmdchan(cmdchan)
+        end
+
         local dir = player:get_look_dir()
         local dis = vector.multiply(dir, 5)
         local pp = player:get_pos()
@@ -34,25 +39,28 @@ register.add_form_handler("core:spawn_console", spawn_console)
 
 local function console(player, formname, fields)
     if formname == "core:console" then
+        if not (fields.key_enter or fields.send) then
+            return
+        end
         local player_name = player:get_player_name()
-        local p = fields["entity_pos"]
-        local pos = minetest.deserialize(p)
-        local entity = get_entity(pos)
-        local addr = entity:get_luaentity().addr
-        local path = entity:get_luaentity().path
-        local lcmd = tostring(core_conf:get("lcmd"))
-        local inpt = fields["input"]:gsub("; ", "")
-        cmd_write(addr, path, player_name, fields["input"], lcmd)
-        local response = cmd_read(addr, player_name, lcmd)
-        entity:get_luaentity().output = fields["input"] .. ": " .. response .. "\n" .. entity:get_luaentity().output
-        local formspec = {"formspec_version[3]", "size[13,13,false]",
-                          "textarea[0.5,0.5;12.0,10;;;" .. minetest.formspec_escape(entity:get_luaentity().output) ..
-            "]", "field[0.5,10.5;12,1;input;;\\; ]", "field_close_on_enter[input;false]",
-                          "button[10,11.6;2.5,0.9;send;send]",
-                          "field[13,13;0,0;entity_pos;;" .. minetest.formspec_escape(p) .. "]"}
-        local form = table.concat(formspec, "")
-
-        minetest.show_formspec(player_name, "core:console", form)
+        local pos = minetest.deserialize(fields.entity_pos)
+        local index, entity = next(minetest.get_objects_inside_radius(pos, 0.5))
+        local lua_entity = entity:get_luaentity()
+        local addr = lua_entity.addr
+        local inpt = fields.input:gsub("; ", "")
+        local connection = connections:get_connection(player_name, addr)
+        local cmdchan = connection:get_cmdchan()
+        local response = cmdchan:execute(fields.input)
+        lua_entity.output = fields.input .. ": " .. response .. "\n" .. lua_entity.output
+        minetest.show_formspec(player_name, "core:console", table.concat({
+            "formspec_version[4]", 
+            "size[13,13,false]",
+            "textarea[0.5,0.5;12.0,10;;;", minetest.formspec_escape(lua_entity.output), "]", 
+            "field[0.5,10.5;12,1;input;;\\; ]", 
+            "field_close_on_enter[input;false]",
+            "button[10,11.6;2.5,0.9;send;send]",
+            "field[13,13;0,0;entity_pos;;", minetest.formspec_escape(fields.entity_pos), "]"
+        }, ""))
     end
 end
 
