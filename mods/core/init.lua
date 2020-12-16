@@ -63,6 +63,7 @@ require 'buffer'
 
 -- entities
 require 'entities.stat'
+require 'entities.console'
 
 -- chat
 require 'chat.ffi'

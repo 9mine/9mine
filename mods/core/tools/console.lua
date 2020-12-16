@@ -4,14 +4,33 @@ minetest.register_tool("core:console", {
     wield_image = "core_console.png",
 
     on_use = function(itemstack, player, pointed_thing)
-        minetest.show_formspec(player:get_player_name(), "core:console",
-            table.concat({
-                "formspec_version[3]size[10,3,false]", 
-                "field[0.5,0.5;9,1;addr;Remote host;]",
-                "button_exit[7,1.8;2.5,0.9;connect;connect]"
-            }, ""))
+        minetest.show_formspec(player:get_player_name(), "core:spawn_console",
+            table.concat({"formspec_version[3]size[10,3,false]", "field[0.5,0.5;9,1;addr;Remote host;]",
+                          "button_exit[7,1.8;2.5,0.9;connect;connect]"}, ""))
     end
 })
+
+local function spawn_console(player, formname, fields)
+    if formname == "core:spawn_console" then
+        local attach_string = split_connection_string(fields.addr)
+        local connection = connections:get_connection(player:get_player_name(), attach_string, true)
+        if not connection then
+            return
+        end
+        local dir = player:get_look_dir()
+        local dis = vector.multiply(dir, 5)
+        local pp = player:get_pos()
+        local fp = vector.add(pp, dis)
+        fp.y = fp.y + 2
+        local entity = minetest.add_entity(fp, "core:console")
+        entity:set_properties({
+            nametag = attach_string
+        })
+        entity:get_luaentity().addr = attach_string
+    end
+end
+
+register.add_form_handler("core:spawn_console", spawn_console)
 
 local function console(player, formname, fields)
     if formname == "core:console" then
