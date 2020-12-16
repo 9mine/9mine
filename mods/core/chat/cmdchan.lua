@@ -2,7 +2,7 @@ minetest.register_on_chat_message(function(player_name, message)
     local player = minetest.get_player_by_name(player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(common.get_platform_string(player))
-    if not platform then 
+    if not platform then
         minetest.chat_send_player(player_name, "No platform found nearby")
         return true
     end
@@ -22,6 +22,20 @@ minetest.register_on_chat_message(function(player_name, message)
             message = message:gsub("| inventory", "")
             local result = cmdchan:execute(message)
             common.add_ns_to_inventory(player, result)
+        elseif message:match(" | man$") then
+            message = message:gsub("| man", "")
+            local result = cmdchan:execute(message)
+            local player_name = player:get_player_name()
+            minetest.show_formspec(player_name, "core:man", table.concat(
+                {
+                "formspec_version[4]", 
+                "size[15,15,false]",
+                "style[man;textcolor=red;font=bold;font_size=*2]",
+                "hypertext[0, 0; 15, 15;man;",
+                "<style color=white font=mono size=36>",
+                minetest.formspec_escape(result), "</style>]"
+            }, ""))
+
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_player(player_name, result .. "\n")

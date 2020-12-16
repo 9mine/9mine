@@ -525,7 +525,7 @@ end
 -- and deletes entities, that are not present in new directory content  
 function platform:update()
     local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) then
+    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
         local update_buffer = buffer(self:get_conn(), self.path)
         minetest.after(0.1, platform.update_with_buffer, self, update_buffer)
     else
