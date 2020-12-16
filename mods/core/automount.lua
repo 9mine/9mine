@@ -94,23 +94,20 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
     else
         minetest.chat_send_player(player_name, "cmdchan is available")
     end
-
     if player_graph:get_node(attach_string .. "/") then
         local root_platform = player_graph:get_platform(attach_string .. "/")
         minetest.show_formspec(player_name, "", "")
         common.goto_platform(player, root_platform:get_root_point())
     else
-        local result
         if random then
-            result = player:set_pos({
+            player:set_pos({
                 x = math.random(-30000, 30000),
                 y = math.random(-30000, 30000),
                 z = math.random(-30000, 30000)
             })
-        else
-            result = player:get_pos()
         end
-        minetest.after(2, function()
+        local result = player:get_pos()
+        minetest.after(2, function(result)
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
             root_platform.mount_point = "/"
@@ -119,7 +116,7 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
             local point = vector.round(player:get_pos())
             root_platform.root_point = point
             root_platform:spawn(point, player, math.random(0, 255))
-        end)
+        end, result)
     end
 
 end
