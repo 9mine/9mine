@@ -63,6 +63,6 @@ end
 function cmdchan:show_response(response, player_name)
     minetest.show_formspec(player_name, "cmdchan:response", table.concat(
         {"formspec_version[3]", "size[13,13,false]",
-         "textarea[0.5, 0.5; 12.0, 11.0;;;" .. minetest.formspec_escape(response) .. "]",
+         "textarea[0.5, 0.5; 12.0, 11.0;;;", minetest.formspec_escape(response), "]",
          "button_exit[10, 11.8;2.5,0.7;close;close]"}, ""))
 end

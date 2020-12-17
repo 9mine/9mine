@@ -24,18 +24,12 @@ minetest.register_on_chat_message(function(player_name, message)
             common.add_ns_to_inventory(player, result)
         elseif message:match(" | man$") then
             message = message:gsub("| man", "")
-            local result = cmdchan:execute(message)
+            local response = cmdchan:execute(message)
             local player_name = player:get_player_name()
             minetest.show_formspec(player_name, "core:man", table.concat(
-                {
-                "formspec_version[4]", 
-                "size[15,15,false]",
-                "style[man;textcolor=red;font=bold;font_size=*2]",
-                "hypertext[0, 0; 15, 15;man;",
-                "<style color=white font=mono size=36>",
-                minetest.formspec_escape(result), "</style>]"
-            }, ""))
-
+                {"formspec_version[4]", "size[13,13,false]",
+                 "hypertext[0.5, 0.5; 12.0, 11.0;;", minetest.formspec_escape(response), "]",
+                 "button_exit[10, 11.8;2.5,0.7;close;close]"}, ""))
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_player(player_name, result .. "\n")
