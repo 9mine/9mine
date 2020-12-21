@@ -412,3 +412,26 @@ else
     return common.hex(service.service_addr) .. ".png"
 end
 end
+
+function common.parse_man(manpage)
+    manpage = manpage:gsub("\n ", "\n<style color=#00ffffff size=1>.</style>        ")
+    :gsub("%[", "\\%[")
+    :gsub("%]", "\\%]")
+    :gsub(";", "\\;")
+local links = {}
+    for token in manpage:gmatch("[%a%-%d]+%(%d%)") do 
+        links[token] = true
+    end
+    
+    for k, v in pairs(links) do 
+        manpage = manpage:gsub(k:gsub("%(", "%%%("):gsub("%)", "%%%)"):gsub("%-", "%%%-"), "<action name=" .. k:match("[%a%-]+").. ">".. k .."</action> ")
+    end
+    return manpage
+end
+
+function common.show_man(player_name, manpage)
+minetest.show_formspec(player_name, "core:man", table.concat(
+    {"formspec_version[4]", "size[14,13,false]",
+     "hypertext[0.5, 0.5; 13.0, 11.0;;`<global background=#FFFFea color=black><big>", manpage ,"</big>`]",
+     "button_exit[11, 11.8;2.5,0.7;close;close]"}, ""))
+end
