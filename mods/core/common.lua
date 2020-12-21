@@ -424,7 +424,7 @@ local links = {}
     end
     
     for k, v in pairs(links) do 
-        manpage = manpage:gsub(k:gsub("%(", "%%%("):gsub("%)", "%%%)"):gsub("%-", "%%%-"), "<action name=" .. k:match("[%a%-]+").. ">".. k .."</action> ")
+        manpage = manpage:gsub(k:gsub("%(", "%%%("):gsub("%)", "%%%)"):gsub("%-", "%%%-"), "<action name=" .. k:match("[%a%-%d]+").. ">".. k .."</action>")
     end
     return manpage
 end
