@@ -31,7 +31,7 @@ minetest.register_on_chat_message(function(player_name, message)
             local player_name = player:get_player_name()
             minetest.show_formspec(player_name, "core:man", table.concat(
                 {"formspec_version[4]", "size[15,13,false]",
-                 "hypertext[0.5, 0.5; 14.0, 11.0;;`<global background=yellow color=black><big>", response ,"</big>`]",
+                 "hypertext[0.5, 0.5; 14.0, 11.0;;`<global background=#FFFFea color=black><big>", response ,"</big>`]",
                  "button_exit[12, 11.8;2.5,0.7;close;close]"}, ""))
         else
             local result = cmdchan:execute(message, path)
@@ -68,8 +68,8 @@ local man_event = function(player, formname, fields)
         :gsub("%[", "\\%[")
         :gsub("%]", "\\%]")
         minetest.show_formspec(player_name, "core:man", table.concat(
-            {"formspec_version[4]", "size[15,13,false]",
-             "hypertext[0.5, 0.5; 14.0, 11.0;;`<global background=yellow color=black><big>", response ,"</big>`]",
+            {"formspec_version[4]", "size[15,13,false]",  
+             "hypertext[0.5, 0.5; 14.0, 11.0;;`<global background=#FFFFea color=black><big>", response ,"</big>`]",
              "button_exit[12, 11.8;2.5,0.7;close;close]"}, ""))
     end
 end
