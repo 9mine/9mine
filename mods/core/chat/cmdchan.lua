@@ -11,16 +11,29 @@ minetest.register_on_chat_message(function(player_name, message)
     if command:match("man") and message:match(" | man$") then
         message = message:gsub(" | man", "")
         local conn = platform:get_conn()
-        local section = message:match("man %d+ ") and command:gsub("man ", ""):match("%d+") or "1"
+        local section = message:match("man %d+ ") and command:gsub("man ", ""):match("%d+")
         message = message:gsub("man ", ""):gsub("%d+ ", "")
         local mans_path = core_conf:get("mans_path")
-        local result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
-        if not result then
-            minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
+        local result, manpage
+        if not section then
+            for section = 1, 10 do
+                result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
+                if result then
+                    break
+                end
+            end
+            minetest.chat_send_player(player_name, "Error reading accross all sections: " .. manpage)
+            return true
         else
-            common.show_man(player_name, manpage)
+            result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
         end
+        if not result then
+            minetest.chat_send_player(player_name, "Error reading accross all sections: " .. manpage)
+            return
+        end
+        common.show_man(player_name, manpage)
         return true
+
     end
     local cmdchan = platform:get_cmdchan()
     if not cmdchan then
