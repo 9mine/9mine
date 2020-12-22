@@ -42,6 +42,18 @@ function automount:mount_registry()
         print("Registry mount failed. Retry")
         minetest.after(1, automount.mount_registry, self)
     end
+    minetest.after(1.5, automount.mount_manuals, self)
+end
+
+function automount:mount_manuals()
+    local root_cmdchan = self.root_cmdchan
+    local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
+    if man_addr:match(".*!.*!.*") then
+        print("man addr is " .. man_addr)
+        root_cmdchan:execute("mount -A " .. man_addr .. " " .. core_conf:get("mans_path"))
+    else
+        minetest.after(1.5, automount.mount_manuals, self)
+    end
 end
 
 function automount:poll_user_management()
@@ -71,7 +83,8 @@ function automount:poll_regquery(player, counter, last_login)
         minetest.chat_send_player(player_name, user_addr .. " mounted")
         minetest.show_formspec(player_name, "core:some_form",
             table.concat({"formspec_version[4]", "size[20, 1.2,false]",
-                          "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ", user_addr, " found.<center><bigger>]"}, ""))
+                          "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ", user_addr, " found.<center><bigger>]"},
+                ""))
         self:spawn_root_platform(user_addr, player, last_login, true)
     else
         minetest.after(2, automount.poll_regquery, self, player, counter, last_login)
