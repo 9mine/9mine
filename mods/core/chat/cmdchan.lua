@@ -6,13 +6,23 @@ minetest.register_on_chat_message(function(player_name, message)
         minetest.chat_send_player(player_name, "No platform found nearby")
         return true
     end
+    local commands = core_conf:get("pcmd")
+    local command = message:match("[^ ]+")
+    if command:match("man") and message:match(" | man$") then
+        message = message:gsub(" | man", "")
+        local conn = platform:get_conn()
+        local section = message:match("man %d+ ") and command:gsub("man ", ""):match("%d+") or "1"
+        message = message:gsub("man ", ""):gsub("%d+ ", "")
+        local mans_path = core_conf:get("mans_path")
+        local manpage = np_prot.file_read(conn, mans_path .. "/" .. section .. "/" .. message)
+        common.show_man(player_name, manpage)
+        return true
+    end
     local cmdchan = platform:get_cmdchan()
     if not cmdchan then
         return
     end
     local path = platform:get_path()
-    local commands = core_conf:get("pcmd")
-    local command = message:match("[^ ]+")
     if commands:match(command) then
         if message:match("| minetest$") then
             message = message:gsub("| minetest", "")
@@ -24,9 +34,9 @@ minetest.register_on_chat_message(function(player_name, message)
             common.add_ns_to_inventory(player, result)
         elseif message:match(" | man$") then
             message = message:gsub("| man", "")
-            local response = cmdchan:execute(message)            
+            local response = cmdchan:execute(message)
             local player_name = player:get_player_name()
-            common.show_man(player_name, common.parse_man(response))
+            common.show_man(player_name, response)
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_player(player_name, result .. "\n")
@@ -52,15 +62,17 @@ local man_event = function(player, formname, fields)
             minetest.chat_send_player(player_name, "No platform found nearby")
             return true
         end
-        local cmdchan = platform:get_cmdchan()
-        if not cmdchan then
-            return
-        end
         local k, v = next(fields)
+        print(v)
         v = v:gsub("action:", "")
+        local c = v:match("%(%d+%)")
+        local section = c:match("%d+")
+        local man = v:gsub("%(%d+%)", "")
         local path = platform:get_path()
-        local response = cmdchan:execute("man " .. v)    
-        common.show_man(player_name, common.parse_man(response))
+        local conn = platform:get_conn()
+        local mans_path = core_conf:get("mans_path")
+        local manpage = np_prot.file_read(conn, mans_path .. "/" .. section .. "/" .. man)
+        common.show_man(player_name, manpage)
     end
 end
 
