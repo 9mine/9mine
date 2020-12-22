@@ -56,11 +56,8 @@ local man_event = function(player, formname, fields)
         if not cmdchan then
             return
         end
-        print(dump(fields))
         local k, v = next(fields)
-        print(v)
         v = v:gsub("action:", "")
-        print(v)
         local path = platform:get_path()
         local response = cmdchan:execute("man " .. v)    
         common.show_man(player_name, common.parse_man(response))
