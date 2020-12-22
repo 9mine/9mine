@@ -28,8 +28,8 @@ minetest.register_on_chat_message(function(player_name, message)
             result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
         end
         if not result then
-            minetest.chat_send_player(player_name, "Error reading accross all sections: " .. manpage)
-            return
+            minetest.chat_send_player(player_name, "Error reading manual: " .. manpage)
+            return true
         end
         common.show_man(player_name, manpage)
         return true

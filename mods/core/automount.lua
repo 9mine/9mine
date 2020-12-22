@@ -49,7 +49,6 @@ function automount:mount_manuals()
     local root_cmdchan = self.root_cmdchan
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
     if man_addr:match(".*!.*!.*") then
-        print("man addr is " .. man_addr)
         root_cmdchan:execute("mount -A " .. man_addr .. " " .. core_conf:get("mans_path"))
     else
         minetest.after(1.5, automount.mount_manuals, self)
