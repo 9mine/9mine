@@ -2,7 +2,7 @@ minetest.register_on_chat_message(function(player_name, message)
     local player = minetest.get_player_by_name(player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(common.get_platform_string(player))
-    if not platform then 
+    if not platform then
         minetest.chat_send_player(player_name, "No platform found nearby")
         return true
     end
@@ -22,6 +22,11 @@ minetest.register_on_chat_message(function(player_name, message)
             message = message:gsub("| inventory", "")
             local result = cmdchan:execute(message)
             common.add_ns_to_inventory(player, result)
+        elseif message:match(" | man$") then
+            message = message:gsub("| man", "")
+            local response = cmdchan:execute(message)            
+            local player_name = player:get_player_name()
+            common.show_man(player_name, common.parse_man(response))
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_player(player_name, result .. "\n")
@@ -33,3 +38,30 @@ minetest.register_on_chat_message(function(player_name, message)
         return true
     end
 end)
+
+local man_event = function(player, formname, fields)
+    if formname == "core:man" then
+        if fields.quit then
+            return
+        end
+        local player_name = player:get_player_name()
+        local player = minetest.get_player_by_name(player_name)
+        local player_graph = graphs:get_player_graph(player_name)
+        local platform = player_graph:get_platform(common.get_platform_string(player))
+        if not platform then
+            minetest.chat_send_player(player_name, "No platform found nearby")
+            return true
+        end
+        local cmdchan = platform:get_cmdchan()
+        if not cmdchan then
+            return
+        end
+        local k, v = next(fields)
+        v = v:gsub("action:", "")
+        local path = platform:get_path()
+        local response = cmdchan:execute("man " .. v)    
+        common.show_man(player_name, common.parse_man(response))
+    end
+end
+
+register.add_form_handler("core:man", man_event)

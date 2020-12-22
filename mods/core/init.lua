@@ -29,6 +29,7 @@ require 'tools.copy'
 require 'tools.registry'
 require 'tools.remove'
 require 'tools.stat'
+require 'tools.console'
 
 -- mod files 
 require 'automount'
@@ -37,9 +38,9 @@ require 'events.ffi'
 require 'events.core'
 require 'events.stat'
 require 'events.platform'
-require 'events.registry'
 require 'crafts.ns'
 require 'users'
+require 'home_platform'
 
 -- nodes
 require 'nodes.dir'
@@ -62,6 +63,7 @@ require 'buffer'
 
 -- entities
 require 'entities.stat'
+require 'entities.console'
 
 -- chat
 require 'chat.ffi'
@@ -70,6 +72,7 @@ require 'chat.graph'
 require 'chat.commands'
 require 'chat.mvcp'
 connections = connections()
+automount = automount()
 graphs = graphs()
 np_prot = np_prot()
 mounts = mounts()
@@ -79,5 +82,5 @@ functions = {}
 filters = {}
 crafts = {}
 form_handlers = {}
-root_cmdchan = automount()
+root_cmdchan = automount:connect_to_root()
 area_store = AreaStore()

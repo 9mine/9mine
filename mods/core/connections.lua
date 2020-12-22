@@ -31,8 +31,19 @@ function connections:set_root_connection(connection)
     self.root_connection = connection
 end
 
-function connections:get_root_connection()
-    return self.root_connection
+function connections:get_root_connection(inferno_addr)
+    local connection = self.root_connection
+    if not connection then
+        connection = np_over_tcp(inferno_addr)
+        if connection:attach() then
+            self:set_root_connection(connection)
+            return connection
+        else
+            return nil
+        end
+    else
+        return connection
+    end
 end
 
 function connections:set_root_cmdchan(cmdchan)

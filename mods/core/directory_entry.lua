@@ -83,7 +83,7 @@ function directory_entry:set_entry_string()
 end
 
 -- methods
-function directory_entry:filter(stat_entity, lua)
+function directory_entry:filter(stat_entity, lua, player_name)
     stat_entity:set_properties({
         nametag = self.stat.name,
         textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
@@ -93,12 +93,46 @@ function directory_entry:filter(stat_entity, lua)
         lua()
     end
     local lua_entity = stat_entity:get_luaentity()
+    lua_entity.player_name = player_name
     lua_entity.entry_string = self:get_entry_string()
-    stat_entity:set_acceleration({
-        x = 0,
-        y = -9.81,
-        z = 0
-    })
+    if minetest.get_node(self.pos).name == "core:platform" then
+        stat_entity:set_acceleration({
+            x = 0,
+            y = -9.81,
+            z = 0
+        })
+        minetest.after(math.random(1,3), function() 
+            local pos = self:get_pos()
+            pos.y = pos.y + 1
+            stat_entity:set_acceleration({
+                x = 0,
+                y = 0,
+                z = 0
+            })
+            stat_entity:set_pos(pos)
+        end)
+    else
+        minetest.after(math.random(1,3), function()
+            if minetest.get_node(self.pos).name == "core:platform" then
+                stat_entity:set_acceleration({
+                    x = 0,
+                    y = -9.81,
+                    z = 0
+                })
+            else
+            end
+            minetest.after(math.random(1,3), function() 
+                local pos = self:get_pos()
+                pos.y = pos.y + 1
+                stat_entity:set_acceleration({
+                    x = 0,
+                    y = 0,
+                    z = 0
+                })
+                stat_entity:set_pos(pos)
+            end)
+        end)
+    end
     return self
 end
 

@@ -52,7 +52,7 @@ end
 
 function cmdchan:execute(command, location)
     local tmp_file = "/tmp/cmdchan_output"
-    command = command ..  "> " .. tmp_file .. " >[2=1]"
+    command = command ..  " > " .. tmp_file .. " >[2=1]"
     -- print("command: " .. command)
     local write_result, write_response = pcall(cmdchan.write, self, command, location)
     -- local write_result, write_response = pcall(cmdchan.write, self, command, location)
@@ -63,6 +63,6 @@ end
 function cmdchan:show_response(response, player_name)
     minetest.show_formspec(player_name, "cmdchan:response", table.concat(
         {"formspec_version[3]", "size[13,13,false]",
-         "textarea[0.5,0.5;12.0,12.0;;;" .. minetest.formspec_escape(response) .. "]",
-         "button_exit[10,11.8;2.5,0.7;close;close]"}, ""))
+         "textarea[0.5, 0.5; 12.0, 11.0;;;", minetest.formspec_escape(response), "]",
+         "button_exit[10, 11.8;2.5,0.7;close;close]"}, ""))
 end

@@ -34,7 +34,7 @@ end
 -- methods
 -- reads content of directory using path, set during platform initialization
 function platform:readdir()
-    local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "./" or self.path)
+    local result, content = pcall(readdir, self.connection.conn, self.path == "/" and "../" or self.path)
     if not result then
         if self.connection:is_alive() then
             minetest.chat_send_player(self:get_player(),
@@ -205,9 +205,9 @@ function platform:spawn_stat(stat)
     local slot = table.copy(self:get_slot())
     directory_entry:set_pos(slot)
     self:configure_entry(directory_entry)
-    slot.y = slot.y + 7 + math.random(5)
+    slot.y = slot.y + 7 + math.random(5, 12)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity)
+    directory_entry:filter(stat_entity, nil, self:get_player())
     return directory_entry
 end
 
@@ -297,6 +297,7 @@ function platform:process_content(content, player_graph, content_size, root_buff
         minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
             common.table_length(self.directory_entries) .. " entities.")
         minetest.after(1, function()
+            self:set_content_size(content_size)
             self:set_external_handler_flag(false)
             self:update()
         end)
@@ -334,13 +335,16 @@ end
 function platform:spawn(root_point, player, color, paths)
     local root_buffer = buffer(self:get_conn(), self.path)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
-    if not result then return end 
+    if not result then
+        return
+    end
     local size = self:compute_size(content)
-    minetest.after(0.1, function()
+    minetest.after(0.5, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
-        minetest.after(0.5, function()
+        minetest.after(1, function()
             self:spawn_content(content, root_buffer)
+            minetest.show_formspec(player:get_player_name(), "", "")
             if paths then
                 minetest.after(0.6, platform.spawn_path_step, self, paths, player)
             end
@@ -396,7 +400,7 @@ function platform:enlarge()
     area_store:remove_area(self.properties.area_id)
     local color = self:get_color()
     local root = self.root_point
-    local slots = self.slots
+    local slots = {}
     local old_size = self.size
     local size = old_size * 2
     local size_diff = (size - old_size)
@@ -434,9 +438,9 @@ function platform:enlarge()
                         z = z
                     }
                     local vi = a:index(x, y, z)
-                    if data[vi] == minetest.CONTENT_IGNORE then 
-                        print("IGNORED WAS FOUND at " .. dump(p))
-                    end
+                    -- if data[vi] == minetest.CONTENT_IGNORE then 
+                    --     print("IGNORED WAS FOUND at " .. dump(p))
+                    -- end
                     data[vi] = core_platform_node
                     param2[vi] = color
 
@@ -451,6 +455,7 @@ function platform:enlarge()
     self.size = size
     self.root_point = p1
     table.shuffle(slots)
+    self.slots = slots
 end
 
 -- when platform node punched, formspec show with table properties
@@ -469,36 +474,47 @@ function platform:show_properties(player)
 end
 
 function platform:update_with_buffer(update_buffer)
-    local result, content = pcall(update_buffer.process_next,update_buffer)
-    if not result then 
+    local result, content = pcall(update_buffer.process_next, update_buffer)
+    if not result then
         self:wipe()
         return
     end
     if update_buffer:is_open() then
         minetest.after(1, platform.update_with_buffer, self, update_buffer)
     else
+        local content_size = #content
         local new_size = self:compute_size(content)
         local new_content = common.qid_as_key(content)
         local stats = self.directory_entries
         local player_graph = graphs:get_player_graph(self:get_player())
-        for qid, st in pairs(new_content) do
-            if not stats[qid] then
-                local directory_entry = self:spawn_stat(st)
-                player_graph:add_entry(self, directory_entry)
-                self.directory_entries[qid] = directory_entry
-            end
-        end
-        for qid in pairs(stats) do
-            if not new_content[qid] then
-                local directory_entry_node = self.directory_entries[qid].node
-                directory_entry_node:delete()
-                self:remove_entity(qid)
-            end
-        end
-        if self.size > 3 and common.table_length(new_content) == 0 then
+        if self.size > 3 and (math.sqrt(content_size) + 3) / self.size < 0.65 then
+            self:wipe_top()
             self:delete_nodes()
             area_store:remove_area(self.properties.area_id)
             self:draw(self.origin_point, new_size, self:get_color())
+            while next(content) do
+                local index, stat = next(content)
+                local directory_entry = self:spawn_stat(stat)
+                self.directory_entries[stat.qid.path_hex] = directory_entry
+                player_graph:add_entry(self, directory_entry)
+                table.remove(content, index)
+            end
+        else
+            for qid, st in pairs(new_content) do
+                if not stats[qid] then
+                    local directory_entry = self:spawn_stat(st)
+                    player_graph:add_entry(self, directory_entry)
+                    self.directory_entries[qid] = directory_entry
+                end
+            end
+            for qid in pairs(stats) do
+                if not new_content[qid] then
+                    local directory_entry_node = self.directory_entries[qid].node
+                    directory_entry_node:delete()
+                    self:remove_entity(qid)
+                end
+            end
+            self:set_content_size(content_size)
         end
         local refresh_time = self:get_refresh_time()
         minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
@@ -509,7 +525,7 @@ end
 -- and deletes entities, that are not present in new directory content  
 function platform:update()
     local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) then
+    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
         local update_buffer = buffer(self:get_conn(), self.path)
         minetest.after(0.1, platform.update_with_buffer, self, update_buffer)
     else
@@ -675,6 +691,10 @@ function platform:get_player()
     return self.properties.player_name
 end
 
+function platform:get_content_size()
+    return self.properties.content_size
+end
+
 function platform:get_color()
     return self.properties.color
 end
@@ -690,6 +710,10 @@ end
 
 function platform:set_player(player_name)
     self.properties.player_name = player_name
+end
+
+function platform:set_content_size(content_size)
+    self.properties.content_size = content_size
 end
 
 function platform:set_refresh_time(refresh_time)
