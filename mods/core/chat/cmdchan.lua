@@ -14,8 +14,12 @@ minetest.register_on_chat_message(function(player_name, message)
         local section = message:match("man %d+ ") and command:gsub("man ", ""):match("%d+") or "1"
         message = message:gsub("man ", ""):gsub("%d+ ", "")
         local mans_path = core_conf:get("mans_path")
-        local manpage = np_prot.file_read(conn, mans_path .. "/" .. section .. "/" .. message)
-        common.show_man(player_name, manpage)
+        local result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
+        if not result then
+            minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
+        else
+            common.show_man(player_name, manpage)
+        end
         return true
     end
     local cmdchan = platform:get_cmdchan()
@@ -32,11 +36,6 @@ minetest.register_on_chat_message(function(player_name, message)
             message = message:gsub("| inventory", "")
             local result = cmdchan:execute(message)
             common.add_ns_to_inventory(player, result)
-        elseif message:match(" | man$") then
-            message = message:gsub("| man", "")
-            local response = cmdchan:execute(message)
-            local player_name = player:get_player_name()
-            common.show_man(player_name, response)
         else
             local result = cmdchan:execute(message, path)
             minetest.chat_send_player(player_name, result .. "\n")
@@ -63,16 +62,18 @@ local man_event = function(player, formname, fields)
             return true
         end
         local k, v = next(fields)
-        print(v)
         v = v:gsub("action:", "")
         local c = v:match("%(%d+%)")
         local section = c:match("%d+")
         local man = v:gsub("%(%d+%)", "")
-        local path = platform:get_path()
         local conn = platform:get_conn()
         local mans_path = core_conf:get("mans_path")
-        local manpage = np_prot.file_read(conn, mans_path .. "/" .. section .. "/" .. man)
-        common.show_man(player_name, manpage)
+        local result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. man)
+        if not result then
+            minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
+        else
+            common.show_man(player_name, manpage)
+        end
     end
 end
 
