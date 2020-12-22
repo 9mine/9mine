@@ -2,6 +2,7 @@ name: Minetest Container Image
 on: push
 jobs:
   build:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,13 +12,13 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: build image
+      - name: Build Docker Image
         run: docker build -t ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/} .
 
-      - name: login to hub.docker.com
+      - name: Login to hub.docker.com
         run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: push image to registry
+      - name: Push Image to Registry
         run: docker image push ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/}
 
       # - name: build client image
