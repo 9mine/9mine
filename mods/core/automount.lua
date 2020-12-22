@@ -120,6 +120,7 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
             })
         end
         local result = player:get_pos()
+        minetest.after(1.5, automount.mount_manuals, self)
         minetest.after(2, function(result)
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
