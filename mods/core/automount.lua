@@ -45,13 +45,14 @@ function automount:mount_registry()
     minetest.after(1.5, automount.mount_manuals, self)
 end
 
-function automount:mount_manuals()
-    local root_cmdchan = self.root_cmdchan
+function automount:mount_manuals(cmdchan)
+    local root_cmdchan = cmdchan or self.root_cmdchan
+    root_cmdchan:execute("mkdir -p ".. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
     if man_addr:match(".*!.*!.*") then
         root_cmdchan:execute("mount -A " .. man_addr .. " " .. core_conf:get("mans_path"))
     else
-        minetest.after(1.5, automount.mount_manuals, self)
+        minetest.after(1.5, automount.mount_manuals, self, cmdchan)
     end
 end
 
@@ -119,7 +120,7 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
             })
         end
         local result = player:get_pos()
-        minetest.after(1.5, automount.mount_manuals, self)
+        minetest.after(1.5, automount.mount_manuals, self, user_cmdchan)
         minetest.after(2, function(result)
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
