@@ -75,6 +75,10 @@ function StatEntity:on_activate(staticdata, dtime_s)
         local player_graph = graphs:get_player_graph(self.player_name)
         if player_graph then
             local directory_entry = player_graph:get_entry(self.entry_string)
+            if not directory_entry then 
+                self.object:remove()
+                return
+            end
             local pos = directory_entry:get_pos()
             pos.y = pos.y + 1
             self.object:set_pos(pos)
