@@ -1,8 +1,8 @@
 class 'automount'
 
 function automount:automount()
-    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
-                             core_conf:get("REGISTRY_ADDR")
+    self.registry_addr = os.getenv("USER_REGISTRY_ADDR") ~= "" and os.getenv("USER_REGISTRY_ADDR") or
+                             core_conf:get("USER_REGISTRY_ADDR")
     self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
 end
 
@@ -42,24 +42,25 @@ function automount:mount_registry()
         print("Registry mount failed. Retry")
         minetest.after(1, automount.mount_registry, self)
     end
-    minetest.after(1.5, automount.mount_manuals, self)
+    minetest.after(1.5, automount.mount_manuals, self, nil, 0)
 end
 
-function automount:mount_manuals(cmdchan)
+function automount:mount_manuals(cmdchan, count)
+    if count > 5 then return end 
     local root_cmdchan = cmdchan or self.root_cmdchan
     root_cmdchan:execute("mkdir -p ".. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
     if man_addr:match(".*!.*!.*") then
         root_cmdchan:execute("mount -A " .. man_addr .. " " .. core_conf:get("mans_path"))
     else
-        minetest.after(1.5, automount.mount_manuals, self, cmdchan)
+        count = count + 1
+        minetest.after(1.5, automount.mount_manuals, self, cmdchan, count)
     end
 end
 
 function automount:poll_user_management()
     local root_cmdchan = self.root_cmdchan
     print("Polling user management . . .")
-    print(root_cmdchan:execute("mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry"))
     local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
     if user_management:match(".*!.*!.*") then
         print(user_management)
@@ -122,7 +123,7 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
             })
         end
         local result = player:get_pos()
-        minetest.after(1.5, automount.mount_manuals, self, user_cmdchan)
+        minetest.after(1.5, automount.mount_manuals, self, user_cmdchan, 0)
         minetest.after(2, function(result)
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
