@@ -95,6 +95,8 @@ function automount:spawn_root_platform(attach_string, player, last_login, random
     local player_name = player:get_player_name()
     local connection = connections:get_connection(player_name, attach_string, true)
     if not connection then
+        minetest.chat_send_player(player_name, "no connection established with user namespace")
+        print("no connection established with user namespace")
         return
     end
     local player_graph = graphs:get_player_graph(player_name)
