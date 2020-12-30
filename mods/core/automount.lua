@@ -1,8 +1,10 @@
 class 'automount'
 
 function automount:automount()
-    self.registry_addr = os.getenv("USER_REGISTRY_ADDR") ~= "" and os.getenv("USER_REGISTRY_ADDR") or
+    self.user_registry_addr = os.getenv("USER_REGISTRY_ADDR") ~= "" and os.getenv("USER_REGISTRY_ADDR") or
                              core_conf:get("USER_REGISTRY_ADDR")
+    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
+                             core_conf:get("REGISTRY_ADDR")
     self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
 end
 
@@ -28,7 +30,7 @@ end
 
 function automount:mount_registry()
     local root_cmdchan = self.root_cmdchan
-    local response = root_cmdchan:execute("mount -A " .. self.registry_addr .. " /mnt/registry"):gsub("%s+", "")
+    local response = root_cmdchan:execute("mount -A " .. self.user_registry_addr .. " /mnt/registry"):gsub("%s+", "")
     if response == "" then
         local user_management = root_cmdchan:execute("ndb/regquery -n description 'user management'"):gsub("\n", "")
         if user_management:match(".*!.*!.*") then
