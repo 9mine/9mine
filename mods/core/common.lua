@@ -35,6 +35,20 @@ function common.get_platform_string(player)
     return value.data
 end
 
+function common.get_platform_string_by_pos(pos)
+    if not pos then
+        return nil, "Error"
+    end
+    local area = area_store:get_areas_for_pos(pos, false, true)
+    local index, value = next(area)
+    if not value then
+        minetest.chat_send_player(player:get_player_name(), "No platform for this position in AreaStore")
+        return
+    end
+    return value.data
+end
+
+
 function common.qid_as_key(dir)
     if not dir or type(dir) == "string" then
         return
