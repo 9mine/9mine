@@ -72,7 +72,6 @@ spawn_matched = function(name, matched)
         spawn_pos.y = spawn_pos.y + 10
         local name = entry.platform_string .. "\n" .. entry.stat.name
         local entity = minetest.add_entity(spawn_pos, "core:stat")
-        print("soredeijo")
         entity:set_nametag_attributes({color = "black", text = name})
         entity:set_armor_groups({immortal = 0})
         entity:set_properties({physical = false})
