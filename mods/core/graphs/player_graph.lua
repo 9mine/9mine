@@ -12,6 +12,11 @@ function player_graph:player_graph(player_name)
     return self
 end
 
+-- returns graph object for current player 
+function player_graph:get_graph()
+    return self.graph
+end
+
 -- provided with addr string (tcp!host!port) create 
 -- node and make edge between host addr and root nodes
 function player_graph:add_host(attach_string)

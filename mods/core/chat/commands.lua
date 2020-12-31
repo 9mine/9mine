@@ -13,3 +13,26 @@ minetest.register_chatcommand("cd", {
         return true
     end
 })
+
+
+minetest.register_chatcommand("whereis", {
+    func = function(player_name, params)
+        local response = ""
+        local matched = {}
+        local player_graph = graphs:get_player_graph(player_name)
+        local graph = player_graph:get_graph()
+
+        for n in graph:walknodes() do 
+            if n.entry then 
+                if n.entry.stat.name:match(params) then 
+                    table.insert(matched, n.entry)
+                end
+            end
+        end
+        
+        for k, v in pairs(matched) do 
+            minetest.chat_send_player(player_name, v:get_entry_string())
+        end
+        return true, "\n"
+    end
+})
