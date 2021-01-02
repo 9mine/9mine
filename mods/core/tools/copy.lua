@@ -20,10 +20,8 @@ function CopyTool.on_drop(stat_entity, name, player_name, command)
     end
 
     local entry_string = stat_entity:get_luaentity().entry_string
-    local meta = minetest.get_meta(node_pos)
-    local platform_string = meta:get_string("platform_string")
     local player_graph = graphs:get_player_graph(player_name)
-    local platform = player_graph:get_platform(platform_string)
+    local platform = player_graph:get_platform(common.get_platform_string_by_pos(node_pos))
     local directory_entry = player_graph:get_entry(entry_string)
     directory_entry = directory_entry:copy()
 
@@ -77,6 +75,8 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
     local name = item_meta:get_string("name")
     local texture = item_meta:get_string("texture")
     local entry_string = item_meta:get_string("entry_string")
+    local visual = item_meta:get_string("visual")
+    local player_name = item_meta:get_string("player_name")
     itemstack:take_item(1)
     local pos = dropper:get_pos()
     local p = table.copy(pos)
@@ -88,10 +88,11 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
     p.y = p.y + dir.y
     p.z = p.z + dir.z
     local stat_entity = minetest.add_entity(p, "core:stat")
-    stat_entity:get_luaentity().texture = texture
     stat_entity:get_luaentity().entry_string = entry_string
+    stat_entity:get_luaentity().player_name = player_name
     stat_entity:set_properties({
-        textures = {texture},
+        visual = visual,
+        textures = visual == "sprite" and {texture} or {texture, texture, texture, texture, texture, texture},
         nametag = name,
         nametag_color = "black"
     })
@@ -105,14 +106,16 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
 end
 
 function CopyTool.copy(entity, player)
-    local player_graph = graphs:get_player_graph(player:get_player_name())
+    local player_name = player:get_player_name()
+    local player_graph = graphs:get_player_graph(player_name)
     local directory_entry = player_graph:get_entry(entity.entry_string)
     local type = directory_entry.stat.qid.type == 128 and "core:dir_node" or "core:file_node"
     local item = ItemStack(type)
     local item_meta = item:get_meta()
     item_meta:set_string("name", entity.object:get_nametag_attributes().text)
-    item_meta:set_string("texture", entity.texture)
-    item_meta:set_string("path", directory_entry.path)
+    item_meta:set_string("texture", entity.object:get_properties().textures[1])
+    item_meta:set_string("visual", entity.object:get_properties().visual)
+    item_meta:set_string("player_name", player_name)
     item_meta:set_string("entry_string", entity.entry_string)
     item_meta:set_string("description", entity.entry_string)
     player:get_inventory():add_item("main", item)

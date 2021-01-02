@@ -10,10 +10,14 @@ local READ_BUF_SIZ = 8096
 
 function _9p_readdir(ctx, path) 
   local f = ctx:newfid()
+  if path == "/" then 
+    ctx:clone(ctx.rootfid, f)
+  else 
+    ctx:walk(ctx.rootfid, f, path)      
+  end
   local offset = 0
   local dir, data = nil, nil
 
-  ctx:walk(ctx.rootfid, f, path) 
   ctx:open(f, ORDONLY)  
 
   data = ctx:read(f, offset, READ_BUF_SIZ) 
