@@ -14,7 +14,11 @@ function buffer:open()
     local conn = self.conn
     local path = self.path
     local fid = conn:newfid()
-    conn:walk(conn.rootfid, fid, path == "/" and nil or path)      
+    if path == "/" then 
+        conn:clone(conn.rootfid, fid)
+      else 
+        conn:walk(conn.rootfid, fid, path)      
+    end
     conn:open(fid, 0)
     self.fid = fid
     self.offset = 0
