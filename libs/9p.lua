@@ -320,17 +320,22 @@ end
 
 
 local function breakpath(path)
-  local t = {}
-  local k = 1
+  local tab = {}
   local i = 1
 
-  while i < #path do
-    local s, es = string.find(path, "[^/]+", i)
-    t[k] = string.sub(path, s, es)
-    k = k + 1
-    i = es + 1
+  if path == '/' then
+    return {'/'}
   end
-  return t
+
+  while i <= #path do
+    local start, stop = string.find(path, '[^/]+', i)
+    if not start then break end
+
+    local elem = string.sub(path, start, stop)
+    table.insert(tab, elem)
+    i = stop + 1
+  end
+  return tab
 end
 
 -- path == nil clones ofid to nfid
