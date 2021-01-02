@@ -30,7 +30,11 @@ end
 
 function np_prot.file_create(conn, path, file_name)
     local f, g = conn:newfid(), conn:newfid()
-    conn:walk(conn.rootfid, f, path)
+    if path == "/" then 
+        conn:clone(conn.rootfid, f)
+      else 
+        conn:walk(conn.rootfid, f, path)      
+    end
     conn:clone(f, g)
     conn:create(g, file_name, 420, 1)
     conn:clunk(f)
