@@ -2,7 +2,7 @@ class 'automount'
 
 function automount:automount()
     self.user_registry_addr = os.getenv("USER_REGISTRY_ADDR") ~= "" and os.getenv("USER_REGISTRY_ADDR") or
-                             core_conf:get("USER_REGISTRY_ADDR")
+                                  core_conf:get("USER_REGISTRY_ADDR")
     self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR") or
                              core_conf:get("REGISTRY_ADDR")
     self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR") or core_conf:get("INFERNO_ADDR")
@@ -48,9 +48,11 @@ function automount:mount_registry()
 end
 
 function automount:mount_manuals(cmdchan, count)
-    if count > 5 then return end 
+    if count > 5 then
+        return
+    end
     local root_cmdchan = cmdchan or self.root_cmdchan
-    root_cmdchan:execute("mkdir -p ".. core_conf:get("mans_path"))
+    root_cmdchan:execute("mkdir -p " .. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
     if man_addr:match(".*!.*!.*") then
         root_cmdchan:execute("mount -A " .. man_addr .. " " .. core_conf:get("mans_path"))
@@ -73,15 +75,19 @@ function automount:poll_user_management()
     end
 end
 
-function automount:poll_regquery(player, counter, last_login)
+function automount:poll_regquery(player, counter, last_login, home_platform)
     local player_name = player:get_player_name()
     if counter > 10 then
-        local result, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/user")
+        local result, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/" ..
+                                             home_platform == "inferno" and "user" or
+                                             (home_platform == "nfront" and "9front"))
         minetest.kick_player(player_name, "Error creating NS. Try again later. Log: \n" .. ns_create_output)
         return
     end
     counter = counter + 1
-    local user_addr = root_cmdchan:execute("ndb/regquery -n user " .. player_name):gsub("\n", "")
+    local user_addr = root_cmdchan:execute("ndb/regquery -n " .. ((home_platform == "inferno" and "user") or
+                                               (home_platform == "nfront" and "is")) .. " " .. player_name)
+                          :gsub("\n", "")
     if user_addr:match(".*!.*!.*") then
         minetest.chat_send_player(player_name, user_addr .. " mounted")
         minetest.show_formspec(player_name, "core:some_form",
@@ -90,7 +96,7 @@ function automount:poll_regquery(player, counter, last_login)
                 ""))
         self:spawn_root_platform(user_addr, player, last_login, true)
     else
-        minetest.after(2, automount.poll_regquery, self, player, counter, last_login)
+        minetest.after(2, automount.poll_regquery, self, player, counter, last_login, home_platform)
     end
 end
 
