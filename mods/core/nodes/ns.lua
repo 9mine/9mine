@@ -66,14 +66,14 @@ end
 
 minetest.register_node("core:ns_node", NsNode)
 
-minetest.register_on_joinplayer(function(player)
-    local inventory = player:get_inventory()
-    if not inventory:contains_item("main", "core:ns_node") then
-        local ns = ItemStack("core:ns_node")
-        local ns_meta = ns:get_meta()
-        ns_meta:set_string("ns", "")
-        ns_meta:set_string("description", "newns")
-        inventory:add_item("main", ns)
-    end
-end)
+-- minetest.register_on_joinplayer(function(player)
+--     local inventory = player:get_inventory()
+--     if not inventory:contains_item("main", "core:ns_node") then
+--         local ns = ItemStack("core:ns_node")
+--         local ns_meta = ns:get_meta()
+--         ns_meta:set_string("ns", "")
+--         ns_meta:set_string("description", "newns")
+--         inventory:add_item("main", ns)
+--     end
+-- end)
 

@@ -89,16 +89,16 @@ end
 
 minetest.register_node("core:service_node", ServiceNode)
 
-minetest.register_on_joinplayer(function(player)
-    local inventory = player:get_inventory()
-    if not inventory:contains_item("main", "core:service_node") then
-        local item = ItemStack("core:service_node")
-        local service = item:get_meta()
+-- minetest.register_on_joinplayer(function(player)
+--     local inventory = player:get_inventory()
+--     if not inventory:contains_item("main", "core:service_node") then
+--         local item = ItemStack("core:service_node")
+--         local service = item:get_meta()
 
-        service:set_string("service", "tcp!localhost!2100")
-        service:set_string("description", "tcp!localhost!2100")
+--         service:set_string("service", "tcp!localhost!2100")
+--         service:set_string("description", "tcp!localhost!2100")
 
-        inventory:add_item("main", item)
-    end
-end)
+--         inventory:add_item("main", item)
+--     end
+-- end)
 
