@@ -72,7 +72,10 @@ spawn_matched = function(name, matched)
         spawn_pos.y = spawn_pos.y + 10
         local name = entry.platform_string .. "\n" .. entry.stat.name
         local entity = minetest.add_entity(spawn_pos, "core:stat")
-        entity:set_nametag_attributes({color = "black", text = name})
+        entity:set_properties({
+            nametag = name,
+            textures = {entry.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
+        })
         entity:set_armor_groups({immortal = 0})
         entity:set_properties({physical = false})
         entity:set_velocity({x = 0, y = -9.81, z = 0})
