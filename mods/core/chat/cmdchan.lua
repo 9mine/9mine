@@ -3,7 +3,6 @@ minetest.register_on_chat_message(function(player_name, message)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(common.get_platform_string(player))
     if not platform then
-        minetest.chat_send_player(player_name, "No platform found nearby")
         return false
     end
     local commands = core_conf:get("pcmd")
@@ -11,7 +10,7 @@ minetest.register_on_chat_message(function(player_name, message)
     if command:match("man") and message:match(" | man$") then
         message = message:gsub(" | man", "")
         local conn = platform:get_conn()
-        local section = message:match("man %d+ ") and command:gsub("man ", ""):match("%d+")
+        local section = message:match("man %d+ ") and message:match("man %d+ "):match("%d+")
         message = message:gsub("man ", ""):gsub("%d+ ", "")
         local mans_path = core_conf:get("mans_path")
         local result, manpage
