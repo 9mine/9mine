@@ -14,6 +14,10 @@ minetest.register_tool("core:console", {
 
 local function spawn_console(player, formname, fields)
     if formname == "core:spawn_console" then
+        if not fields.addr then 
+            minetest.chat_send_player(player:get_player_name(), "No addr field")
+            return
+        end
         local attach_string = split_connection_string(fields.addr)
         local tx = "core_console.png"
         local connection = connections:get_connection(player:get_player_name(), attach_string, true)
