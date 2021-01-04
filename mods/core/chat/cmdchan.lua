@@ -4,7 +4,7 @@ minetest.register_on_chat_message(function(player_name, message)
     local platform = player_graph:get_platform(common.get_platform_string(player))
     if not platform then
         minetest.chat_send_player(player_name, "No platform found nearby")
-        return true
+        return false
     end
     local commands = core_conf:get("pcmd")
     local command = message:match("[^ ]+")
