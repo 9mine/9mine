@@ -14,16 +14,23 @@ minetest.register_tool("core:console", {
 
 local function spawn_console(player, formname, fields)
     if formname == "core:spawn_console" then
+        if not fields.addr then 
+            minetest.chat_send_player(player:get_player_name(), "No addr field")
+            return
+        end
         local attach_string = split_connection_string(fields.addr)
         local tx = "core_console.png"
         local connection = connections:get_connection(player:get_player_name(), attach_string, true)
         if not connection then
             return
         end
+        local user
         if not connection.cmdchan then
             local cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
             connection:set_cmdchan(cmdchan)
+            user = cmdchan:execute("cat /dev/user")
         end
+
 
         local dir = player:get_look_dir()
         local dis = vector.multiply(dir, 5)
@@ -38,6 +45,7 @@ local function spawn_console(player, formname, fields)
             }
         })
         entity:get_luaentity().addr = attach_string
+        entity:get_luaentity().user = user
     end
 end
 
@@ -52,13 +60,14 @@ local function console(player, formname, fields)
         local pos = minetest.deserialize(fields.entity_pos)
         local index, entity = next(minetest.get_objects_inside_radius(pos, 0.5))
         local lua_entity = entity:get_luaentity()
-        local response = connections:get_connection(player_name, lua_entity.addr):get_cmdchan():execute(fields.input:gsub("; ", ""))
+        local request = lua_entity.user == "glenda" and "%" or "\\;"
+        local response = connections:get_connection(player_name, lua_entity.addr):get_cmdchan():execute(fields.input:gsub(lua_entity.user == "glenda" and "%% " or "; ", ""))
         lua_entity.output = fields.input .. ": " .. response .. "\n" .. lua_entity.output
         minetest.show_formspec(player_name, "core:console", table.concat({
             "formspec_version[4]", 
             "size[13,13,false]",
             "textarea[0.5,0.5;12.0,10;;;", minetest.formspec_escape(lua_entity.output), "]", 
-            "field[0.5,10.5;12,1;input;;\\; ]", 
+            "field[0.5,10.5;12,1;input;;" .. request .. " ]", 
             "field_close_on_enter[input;false]",
             "button[10,11.6;2.5,0.9;send;send]",
             "field[13,13;0,0;entity_pos;;", minetest.formspec_escape(fields.entity_pos), "]"

@@ -81,7 +81,7 @@ function mvcp:map_changes(changes)
 
             -- if cp command, duplicate entity
             if self.command == "cp" then
-                entity = mvcp.copy(entity)
+                entity = mvcp.copy(entity, change.qid.type)
             end
 
             directory_entry:set_pos(pos):set_stat(change)
@@ -221,9 +221,10 @@ function mvcp.get_parent_path(path)
     return parent:match('.*[^/]')
 end
 
-function mvcp.copy(stat_entity)
+function mvcp.copy(stat_entity, tx)
     local pos = stat_entity:get_pos()
     local entity = minetest.add_entity(pos, "core:stat")
+    texture.set_texture(entity, tx == 128 and "core_dir.png" or "core_file.png")
     return entity
 end
 
