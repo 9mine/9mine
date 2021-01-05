@@ -6,7 +6,7 @@ platform_properties = function(player, fields)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(fields.platform_string)
     platform:set_refresh_time(tonumber(fields.refresh_time))
-    platform:set_player(fields.player_name)
+    --platform:set_player(fields.player_name)
     if platform:get_color() ~= tonumber(fields.color) then 
         platform:colorize(tonumber(fields.color))
     end
