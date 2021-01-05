@@ -474,49 +474,54 @@ function platform:show_properties(player)
 end
 
 function platform:update_with_buffer(update_buffer)
-    local result, content = pcall(update_buffer.process_next, update_buffer)
-    if not result then
-        self:wipe()
-        return
-    end
-    if update_buffer:is_open() then
-        minetest.after(1, platform.update_with_buffer, self, update_buffer)
-    else
-        local content_size = #content
-        local new_size = self:compute_size(content)
-        local new_content = common.qid_as_key(content)
-        local stats = self.directory_entries
-        local player_graph = graphs:get_player_graph(self:get_player())
-        if self.size > 3 and (math.sqrt(content_size) + 3) / self.size < 0.65 then
-            self:wipe_top()
-            self:delete_nodes()
-            area_store:remove_area(self.properties.area_id)
-            self:draw(self.origin_point, new_size, self:get_color())
-            while next(content) do
-                local index, stat = next(content)
-                local directory_entry = self:spawn_stat(stat)
-                self.directory_entries[stat.qid.path_hex] = directory_entry
-                player_graph:add_entry(self, directory_entry)
-                table.remove(content, index)
-            end
-        else
-            for qid, st in pairs(new_content) do
-                if not stats[qid] then
-                    local directory_entry = self:spawn_stat(st)
-                    player_graph:add_entry(self, directory_entry)
-                    self.directory_entries[qid] = directory_entry
-                end
-            end
-            for qid in pairs(stats) do
-                if not new_content[qid] then
-                    local directory_entry_node = self.directory_entries[qid].node
-                    directory_entry_node:delete()
-                    self:remove_entity(qid)
-                end
-            end
-            self:set_content_size(content_size)
+    local refresh_time = self:get_refresh_time()
+    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
+        local result, content = pcall(update_buffer.process_next, update_buffer)
+        if not result then
+            self:wipe()
+            return
         end
-        local refresh_time = self:get_refresh_time()
+        if update_buffer:is_open() then
+            minetest.after(1, platform.update_with_buffer, self, update_buffer)
+        else
+            local content_size = #content
+            local new_size = self:compute_size(content)
+            local new_content = common.qid_as_key(content)
+            local stats = self.directory_entries
+            local player_graph = graphs:get_player_graph(self:get_player())
+            if self.size > 3 and (math.sqrt(content_size) + 3) / self.size < 0.65 then
+                self:wipe_top()
+                self:delete_nodes()
+                area_store:remove_area(self.properties.area_id)
+                self:draw(self.origin_point, new_size, self:get_color())
+                while next(content) do
+                    local index, stat = next(content)
+                    local directory_entry = self:spawn_stat(stat)
+                    self.directory_entries[stat.qid.path_hex] = directory_entry
+                    player_graph:add_entry(self, directory_entry)
+                    table.remove(content, index)
+                end
+            else
+                for qid, st in pairs(new_content) do
+                    if not stats[qid] then
+                        local directory_entry = self:spawn_stat(st)
+                        player_graph:add_entry(self, directory_entry)
+                        self.directory_entries[qid] = directory_entry
+                    end
+                end
+                for qid in pairs(stats) do
+                    if not new_content[qid] then
+                        local directory_entry_node = self.directory_entries[qid].node
+                        directory_entry_node:delete()
+                        self:remove_entity(qid)
+                    end
+                end
+                self:set_content_size(content_size)
+            end
+            local refresh_time = self:get_refresh_time()
+            minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
+        end
+    else
         minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
     end
 end
