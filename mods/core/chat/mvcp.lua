@@ -11,7 +11,7 @@ function mvcp:get_destination_platform()
     end
     -- check if destination entry is spawned
     local result, stat =
-        pcall(np_prot.stat_read, self.conn, self.destination == "/" and "./" or self.destination)
+        pcall(np_prot.stat_read, self.conn, self.destination)
 
     -- decide if destination itself should be tracked for changes or 
     -- parent directory of destination

@@ -63,7 +63,7 @@ end
 function np_over_tcp:is_alive()
     local conn = self.conn
     local f = conn:newfid()
-    local result = pcall(np.walk, conn, conn.rootfid, f, "./")
+    local result = pcall(np.clone, conn, conn.rootfid, f)
     if result then
         conn:clunk(f)
     end

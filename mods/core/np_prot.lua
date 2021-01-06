@@ -2,7 +2,11 @@ class 'np_prot'
 
 function np_prot.stat_read(conn, path)
     local f = conn:newfid()
-    conn:walk(conn.rootfid, f, path)
+    if path == "/" then 
+        conn:clone(conn.rootfid, f)
+      else 
+        conn:walk(conn.rootfid, f, path)      
+    end
     conn:open(f, 0)
     local st = conn:stat(f)
     conn:clunk(f)
