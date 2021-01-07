@@ -94,7 +94,7 @@ function automount:poll_regquery(player, counter, last_login, home_platform)
             table.concat({"formspec_version[4]", "size[20, 1.2,false]",
                           "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ", user_addr, " found.<center><bigger>]"},
                 ""))
-        minetest.after(3, self:spawn_root_platform, user_addr, player, last_login, true)
+        self:spawn_root_platform(user_addr, player, last_login, true)
     else
         minetest.after(2, automount.poll_regquery, self, player, counter, last_login, home_platform)
     end
