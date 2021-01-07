@@ -3,7 +3,7 @@ version: "3.5"
 services:
 
   inferno:
-    image: dievri/inferno-os:getauth
+    image: 9mine/inferno-os:focal
     container_name: mt-local
     networks:
       - minetest
@@ -17,7 +17,7 @@ services:
   server:
     depends_on: 
       - inferno
-    image: dievri/minetest:master
+    image: 9mine/minetest:master
     container_name: mt-server
     networks:
       - minetest
