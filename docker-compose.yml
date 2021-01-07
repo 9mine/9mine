@@ -23,6 +23,7 @@ services:
       - minetest
     volumes:
         - "./storage:/storage"
+        - "./mods/core:/root/.minetest/mods/core"
     ports:
       - "30000:30000/udp"
     environment:
