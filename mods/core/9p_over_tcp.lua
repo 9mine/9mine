@@ -16,7 +16,7 @@ end
 
 function np_over_tcp:attach()
     local tcp = socket:tcp()
-    tcp:settimeout(5)
+    tcp:settimeout(15)
     self.tcp = tcp
     if not self.host or not self.port then
         if self.player_name then
