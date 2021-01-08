@@ -16,6 +16,7 @@ end
 
 function np_over_tcp:attach()
     local tcp = socket:tcp()
+    tcp:settimeout(5)
     self.tcp = tcp
     if not self.host or not self.port then
         if self.player_name then
@@ -35,7 +36,6 @@ function np_over_tcp:attach()
         local size, err = tcp:receive(size)
         if err then
             print(err)
-            return false
         end
         return size
     end, function(buf)
@@ -63,7 +63,7 @@ end
 function np_over_tcp:is_alive()
     local conn = self.conn
     local f = conn:newfid()
-    local result = pcall(np.walk, conn, conn.rootfid, f, "./")
+    local result = pcall(np.clone, conn, conn.rootfid, f)
     if result then
         conn:clunk(f)
     end
@@ -79,7 +79,9 @@ function np_over_tcp:get_cmdchan()
 end
 -- parses string in form of '<protocol>!<hostname>!<port_number>'
 parse_attach_string = function(attach_string)
-    if not attach_string then return end 
+    if not attach_string then
+        return
+    end
     local info = {}
     for token in attach_string:gmatch("[^!]+") do
         table.insert(info, token)

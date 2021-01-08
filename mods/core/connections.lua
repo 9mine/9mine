@@ -16,7 +16,8 @@ function connections:make_new(player_name, addr)
     local connection = self.connections[player_name][addr]
     if not connection then
         connection = np_over_tcp(addr, player_name)
-        if connection:attach() then
+        local result, response = pcall(np_over_tcp.attach, connection)
+        if result then
             self:add_connection(player_name, connection)
             return connection
         else
