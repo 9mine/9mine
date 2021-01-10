@@ -6,17 +6,17 @@ minetest.register_chatcommand("graph", {
         graph:layout("circo")
         minetest.chat_send_player(player_name, "Render . . . \n")
         local pfx = minetest.get_modpath("core")
-        local name = os.date("%Y-%m-%d_%H-%M-%S") .. ".png"
+        local name = os.date("%Y-%m-%d_%H-%M-%S") .. ".dot"
         local full_name = pfx .. "/rendered_graphs/" .. name
 
-        graph:render("png", full_name)
-        minetest.dynamic_add_media(full_name)
-        minetest.chat_send_player(player_name, "Graph rendered to " .. name .. "\n")
-
-        if params == "show" then
-            minetest.show_formspec(player_name, "core:graph", table.concat(
-                {"formspec_version[3]", "size[30, 20,false]", "image_button[0.5,0.5;29,19;" .. name .. ";;]"}, ""))
-        end
+        graph:render("dot", full_name)
+        
+        minetest.chat_send_player(player_name, "Graph rendered to " .. full_name .. "\n")
+        --minetest.dynamic_add_media(full_name)
+        -- if params == "show" then
+        --    minetest.show_formspec(player_name, "core:graph", table.concat(
+        --        {"formspec_version[3]", "size[30, 20,false]", "image_button[0.5,0.5;29,19;" .. name .. ";;]"}, ""))
+        --end
     end
 })
 
