@@ -7,7 +7,9 @@ end
 
 function cmdchan:is_present()
     local conn = self.connection.conn
-    local f = conn:newfid()
+    if not conn then return end  
+    local result, f = pcall(np.newfid, conn)
+    if not result then return end 
     local result = pcall(np.walk, conn, conn.rootfid, f, self.cmdchan_path)
     if result then
         conn:clunk(f)
