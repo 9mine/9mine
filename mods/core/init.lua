@@ -20,6 +20,7 @@ filesize = require 'filesize'
 np = require '9p'
 
 -- tools
+require 'tools.test'
 require 'tools.connect'
 require 'tools.enter'
 require 'tools.read'
