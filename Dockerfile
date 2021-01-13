@@ -33,6 +33,7 @@ RUN luarocks-5.1 install luagraph
 RUN luarocks-5.1 install md5
 RUN luarocks-5.1 install luasec
 RUN luarocks-5.1 install luafilesystem
+RUN luarocks-5.1 install lua-cjson
 
 FROM alpine:latest
 
