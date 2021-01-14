@@ -52,6 +52,9 @@ end
 function StatEntity:get_staticdata()
     local attributes = self.object:get_nametag_attributes()
     local properties = self.object:get_properties()
+    if not properties then 
+        print("error getting static data")
+        return end 
     local data = {
         player_name = self.player_name,
         visual = properties.visual,
