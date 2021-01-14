@@ -1,12 +1,11 @@
 local path = minetest.get_modpath("core")
 dofile(path .. "/modload.lua")
-require 'lfs'
 core_conf = Settings(path .. "/mod.conf")
 
 -- global values
 connections = {}
 -- libraries 
-
+require 'lfs'
 require 'graph'
 require "socket"
 require "class"
@@ -20,7 +19,6 @@ filesize = require 'filesize'
 np = require '9p'
 
 -- tools
-require 'tools.test'
 require 'tools.connect'
 require 'tools.enter'
 require 'tools.read'

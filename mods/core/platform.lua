@@ -615,7 +615,8 @@ function platform:load_read_file(entry, entity, player)
             platform = self,
             entry = entry,
             entity = entity,
-            player = player
+            player = player,
+            register = register
         }, {
             __index = _G
         }))
