@@ -1,12 +1,12 @@
 local path = minetest.get_modpath("core")
 dofile(path .. "/modload.lua")
-
+require 'lfs'
 core_conf = Settings(path .. "/mod.conf")
 
 -- global values
 connections = {}
 -- libraries 
-require 'lfs'
+
 require 'graph'
 require "socket"
 require "class"
@@ -59,7 +59,6 @@ require 'graphs.player_graph'
 require 'common'
 require 'np_prot'
 require 'texture'
-require 'mounts'
 require 'buffer'
 
 -- entities
@@ -76,7 +75,6 @@ connections = connections()
 automount = automount()
 graphs = graphs()
 np_prot = np_prot()
-mounts = mounts()
 
 current_hud = {}
 functions = {}

@@ -386,10 +386,8 @@ function platform:spawn_child(path, player, paths)
     if not pos then
         return
     end
-    child_platform.mount_point = self.mount_point
     child_platform.origin_point = pos
     child_platform.root_point = pos
-    mounts:set_mount_points(self)
     child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()
     return child_platform
@@ -602,12 +600,8 @@ function platform:load_getattr(entry, entity)
 end
 
 function platform:load_read_file(entry, entity, player)
-    if not self.mount_point then
-        return
-    end
     local player_name = self:get_player()
-    local lua_read_file = entry.path:gsub("^" .. self.mount_point,
-                              self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/read_file"
+    local lua_read_file = entry.path .. ".include.lua"
     local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_read_file)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
