@@ -616,7 +616,8 @@ function platform:load_read_file(entry, entity, player)
             entry = entry,
             entity = entity,
             player = player,
-            register = register
+            register = register,
+            texture = texture
         }, {
             __index = _G
         }))
