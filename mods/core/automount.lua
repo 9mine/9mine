@@ -43,14 +43,18 @@ function automount:mount_registry()
     else
         print("Registry mount failed. Retry")
         minetest.after(1, automount.mount_registry, self)
+        return
     end
     minetest.after(1.5, automount.mount_manuals, self, nil, 0)
 end
 
 function automount:mount_manuals(cmdchan, count)
-    if count > 5 then
+    if count and count > 5 then
         return
+    else 
+        count = 1
     end
+   
     local root_cmdchan = cmdchan or self.root_cmdchan
     root_cmdchan:execute("mkdir -p " .. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")

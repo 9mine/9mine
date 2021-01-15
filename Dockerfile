@@ -1,71 +1,95 @@
-FROM alpine:latest as compile 
-ENV BRANCH master
-RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev lua5.1       \
-        libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev       \
-        libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev            \
-        gmp-dev jsoncpp-dev postgresql-dev ca-certificates lua5.1-dev           \
-        luarocks5.1 && mkdir minetest_compiled &&                               \
-        git clone --depth 1 https://github.com/minetest/minetest.git 
+FROM    ubuntu:20.10 as compile
 
-RUN cd minetest && export COMMIT_VERSION=$(git log --pretty=tformat:"%h" -n1 . ) && cd .. && \
-    export DATE=$(date) && \
-    sed -i "s#VERSION_EXTRA \"\" CACHE STRING \"Stuff to append to version string\"#VERSION_EXTRA \"${BRANCH} ${COMMIT_VERSION} ${DATE}\"#g" minetest/CMakeLists.txt && \
-    sed -i "s#\${VERSION_STRING}-\${VERSION_EXTRA}#\"\${VERSION_STRING} \${VERSION_EXTRA}\"#g" minetest/CMakeLists.txt && \
-    cmake ./minetest    -DCMAKE_INSTALL_PREFIX=/minetest_compiled   \
-                        -DCMAKE_BUILD_TYPE=MinSizeRel               \
-                        -DRUN_IN_PLACE=FALSE                        \
-                        -DBUILD_UNITTESTS=FALSE                     \
-                        -DBUILD_SERVER=TRUE                         \
-                        -DBUILD_CLIENT=FALSE                        \
-                        && make -j$(nproc) && make install         
-    
-RUN git clone https://github.com/lneto/luadata.git &&               \
-    sed -i 's#-fPIC#-fPIC -I/usr/include/lua5.1#g'                  \
-    /luadata/GNUmakefile /luadata/Makefile && cd luadata && make    
+ENV     DEBIAN_FRONTEND noninteractive
 
-RUN git clone --depth 1 https://github.com/minetest/minetest_game.git 
+RUN     apt-get update && apt-get install -y libluajit-5.1-dev  \
+        git g++ make libc6-dev libirrlicht-dev libssl-dev       \
+        cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev  \
+        libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev \
+        libopenal-dev libcurl4-gnutls-dev libfreetype6-dev      \
+        zlib1g-dev libgmp-dev libjsoncpp-dev luarocks graphviz  \
+        graphviz-dev
 
-RUN luarocks-5.1 install luasocket
-RUN luarocks-5.1 install luabitop 
-RUN luarocks-5.1 install lua-filesize
-RUN apk add graphviz graphviz-dev
-RUN luarocks-5.1 install luagraph
-RUN luarocks-5.1 install md5
-RUN luarocks-5.1 install luasec
-RUN luarocks-5.1 install luafilesystem
-RUN luarocks-5.1 install lua-cjson
+# Build luadata libary 
+RUN     git clone https://github.com/lneto/luadata.git &&                       \
+        sed -i 's#-fPIC#-fPIC -I/usr/include/lua5.1#g; s#llua#lluajit-5.1#g'    \
+        luadata/GNUmakefile && cd luadata && make
 
-FROM alpine:latest
+# Clone minetest game for extracting textures
+RUN     git clone --depth 1 https://github.com/minetest/minetest_game.git 
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq lua5.1-libs
-RUN apk add --update graphviz graphviz-dev font-bitstream-type1 ghostscript-fonts ttf-freefont
-RUN mkdir -p /root/.minetest/worlds/world && mkdir -p /root/.minetest/mods/default/textures && echo " " > /root/.minetest/mods/default/init.lua
+# Specify branch or commit from which minetest should be built
+ENV     BRANCH          master
+#ENV     COMMIT          d2abdda12c8fceee5b20cd0d64e0d955b6ee5657
 
-COPY                    ./minetest.conf             /root/.minetest/minetest.conf
-COPY                    ./world.mt     /root/.minetest/worlds/world/world.mt
-COPY                    ./libs/                     /usr/local/share/lua/5.1/
+RUN     git clone https://github.com/minetest/minetest.git 
+WORKDIR minetest 
+#RUN git checkout $COMMIT
 
-COPY --from=compile     /usr/local/share/lua/5.1    /usr/local/share/lua/5.1/
-COPY --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
-COPY --from=compile     /luadata/data.so            /usr/local/lib/lua/5.1/data.so
-COPY --from=compile     /minetest_compiled/bin      /usr/bin/
-COPY --from=compile     /minetest_compiled/share    /usr/share/
+# Change version string of compiled binary 
+RUN     export COMMIT_VERSION=$(git rev-parse --short HEAD) &&  \
+        export DATE="$(date)" &&                                \
+        sed -i "s#VERSION_EXTRA \"\" CACHE STRING \"Stuff to append to version string\"#VERSION_EXTRA \"${BRANCH} ${COMMIT_VERSION} ${DATE}\"#g ; s#\${VERSION_STRING}-\${VERSION_EXTRA}#\"\${VERSION_STRING} \${VERSION_EXTRA}\"#g" CMakeLists.txt 
 
-COPY                    ./mods                      /root/.minetest/mods/
+# Build and install minetestserver 
+RUN     cmake   -DBUILD_SERVER=TRUE             \
+                -DBUILD_CLIENT=FALSE            \
+                -DRUN_IN_PLACE=FALSE            \
+                -DCMAKE_BUILD_TYPE=MinSizeRel &&\
+                                                \    
+        make    -j$(nproc)                    &&\
+        make    install
 
-
-
-# COPY --from=compile     /usr/lib/libgvc.so.6    \
-#                         /usr/lib/libcgraph.so.6 \
-#                         /usr/lib/libltdl.so.7   \
-#                         /usr/lib/libcdt.so.5    \
-#                         /usr/lib/libcdt.so.5    \
-#                         /usr/lib/libexpat.so.1  \
-#                         /usr/lib/libpathplan.so.4  /usr/lib/
+# Install Lua libraries
+RUN     luarocks install luafilesystem  &&\
+        luarocks install luagraph       &&\
+        luarocks install luasocket      &&\
+        luarocks install luabitop       &&\    
+        luarocks install lua-filesize   &&\
+        luarocks install luagraph       &&\
+        luarocks install md5            &&\
+        luarocks install luafilesystem  &&\
+        luarocks install lua-cjson      &&\
+        luarocks install luaunit        &&\
+        luarocks install luasec   
 
 
-COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mods/default/textures/
+# Production image
+FROM    ubuntu:20.10
 
-RUN mkdir /storage && rm -fr /usr/share/minetest/games/devtest/mods/
+ENV     DEBIAN_FRONTEND noninteractive
 
-ENTRYPOINT [ "/usr/bin/minetestserver" ]
+# Dependencies for minetestserver and mods
+RUN     apt-get update && apt-get install -y sqlite3 libcurl4-gnutls-dev graphviz-dev libluajit-5.1-dev
+
+# Create default mod (for default textures for minetest game)
+RUN     mkdir -p /root/.minetest/worlds/world mkdir   \
+        /root/.minetest/mods/default/textures       &&\ 
+        echo " " > /root/.minetest/mods/default/init.lua 
+
+
+# Copy minetest configuration file
+COPY    ./minetest.conf                                 /root/.minetest/minetest.conf
+
+# Copy minetest world configuration file
+COPY    ./world.mt                                      /root/.minetest/worlds/world/world.mt
+
+# Copy default textures from minetest game
+COPY    --from=compile /minetest_game/mods/default/textures /root/.minetest/mods/default/textures/
+
+# Copy luadata build artifacts
+COPY    --from=compile /luadata/data.so        /usr/local/lib/lua/5.1/data.so  
+# Copy minetest build artifacts
+COPY    --from=compile /usr/local/share/minetest        /usr/local/share/minetest
+COPY    --from=compile /usr/local/bin/minetestserver    /usr/local/bin/
+
+# Copy local libraries
+COPY    ./libs/                                         /usr/local/share/lua/5.1/
+
+# Copy libraries installed with luarocks
+COPY    --from=compile     /usr/local/share/lua/5.1    /usr/local/share/lua/5.1/
+COPY    --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
+
+EXPOSE  30000/udp
+
+ENTRYPOINT ["minetestserver"]
