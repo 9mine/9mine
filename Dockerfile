@@ -52,7 +52,8 @@ RUN     luarocks install luafilesystem  &&\
         luarocks install luafilesystem  &&\
         luarocks install lua-cjson      &&\
         luarocks install luaunit        &&\
-        luarocks install luasec   
+        luarocks install luasec         &&\
+        luarocks install luacheck       
 
 
 # Production image
