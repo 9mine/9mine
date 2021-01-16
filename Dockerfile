@@ -22,6 +22,7 @@ RUN     git clone --depth 1 https://github.com/minetest/minetest_game.git
 ENV     BRANCH          master
 #ENV     COMMIT          d2abdda12c8fceee5b20cd0d64e0d955b6ee5657
 
+# Clone sources for minetestserver
 RUN     git clone https://github.com/minetest/minetest.git 
 WORKDIR minetest 
 #RUN git checkout $COMMIT
@@ -57,6 +58,7 @@ RUN     luarocks install luafilesystem  &&\
 # Production image
 FROM    ubuntu:20.10
 
+# Prevent promt for answers
 ENV     DEBIAN_FRONTEND noninteractive
 
 # Dependencies for minetestserver and mods
@@ -66,7 +68,6 @@ RUN     apt-get update && apt-get install -y sqlite3 libcurl4-gnutls-dev graphvi
 RUN     mkdir -p /root/.minetest/worlds/world mkdir   \
         /root/.minetest/mods/default/textures       &&\ 
         echo " " > /root/.minetest/mods/default/init.lua 
-
 
 # Copy minetest configuration file
 COPY    ./minetest.conf                                 /root/.minetest/minetest.conf
@@ -79,6 +80,7 @@ COPY    --from=compile /minetest_game/mods/default/textures /root/.minetest/mods
 
 # Copy luadata build artifacts
 COPY    --from=compile /luadata/data.so        /usr/local/lib/lua/5.1/data.so  
+
 # Copy minetest build artifacts
 COPY    --from=compile /usr/local/share/minetest        /usr/local/share/minetest
 COPY    --from=compile /usr/local/bin/minetestserver    /usr/local/bin/
@@ -89,6 +91,9 @@ COPY    ./libs/                                         /usr/local/share/lua/5.1
 # Copy libraries installed with luarocks
 COPY    --from=compile     /usr/local/share/lua/5.1    /usr/local/share/lua/5.1/
 COPY    --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
+
+# Delete devetest default mods
+RUN     rm -rf /usr/local/share/minetest/games/devtest/mods
 
 EXPOSE  30000/udp
 
