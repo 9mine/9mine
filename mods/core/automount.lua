@@ -51,7 +51,7 @@ end
 function automount:mount_manuals(cmdchan, count)
     if count and count > 5 then
         return
-    else 
+    elseif not count then 
         count = 1
     end
    
