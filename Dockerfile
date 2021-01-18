@@ -52,9 +52,7 @@ RUN     luarocks install luafilesystem  &&\
         luarocks install luafilesystem  &&\
         luarocks install lua-cjson      &&\
         luarocks install luaunit        &&\
-        luarocks install luasec         &&\
-        luarocks install luacheck       
-
+        luarocks install luasec
 
 # Production image
 FROM    ubuntu:20.10
@@ -95,6 +93,9 @@ COPY    --from=compile     /usr/local/lib/lua/5.1      /usr/local/lib/lua/5.1/
 
 # Delete devetest default mods
 RUN     rm -rf /usr/local/share/minetest/games/devtest/mods
+
+# Copy mods source code from repo 
+COPY    ./mods             /root/.minetest/mods/
 
 EXPOSE  30000/udp
 
