@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@latest
+        uses: satackey/action-docker-layer-caching@v0.0.11
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
