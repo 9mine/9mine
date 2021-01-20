@@ -421,8 +421,7 @@ function platform:enlarge()
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                if ((x >= root.x and x <= root.x + old_size) and (z >= root.z and z <= root.z + old_size)) then
-                else
+                if not ((x >= root.x and x <= root.x + old_size) and (z >= root.z and z <= root.z + old_size)) then
                     local p = {
                         x = x,
                         y = y,
@@ -551,8 +550,7 @@ function platform:load_readdir()
             __index = _G
         }))
         lua()
-    elseif include_string == "" then
-    else
+    elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_readdir)
         return
     end
@@ -582,8 +580,7 @@ function platform:load_getattr(entry, entity)
             __index = _G
         }))
         return lua
-    elseif include_string == "" then
-    else
+    elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_getattr)
         return
     end
@@ -612,8 +609,7 @@ function platform:load_read_file(entry, entity, player)
             __index = _G
         }))
         lua()
-    elseif include_string == "" then
-    else
+    elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_read_file)
         return
     end
