@@ -8,15 +8,11 @@ local platform_properties = function(player, fields)
     if platform:get_color() ~= tonumber(fields.color) then
         platform:colorize(tonumber(fields.color))
     end
-    platform.properties.external_handler =
-        fields.external_handler == "true" and true or false
-    minetest.chat_send_player(player_name, "For " .. fields.platform_string ..
-                                  " refresh time is: " .. fields.refresh_time)
+    platform.properties.external_handler = fields.external_handler == "true" and true or false
+    minetest.chat_send_player(player_name, "For " .. fields.platform_string .. " refresh time is: "
+                                  .. fields.refresh_time)
 end
 
-minetest.register_on_player_receive_fields(
-    function(player, formname, fields)
-        if formname == "platform:properties" then
-            platform_properties(player, fields)
-        end
-    end)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname == "platform:properties" then platform_properties(player, fields) end
+end)

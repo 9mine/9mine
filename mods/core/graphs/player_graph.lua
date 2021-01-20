@@ -19,12 +19,10 @@ function player_graph:get_graph() return self.graph end
 -- node and make edge between host addr and root nodes
 function player_graph:add_host(attach_string)
     local host_node = self.graph:node(attach_string)
-    local result, response = pcall(self.graph.edge, self.graph, self.root_node,
-                                   host_node)
+    local result, response = pcall(self.graph.edge, self.graph, self.root_node, host_node)
     if not result then
         minetest.chat_send_player(self.player_name,
-                                  "Error graphing edge for host_node: " ..
-                                      response)
+                                  "Error graphing edge for host_node: " .. response)
     end
     return host_node
 end
@@ -62,20 +60,17 @@ function player_graph:add_platform(platform, parent_platform, player_host_node)
     local platform_node = self.graph:node(platform.platform_string)
     platform_node.object = platform
     if not parent_platform then
-        local result, response = pcall(self.graph.edge, self.graph,
-                                       player_host_node, platform_node)
+        local result, response = pcall(self.graph.edge, self.graph, player_host_node, platform_node)
         if not result then
             minetest.chat_send_player(self.player_name,
-                                      "Error graphing edge before host_node: " ..
-                                          response)
+                                      "Error graphing edge before host_node: " .. response)
         end
     else
-        local result, response = pcall(self.graph.edge, self.graph,
-                                       parent_platform:get_node(), platform_node)
+        local result, response = pcall(self.graph.edge, self.graph, parent_platform:get_node(),
+                                       platform_node)
         if not result then
             minetest.chat_send_player(self.player_name,
-                                      "Error graphing edge with parent_plat: " ..
-                                          response)
+                                      "Error graphing edge with parent_plat: " .. response)
         end
     end
     return platform_node
@@ -88,11 +83,9 @@ function player_graph:add_entry(platform, directory_entry)
     local entry_node = self.graph:node(directory_entry:get_entry_string())
     entry_node.entry = directory_entry
     directory_entry.node = entry_node
-    local result, response = pcall(self.graph.edge, self.graph, platform_node,
-                                   entry_node)
+    local result, response = pcall(self.graph.edge, self.graph, platform_node, entry_node)
     if not result then
-        minetest.chat_send_player(self.player_name,
-                                  "Error graphing edge: " .. response)
+        minetest.chat_send_player(self.player_name, "Error graphing edge: " .. response)
     end
 end
 

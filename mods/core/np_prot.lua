@@ -4,7 +4,7 @@ function np_prot.stat_read(conn, path)
     local f = conn:newfid()
     if path == "/" then
         conn:clone(conn.rootfid, f)
-      else
+    else
         conn:walk(conn.rootfid, f, path)
     end
     conn:open(f, 0)
@@ -22,9 +22,7 @@ function np_prot.file_read(conn, path)
     local response = ""
     while (true) do
         local dt = conn:read(f, offset, buf_size)
-        if (dt == nil) then
-            break
-        end
+        if (dt == nil) then break end
         response = response .. tostring(dt)
         offset = offset + #dt
     end
@@ -36,7 +34,7 @@ function np_prot.file_create(conn, path, file_name)
     local f, g = conn:newfid(), conn:newfid()
     if path == "/" then
         conn:clone(conn.rootfid, f)
-      else
+    else
         conn:walk(conn.rootfid, f, path)
     end
     conn:clone(f, g)

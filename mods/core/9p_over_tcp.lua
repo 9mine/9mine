@@ -28,19 +28,16 @@ function np_over_tcp:attach()
     if not result then
         print("Connection error to " .. self.addr .. ": " .. err)
         if self.player_name then
-            minetest.chat_send_player(self.player_name, "Connection error to " .. self.addr .. ": " .. err)
+            minetest.chat_send_player(self.player_name,
+                                      "Connection error to " .. self.addr .. ": " .. err)
         end
         return false
     end
     local conn = np.newconn(function(size)
         size, err = tcp:receive(size)
-        if err then
-            print(err)
-        end
+        if err then print(err) end
         return size
-    end, function(buf)
-        tcp:send(buf)
-    end)
+    end, function(buf) tcp:send(buf) end)
     self.conn = conn
     conn:attach("root", "")
     if self.player_name then
@@ -56,24 +53,16 @@ function np_over_tcp:reattach()
     self:attach()
 end
 
-function np_over_tcp:close()
-    self.tcp:close()
-end
+function np_over_tcp:close() self.tcp:close() end
 
 function np_over_tcp:is_alive()
     local conn = self.conn
     local f = conn:newfid()
     local result = pcall(np.clone, conn, conn.rootfid, f)
-    if result then
-        conn:clunk(f)
-    end
+    if result then conn:clunk(f) end
     return result
 end
 
-function np_over_tcp:set_cmdchan(cmdchan)
-    self.cmdchan = cmdchan
-end
+function np_over_tcp:set_cmdchan(cmdchan) self.cmdchan = cmdchan end
 
-function np_over_tcp:get_cmdchan()
-    return self.cmdchan
-end
+function np_over_tcp:get_cmdchan() return self.cmdchan end

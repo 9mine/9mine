@@ -11,8 +11,7 @@ minetest.register_chatcommand("graph", {
 
         graph:render("dot", full_name)
 
-        minetest.chat_send_player(player_name,
-                                  "Graph rendered to " .. full_name .. "\n")
+        minetest.chat_send_player(player_name, "Graph rendered to " .. full_name .. "\n")
         -- minetest.dynamic_add_media(full_name)
         -- if params == "show" then
         --    minetest.show_formspec(player_name, "core:graph", table.concat(

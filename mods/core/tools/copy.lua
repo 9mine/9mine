@@ -7,8 +7,7 @@ CopyTool = {
 
 function CopyTool.on_drop(stat_entity, _, player_name, command)
     -- if no platform node found nearby, delete dropped entity
-    local node_pos = minetest.find_node_near(stat_entity:get_pos(), 1,
-                                             {"core:platform"})
+    local node_pos = minetest.find_node_near(stat_entity:get_pos(), 1, {"core:platform"})
     if not node_pos then
         minetest.chat_send_player(player_name, "No platform found")
         stat_entity:remove()
@@ -17,8 +16,8 @@ function CopyTool.on_drop(stat_entity, _, player_name, command)
 
     local entry_string = stat_entity:get_luaentity().entry_string
     local player_graph = graphs:get_player_graph(player_name)
-    local platform = player_graph:get_platform(
-                         common.get_platform_string_by_pos(minetest.get_player_by_name(player_name), node_pos))
+    local platform = player_graph:get_platform(common.get_platform_string_by_pos(
+        minetest.get_player_by_name(player_name), node_pos))
     local directory_entry = player_graph:get_entry(entry_string)
     directory_entry = directory_entry:copy()
 
@@ -27,8 +26,7 @@ function CopyTool.on_drop(stat_entity, _, player_name, command)
     local slot = {}
     for index, pos in pairs(platform.slots) do
         if pos.x == node_pos.x and pos.z == node_pos.z then
-            minetest.chat_send_player(player_name,
-                                      "Free slot found: " .. dump(pos))
+            minetest.chat_send_player(player_name, "Free slot found: " .. dump(pos))
             spawned = true
             table.remove(platform.slots, index)
             slot = pos
@@ -50,15 +48,12 @@ function CopyTool.on_drop(stat_entity, _, player_name, command)
     local cmdchan = platform:get_cmdchan()
     platform:set_external_handler_flag(true)
     minetest.chat_send_player(player_name, cmdchan:execute(
-                                  command .. " " .. directory_entry.path .. " " ..
-                                      platform.path))
-    local new_path = platform.path == "/" and platform.path ..
-                         directory_entry.stat.name or platform.path .. "/" ..
-                         directory_entry.stat.name
+        command .. " " .. directory_entry.path .. " " .. platform.path))
+    local new_path = platform.path == "/" and platform.path .. directory_entry.stat.name
+                         or platform.path .. "/" .. directory_entry.stat.name
     if player_graph:get_entry(platform.addr .. new_path) then
         minetest.chat_send_player(player_name, "Already exist. Replacing")
-        platform:remove_entity(player_graph:get_entry(platform.addr .. new_path)
-                                   :get_qid())
+        platform:remove_entity(player_graph:get_entry(platform.addr .. new_path):get_qid())
     end
     -- read stat of copied entry
     local _, stat = pcall(np_prot.stat_read, platform:get_conn(), new_path)
@@ -93,14 +88,13 @@ function CopyTool.node_on_drop(itemstack, dropper, pos)
     stat_entity:get_luaentity().player_name = player_name
     stat_entity:set_properties({
         visual = visual,
-        textures = visual == "sprite" and {texture} or
-            {texture, texture, texture, texture, texture, texture},
+        textures = visual == "sprite" and {texture}
+            or {texture, texture, texture, texture, texture, texture},
         nametag = name,
         nametag_color = "black"
     })
     stat_entity:set_acceleration({x = 0, y = -9.81, z = 0})
-    minetest.after(2, CopyTool.on_drop, stat_entity, name,
-                   dropper:get_player_name(), "cp -r")
+    minetest.after(2, CopyTool.on_drop, stat_entity, name, dropper:get_player_name(), "cp -r")
     return itemstack
 end
 
@@ -108,8 +102,7 @@ function CopyTool.copy(entity, player)
     local player_name = player:get_player_name()
     local player_graph = graphs:get_player_graph(player_name)
     local directory_entry = player_graph:get_entry(entity.entry_string)
-    local type = directory_entry.stat.qid.type == 128 and "core:dir_node" or
-                     "core:file_node"
+    local type = directory_entry.stat.qid.type == 128 and "core:dir_node" or "core:file_node"
     local item = ItemStack(type)
     local item_meta = item:get_meta()
     item_meta:set_string("name", entity.object:get_nametag_attributes().text)

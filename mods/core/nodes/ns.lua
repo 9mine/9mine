@@ -14,10 +14,8 @@ local function on_drop(itemstack, dropper, pos)
     stat_entity:set_acceleration({x = 0, y = -9.81, z = 0})
     stat_entity:set_properties({
         visual = "cube",
-        textures = {
-            "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png",
-            "core_ns.png", "core_ns.png"
-        },
+        textures = {"core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png",
+            "core_ns.png"},
         nametag = "NameSpace"
     })
     stat_entity:get_luaentity().ns = namespace
@@ -29,10 +27,8 @@ end
 NsNode = {
     drawtype = "glasslike",
     visual_scale = 1.0,
-    tiles = {
-        "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png",
-        "core_ns.png", "core_ns.png"
-    },
+    tiles = {"core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png", "core_ns.png",
+        "core_ns.png"},
     inventory_image = "core_ns.png",
     use_texture_alpha = true,
     stack_max = 1,
@@ -53,8 +49,7 @@ function NsNode.newns(entity, player)
     local ns = entity:get_luaentity().ns
     cmdchan:execute("touch /tmp/ns")
     np_prot.file_write(conn, "/tmp/ns", ns)
-    minetest.chat_send_player(player_name,
-                              cmdchan:execute("auth/newns -n /tmp/ns ns"))
+    minetest.chat_send_player(player_name, cmdchan:execute("auth/newns -n /tmp/ns ns"))
     entity:set_acceleration({x = 0, y = 9, z = 0})
     minetest.after(1.5, function() entity:remove() end)
 end

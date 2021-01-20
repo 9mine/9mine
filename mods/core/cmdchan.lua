@@ -11,16 +11,14 @@ function cmdchan:is_present()
     local result, f = pcall(np.newfid, conn)
     if not result then return end
     result = pcall(np.walk, conn, conn.rootfid, f, self.cmdchan_path)
-    if result then
-        conn:clunk(f)
-    end
+    if result then conn:clunk(f) end
     return result
 end
 
 function cmdchan:write(command, location)
     local conn = self.connection.conn
     local f = conn:newfid()
-    print("Write " .. command   .. " to " .. self.cmdchan_path)
+    print("Write " .. command .. " to " .. self.cmdchan_path)
     conn:walk(conn.rootfid, f, self.cmdchan_path)
     conn:open(f, 1)
     local path = location and "cd " .. location .. " ; " or nil
@@ -41,9 +39,7 @@ function cmdchan:read(path)
     local response = ""
     while (true) do
         local dt = conn:read(f, offset, buf_size)
-        if (dt == nil) then
-            break
-        end
+        if (dt == nil) then break end
         response = response .. tostring(dt)
         offset = offset + #dt
     end
@@ -54,7 +50,7 @@ end
 
 function cmdchan:execute(command, location)
     local tmp_file = "/n/cmdchan/cmdchan_output"
-    command = command ..  " > " .. tmp_file .. " >[2=1]"
+    command = command .. " > " .. tmp_file .. " >[2=1]"
     -- print("command: " .. command)
     pcall(cmdchan.write, self, command, location)
     -- local write_result, write_response = pcall(cmdchan.write, self, command, location)
@@ -63,8 +59,8 @@ function cmdchan:execute(command, location)
 end
 
 function cmdchan.show_response(response, player_name)
-    minetest.show_formspec(player_name, "cmdchan:response", table.concat(
-        {"formspec_version[3]", "size[13,13,false]",
-         "textarea[0.5, 0.5; 12.0, 11.0;;;", minetest.formspec_escape(response), "]",
-         "button_exit[10, 11.8;2.5,0.7;close;close]"}, ""))
+    minetest.show_formspec(player_name, "cmdchan:response",
+                           table.concat({"formspec_version[3]", "size[13,13,false]",
+        "textarea[0.5, 0.5; 12.0, 11.0;;;", minetest.formspec_escape(response), "]",
+        "button_exit[10, 11.8;2.5,0.7;close;close]"}, ""))
 end

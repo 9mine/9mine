@@ -39,10 +39,7 @@ function StatTool.parse_mode_bits(mode)
     for i = 0, 3 do bytes[i + 1] = bit.band(bit.rshift(mode, i * 8), 0xff) end
     local d = data.new {unpack(bytes)}
 
-    local l = data.layout {
-        bits = {24, 8, 'number', 'le'},
-        permissions = {0, 16, 'number', 'le'}
-    }
+    local l = data.layout {bits = {24, 8, 'number', 'le'}, permissions = {0, 16, 'number', 'le'}}
 
     local result = d:layout(l)
 
@@ -70,36 +67,27 @@ end
 function StatTool.show_stat(entity, player, player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local directory_entry = player_graph:get_entry(entity.entry_string)
-    local platform = player_graph:get_platform(
-                         directory_entry:get_platform_string())
+    local platform = player_graph:get_platform(directory_entry:get_platform_string())
     local conn = platform:get_conn()
 
     local s = np_prot.stat_read(conn, directory_entry:get_path())
     local result = StatTool.parse_mode_bits(s.mode)
     local mode_bits = ""
-    for _, v in ipairs(result["mode_bits"]) do
-        mode_bits = mode_bits .. v .. " "
-    end
+    for _, v in ipairs(result["mode_bits"]) do mode_bits = mode_bits .. v .. " " end
     local perms = result["perms"]
-    if current_hud[player_name] then
-        player:hud_remove(current_hud[player_name])
-    end
+    if current_hud[player_name] then player:hud_remove(current_hud[player_name]) end
     local stats = player:hud_add({
         hud_elem_type = "text",
         position = {x = 0.8, y = 0.2},
         offset = {x = 0, y = 0},
-        text = table.concat({
-            "name:\t\t" .. s.name, "length:\t\t" .. filesize(s.length),
+        text = table.concat({"name:\t\t" .. s.name, "length:\t\t" .. filesize(s.length),
             "owner:\t\t" .. s.uid, "group:\t\t" .. s.gid,
             "access:\t\t" .. os.date("%x %X", s.atime),
             "modified:\t\t" .. os.date("%x %X", s.mtime),
             "mod. by:\t\t" .. (s.muid == "" and "-" or s.muid),
-            "mode:\t\t" .. (mode_bits == "" and "FILE" or mode_bits),
-            "perms:\t\t" .. perms, "type:\t\t" .. s.type, "qid:\t\t",
-            "       type:\t" .. s.qid.type,
-            "       version:\t" .. s.qid.version,
-            "       path:\t" .. "0x" .. s.qid.path_hex
-        }, "\n"),
+            "mode:\t\t" .. (mode_bits == "" and "FILE" or mode_bits), "perms:\t\t" .. perms,
+            "type:\t\t" .. s.type, "qid:\t\t", "       type:\t" .. s.qid.type,
+            "       version:\t" .. s.qid.version, "       path:\t" .. "0x" .. s.qid.path_hex}, "\n"),
 
         alignment = {x = 1, y = 0}
     })

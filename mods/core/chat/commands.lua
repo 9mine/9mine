@@ -12,8 +12,7 @@ local spawn_matched = function(player_name, matched)
     local position = player:get_pos()
     local look_dir = player:get_look_dir()
     local direction = vector.multiply(look_dir, 6)
-    local destination = vector.add(vector.add(position, direction),
-                                   {x = 0, y = 2, z = 0})
+    local destination = vector.add(vector.add(position, direction), {x = 0, y = 2, z = 0})
 
     local rot_dir = vector.rotate(look_dir, {x = 0, y = math.pi / 2, z = 0})
 
@@ -34,36 +33,30 @@ local spawn_matched = function(player_name, matched)
         local entity = minetest.add_entity(spawn_pos, "core:stat")
         entity:set_properties({
             nametag = name,
-            textures = {
-                entry.stat.qid.type == 128 and "core_dir.png" or "core_file.png"
-            }
+            textures = {entry.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
         })
         entity:set_armor_groups({immortal = 0})
         entity:set_properties({physical = false})
         entity:set_velocity({x = 0, y = -9.81, z = 0})
         entity:get_luaentity().entry_string = entry.entry_string
 
-        local front_of_entity =
-            vector.subtract(entry.pos, {x = 0, y = 0, z = 2})
+        local front_of_entity = vector.subtract(entry.pos, {x = 0, y = 0, z = 2})
 
-        entity:get_luaentity().on_punch =
-            function(_, puncher)
-                for _, v in pairs(remove_line) do
-                    v.y = v.y - 10
-                    local objects = minetest.get_objects_inside_radius(v, 4)
-                    while next(objects) ~= nil do
-                        local x, y = next(objects)
-                        if not y:is_player() then
-                            y:remove()
-                        end
-                        table.remove(objects, x)
-                    end
+        entity:get_luaentity().on_punch = function(_, puncher)
+            for _, v in pairs(remove_line) do
+                v.y = v.y - 10
+                local objects = minetest.get_objects_inside_radius(v, 4)
+                while next(objects) ~= nil do
+                    local x, y = next(objects)
+                    if not y:is_player() then y:remove() end
+                    table.remove(objects, x)
                 end
-
-                puncher:set_look_vertical(0.3490)
-                puncher:set_look_horizontal(0)
-                puncher:set_pos(front_of_entity)
             end
+
+            puncher:set_look_vertical(0.3490)
+            puncher:set_look_horizontal(0)
+            puncher:set_pos(front_of_entity)
+        end
         minetest.after(0.05, stop, entity, position.y)
     end
 end
@@ -72,13 +65,11 @@ minetest.register_chatcommand("cd", {
     func = function(player_name, path_from_chat)
         local player = minetest.get_player_by_name(player_name)
         local player_graph = graphs:get_player_graph(player_name)
-        local platform = player_graph:get_platform(
-                             common.get_platform_string(player))
+        local platform = player_graph:get_platform(common.get_platform_string(player))
         if not platform then return false, "No platform nearby" end
         local path = platform:get_path()
         if not path_from_chat:match("^/") then
-            path = path == "/" and path .. path_from_chat or path .. "/" ..
-                       path_from_chat
+            path = path == "/" and path .. path_from_chat or path .. "/" .. path_from_chat
         else
             path = path_from_chat
         end
@@ -107,8 +98,4 @@ minetest.register_chatcommand("whereis", {
         return true, "\n"
     end
 })
-
-
-
-
 

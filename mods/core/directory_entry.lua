@@ -21,36 +21,18 @@ function directory_entry:directory_entry(stat)
 end
 
 -- Getters
-function directory_entry:get_stat()
-    return self.stat
-end
-function directory_entry:get_addr()
-    return self.addr
-end
-function directory_entry:get_path()
-    return self.path
-end
-function directory_entry:get_pos()
-    return table.copy(self.pos)
-end
-function directory_entry:get_platform_path()
-    return self.platform_path
-end
-function directory_entry:get_platform_string()
-    return self.platform_string
-end
-function directory_entry:get_entry_string()
-    return self.entry_string
-end
-function directory_entry:get_graph_entry_string()
-    return self.entry_string .. self.stat.qid.path_hex
-end
+function directory_entry:get_stat() return self.stat end
+function directory_entry:get_addr() return self.addr end
+function directory_entry:get_path() return self.path end
+function directory_entry:get_pos() return table.copy(self.pos) end
+function directory_entry:get_platform_path() return self.platform_path end
+function directory_entry:get_platform_string() return self.platform_string end
+function directory_entry:get_entry_string() return self.entry_string end
+function directory_entry:get_graph_entry_string() return self.entry_string .. self.stat.qid.path_hex end
 
 -- Additional getters
 -- return qid as hex string
-function directory_entry:get_qid()
-    return self.stat.qid.path_hex
-end
+function directory_entry:get_qid() return self.stat.qid.path_hex end
 
 -- Setters
 function directory_entry:set_stat(stat)
@@ -66,7 +48,8 @@ function directory_entry:set_pos(pos)
     return self
 end
 function directory_entry:set_path(platform_path)
-    self.path = platform_path == "/" and platform_path .. self.stat.name or platform_path .. "/" .. self.stat.name
+    self.path = platform_path == "/" and platform_path .. self.stat.name or platform_path .. "/"
+                    .. self.stat.name
     return self
 end
 function directory_entry:set_platform_path(platform_path)
@@ -89,45 +72,27 @@ function directory_entry:filter(stat_entity, lua, player_name)
         textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
     })
     register.call_texture_handlers(self, stat_entity)
-    if lua then
-        lua()
-    end
+    if lua then lua() end
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.player_name = player_name
     lua_entity.entry_string = self:get_entry_string()
     if minetest.get_node(self.pos).name == "core:platform" then
-        stat_entity:set_acceleration({
-            x = 0,
-            y = -9.81,
-            z = 0
-        })
-        minetest.after(math.random(1,3), function()
+        stat_entity:set_acceleration({x = 0, y = -9.81, z = 0})
+        minetest.after(math.random(1, 3), function()
             local pos = self:get_pos()
             pos.y = pos.y + 1
-            stat_entity:set_acceleration({
-                x = 0,
-                y = 0,
-                z = 0
-            })
+            stat_entity:set_acceleration({x = 0, y = 0, z = 0})
             stat_entity:set_pos(pos)
         end)
     else
-        minetest.after(math.random(1,3), function()
+        minetest.after(math.random(1, 3), function()
             if minetest.get_node(self.pos).name == "core:platform" then
-                stat_entity:set_acceleration({
-                    x = 0,
-                    y = -9.81,
-                    z = 0
-                })
+                stat_entity:set_acceleration({x = 0, y = -9.81, z = 0})
             end
-            minetest.after(math.random(1,3), function()
+            minetest.after(math.random(1, 3), function()
                 local pos = self:get_pos()
                 pos.y = pos.y + 1
-                stat_entity:set_acceleration({
-                    x = 0,
-                    y = 0,
-                    z = 0
-                })
+                stat_entity:set_acceleration({x = 0, y = 0, z = 0})
                 stat_entity:set_pos(pos)
             end)
         end)

@@ -28,9 +28,7 @@ function connections:make_new(player_name, addr)
     end
 end
 
-function connections:set_root_connection(connection)
-    self.root_connection = connection
-end
+function connections:set_root_connection(connection) self.root_connection = connection end
 
 function connections:get_root_connection(inferno_addr)
     local connection = self.root_connection
@@ -47,19 +45,13 @@ function connections:get_root_connection(inferno_addr)
     end
 end
 
-function connections:set_root_cmdchan(cmdchan)
-    self.root_cmdchan = cmdchan
-end
+function connections:set_root_cmdchan(cmdchan) self.root_cmdchan = cmdchan end
 
-function connections:get_root_cmdchan()
-    return self.root_cmdchan
-end
+function connections:get_root_cmdchan() return self.root_cmdchan end
 
 function connections:get_connection(player_name, addr, create)
     local connection = self.connections[player_name][addr]
-    if not connection and create then
-        connection = self:make_new(player_name, addr)
-    end
+    if not connection and create then connection = self:make_new(player_name, addr) end
     return connection
 end
 
@@ -71,7 +63,5 @@ function connections:add_connection(player_name, connection)
 end
 
 function connections:add_player(player_name)
-    if not self.connections[player_name] then
-        self.connections[player_name] = {}
-    end
+    if not self.connections[player_name] then self.connections[player_name] = {} end
 end

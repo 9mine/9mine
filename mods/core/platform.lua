@@ -1,8 +1,8 @@
 class 'platform'
 -- platform object. Represents directory content. Holds reference to connection information
 function platform:platform(connection, path, cmdchan, parent_node)
-    local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME") or
-                                      core_conf:get("refresh_time"))
+    local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME")
+                                      or core_conf:get("refresh_time"))
     self.connection = connection
     self.cmdchan = cmdchan
     self.addr = connection.addr
@@ -38,14 +38,13 @@ function platform:readdir()
     if not result then
         if self.connection:is_alive() then
             minetest.chat_send_player(self:get_player(),
-                "Connection is alive, but error reading content of directory: " .. content)
+                                      "Connection is alive, but error reading content of directory: "
+                                          .. content)
             return
         else
             if self.connection:reattach() then
                 result, content = pcall(readdir, self.connection.conn, self.path)
-                if result then
-                    content = content or {}
-                end
+                if result then content = content or {} end
             end
         end
     else
@@ -65,32 +64,21 @@ end
 function platform:draw(root_point, size, color)
     local slots = {}
     local p1 = root_point
-    local p2 = {
-        x = p1.x + size,
-        y = p1.y,
-        z = p1.z + size
-    }
+    local p2 = {x = p1.x + size, y = p1.y, z = p1.z + size}
     self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
     local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local data = vm:get_data()
     local param2 = vm:get_param2_data()
-    local a = VoxelArea:new{
-        MinEdge = emin,
-        MaxEdge = emax
-    }
+    local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
                 local vi = a:index(x, y, z)
                 data[vi] = core_platform_node
                 param2[vi] = color
-                table.insert(slots, {
-                    x = x,
-                    y = y,
-                    z = z
-                })
+                table.insert(slots, {x = x, y = y, z = z})
             end
         end
     end
@@ -106,18 +94,11 @@ end
 
 function platform:colorize(color)
     local p1 = self.root_point
-    local p2 = {
-        x = p1.x + self.size,
-        y = p1.y,
-        z = p1.z + self.size
-    }
+    local p2 = {x = p1.x + self.size, y = p1.y, z = p1.z + self.size}
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local param2 = vm:get_param2_data()
-    local a = VoxelArea:new{
-        MinEdge = emin,
-        MaxEdge = emax
-    }
+    local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -151,19 +132,12 @@ function platform:delete_nodes()
     local root_point = self.root_point
     local size = self.size
     local p1 = root_point
-    local p2 = {
-        x = p1.x + size,
-        y = p1.y,
-        z = p1.z + size
-    }
+    local p2 = {x = p1.x + size, y = p1.y, z = p1.z + size}
     local air_node = minetest.get_content_id("air")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local data = vm:get_data()
-    local a = VoxelArea:new{
-        MinEdge = emin,
-        MaxEdge = emax
-    }
+    local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
@@ -178,9 +152,7 @@ end
 
 -- returns copy of platform root (corner) node position
 function platform:get_root_point()
-    if not self.root_point then
-        return
-    end
+    if not self.root_point then return end
     return table.copy(self.root_point)
 end
 
@@ -249,19 +221,14 @@ end
 function platform:remove_entity(qid)
     local stat_entity, pos = self:get_entity_by_qid(qid)
     if stat_entity then
-        stat_entity:set_acceleration({
-            x = 0,
-            y = 9,
-            z = 0
-        })
+        stat_entity:set_acceleration({x = 0, y = 9, z = 0})
         table.insert(self.slots, pos)
         self.directory_entries[qid] = nil
-        minetest.after(1.5, function()
-            stat_entity:remove()
-        end)
+        minetest.after(1.5, function() stat_entity:remove() end)
     else
 
-        minetest.chat_send_player(self:get_player(), "Removing stat entity with qid " .. qid .. " failed")
+        minetest.chat_send_player(self:get_player(),
+                                  "Removing stat entity with qid " .. qid .. " failed")
     end
 end
 
@@ -283,12 +250,15 @@ function platform:process_content(content, player_graph, content_size, root_buff
     if next(content) then
         content_size = content_size + #content
         minetest.chat_send_player(self:get_player(),
-            "read chunk of " .. #content .. " stats for " .. self.platform_string .. " in total of " .. content_size ..
-                " up to now")
-        minetest.after(2, platform.process_content, self, content, player_graph, content_size, root_buffer)
+                                  "read chunk of " .. #content .. " stats for "
+                                      .. self.platform_string .. " in total of " .. content_size
+                                      .. " up to now")
+        minetest.after(2, platform.process_content, self, content, player_graph, content_size,
+                       root_buffer)
     else
-        minetest.chat_send_player(self:get_player(), "spawned " .. self.platform_string .. " with " ..
-            common.table_length(self.directory_entries) .. " entities.")
+        minetest.chat_send_player(self:get_player(),
+                                  "spawned " .. self.platform_string .. " with "
+                                      .. common.table_length(self.directory_entries) .. " entities.")
         minetest.after(1, function()
             self:set_content_size(content_size)
             self:set_external_handler_flag(false)
@@ -299,9 +269,7 @@ end
 -- returns next free slot. If no free slots, than doubles platform
 -- and returns free slots from there
 function platform:get_slot()
-    if common.table_length(self.slots) / (self.size ^ 2) < 0.50 then
-        self:enlarge()
-    end
+    if common.table_length(self.slots) / (self.size ^ 2) < 0.50 then self:enlarge() end
     local index, slot = next(self.slots)
     table.remove(self.slots, index)
     return table.copy(slot)
@@ -314,9 +282,7 @@ function platform:next_pos()
     local radius_multiplier = spawn_count / 6
     local radius = 50 + 50 * radius_multiplier
     local angle = (next_point * math.pi) / 3
-    if not self.root_point then
-        return
-    end
+    if not self.root_point then return end
     local pos = table.copy(self.root_point)
     pos.y = pos.y + 13
     pos.x = pos.x + radius * math.cos(angle)
@@ -328,9 +294,7 @@ end
 function platform:spawn(root_point, player, color, paths)
     local root_buffer = buffer(self:get_conn(), self.path)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
-    if not result then
-        return
-    end
+    if not result then return end
     local size = platform.compute_size(content)
     minetest.after(0.5, function()
         common.goto_platform(player, self:get_root_point())
@@ -350,9 +314,7 @@ end
 function platform:spawn_path_step(paths, player)
     local player_graph = graphs:get_player_graph(self:get_player())
     local next = table.remove(paths)
-    if not next then
-        return
-    end
+    if not next then return end
     if not player_graph:get_platform(self.connection.addr .. next) then
         self:spawn_child(next, player, paths)
     else
@@ -376,9 +338,7 @@ function platform:spawn_child(path, player, paths)
     child_platform.node = (player_graph:add_platform(child_platform, self))
     child_platform.properties.player_name = self.properties.player_name
     local pos = self:next_pos()
-    if not pos then
-        return
-    end
+    if not pos then return end
     child_platform.origin_point = pos
     child_platform.root_point = pos
     child_platform:spawn(pos, player, self:get_color(), paths)
@@ -397,36 +357,22 @@ function platform:enlarge()
     local size_diff = (size - old_size)
     size = size_diff % 2 == 1 and size - 1 or size
 
-    local p1 = {
-        x = root.x - (size - old_size) / 2,
-        y = root.y,
-        z = root.z - (size - old_size) / 2
-    }
+    local p1 = {x = root.x - (size - old_size) / 2, y = root.y, z = root.z - (size - old_size) / 2}
 
-    local p2 = {
-        x = p1.x + size,
-        y = p1.y,
-        z = p1.z + size
-    }
+    local p2 = {x = p1.x + size, y = p1.y, z = p1.z + size}
     self.properties.area_id = area_store:insert_area(p1, p2, self.platform_string)
     local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local data = vm:get_data()
     local param2 = vm:get_param2_data()
-    local a = VoxelArea:new{
-        MinEdge = emin,
-        MaxEdge = emax
-    }
+    local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                if not ((x >= root.x and x <= root.x + old_size) and (z >= root.z and z <= root.z + old_size)) then
-                    local p = {
-                        x = x,
-                        y = y,
-                        z = z
-                    }
+                if not ((x >= root.x and x <= root.x + old_size)
+                    and (z >= root.z and z <= root.z + old_size)) then
+                    local p = {x = x, y = y, z = z}
                     local vi = a:index(x, y, z)
                     data[vi] = core_platform_node
                     param2[vi] = color
@@ -449,20 +395,23 @@ end
 -- :feresh_time - time between platform updates, in seconds
 function platform:show_properties(player)
     minetest.show_formspec(player:get_player_name(), "platform:properties",
-        table.concat({"formspec_version[3]", "size[10,9.5,false]", "label[4,0.5;Platform settings]",
-                      "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;", self.properties.refresh_time, "]",
-                      "field[0.5,2.5;9,0.7;external_handler;External Handler;",
-                      tostring(self.properties.external_handler), "]", "field[0.5,4;9,0.7;player_name;Player name;",
-                      minetest.formspec_escape(self.properties.player_name), "]",
-                      "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
-                      minetest.formspec_escape(self.properties.spawn_platforms), "]", "field[0.5,7;9,0.7;color;Color;",
-                      minetest.formspec_escape(self.properties.color), "]", "button_exit[7,8.3;2.5,0.7;save;save]",
-                      "field[0,0;0,0;platform_string;;", self.platform_string, "]"}, ""))
+                           table.concat({"formspec_version[3]", "size[10,9.5,false]",
+        "label[4,0.5;Platform settings]", "field[0.5,1;9,0.7;refresh_time;Refresh Frequency;",
+        self.properties.refresh_time, "]", "field[0.5,2.5;9,0.7;external_handler;External Handler;",
+        tostring(self.properties.external_handler), "]",
+        "field[0.5,4;9,0.7;player_name;Player name;",
+        minetest.formspec_escape(self.properties.player_name), "]",
+        "field[0.5,5.5;9,0.7;spawn_platforms;Spawn platforms;",
+        minetest.formspec_escape(self.properties.spawn_platforms), "]",
+        "field[0.5,7;9,0.7;color;Color;", minetest.formspec_escape(self.properties.color), "]",
+        "button_exit[7,8.3;2.5,0.7;save;save]", "field[0,0;0,0;platform_string;;",
+        self.platform_string, "]"}, ""))
 end
 
 function platform:update_with_buffer(update_buffer)
     local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
+    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size()
+        < 1500 then
         local result, content = pcall(update_buffer.process_next, update_buffer)
         if not result then
             self:wipe()
@@ -517,7 +466,8 @@ end
 -- and deletes entities, that are not present in new directory content
 function platform:update()
     local refresh_time = self:get_refresh_time()
-    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
+    if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size()
+        < 1500 then
         local update_buffer = buffer(self:get_conn(), self.path)
         minetest.after(0.1, platform.update_with_buffer, self, update_buffer)
     else
@@ -528,13 +478,12 @@ end
 -- check if something is present in correspoing
 -- .lua directory
 function platform:load_readdir()
-    if not self.mount_point then
-        return
-    end
+    if not self.mount_point then return end
     local player_name = self:get_player()
-    local lua_readdir = self.path == "/" and self.path:gsub("^/", "/.lua/readdir") or
-                            self.path:gsub("^" .. self.mount_point,
-                                self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/readdir"
+    local lua_readdir = self.path == "/" and self.path:gsub("^/", "/.lua/readdir")
+                            or self.path:gsub("^" .. self.mount_point, self.mount_point == "/"
+                                                  and "/.lua/" or self.mount_point .. "/.lua/")
+                            .. "/readdir"
     local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_readdir)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
@@ -544,11 +493,7 @@ function platform:load_readdir()
         else
             minetest.chat_send_player(player_name, "Loaded: " .. lua_readdir)
         end
-        setfenv(lua, setmetatable({
-            platform = self
-        }, {
-            __index = _G
-        }))
+        setfenv(lua, setmetatable({platform = self}, {__index = _G}))
         lua()
     elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_readdir)
@@ -557,12 +502,11 @@ function platform:load_readdir()
 end
 
 function platform:load_getattr(entry, entity)
-    if not self.mount_point then
-        return
-    end
+    if not self.mount_point then return end
     local player_name = self:get_player()
     local lua_getattr = entry.path:gsub("^" .. self.mount_point,
-                            self.mount_point == "/" and "/.lua/" or self.mount_point .. "/.lua/") .. "/getattr"
+                                        self.mount_point == "/" and "/.lua/" or self.mount_point
+                                            .. "/.lua/") .. "/getattr"
     local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_getattr)
     if result and include_string ~= "" then
         local lua, error = loadstring(include_string)
@@ -572,13 +516,7 @@ function platform:load_getattr(entry, entity)
         else
             minetest.chat_send_player(player_name, "Loaded: " .. lua_getattr)
         end
-        setfenv(lua, setmetatable({
-            platform = self,
-            entry = entry,
-            entity = entity
-        }, {
-            __index = _G
-        }))
+        setfenv(lua, setmetatable({platform = self, entry = entry, entity = entity}, {__index = _G}))
         return lua
     elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_getattr)
@@ -605,9 +543,7 @@ function platform:load_read_file(entry, entity, player)
             player = player,
             register = register,
             texture = texture
-        }, {
-            __index = _G
-        }))
+        }, {__index = _G}))
         lua()
     elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_read_file)
@@ -615,17 +551,9 @@ function platform:load_read_file(entry, entity, player)
     end
 end
 
-function platform:delete_entry(entry)
-    self.directory_entries[entry.stat.qid.path_hex] = nil
-end
-
-function platform:delete_entry_by_qid(qid)
-    self.directory_entries[qid] = nil
-end
-
-function platform:add_entry(entry)
-    self.directory_entries[entry.stat.qid.path_hex] = entry
-end
+function platform:delete_entry(entry) self.directory_entries[entry.stat.qid.path_hex] = nil end
+function platform:delete_entry_by_qid(qid) self.directory_entries[qid] = nil end
+function platform:add_entry(entry) self.directory_entries[entry.stat.qid.path_hex] = entry end
 
 function platform:inject_entry(entry)
     self:configure_entry(entry)
@@ -641,72 +569,22 @@ function platform:dec_spawn_count()
 end
 
 -- Getters
-
-function platform:get_spawn_count()
-    return self.properties.spawn_platforms
-end
-
-function platform:get_node()
-    return self.node
-end
-
-function platform:get_refresh_time()
-    return self.properties.refresh_time
-end
-
-function platform:get_connection()
-    return self.connection
-end
-
-function platform:get_conn()
-    return self.connection.conn
-end
-
-function platform:get_cmdchan()
-    return self.cmdchan
-end
-
-function platform:get_addr()
-    return self.connection.addr
-end
-
-function platform:get_path()
-    return self.path
-end
-
-function platform:get_player()
-    return self.properties.player_name
-end
-
-function platform:get_content_size()
-    return self.properties.content_size
-end
-
-function platform:get_color()
-    return self.properties.color
-end
+function platform:get_spawn_count() return self.properties.spawn_platforms end
+function platform:get_node() return self.node end
+function platform:get_refresh_time() return self.properties.refresh_time end
+function platform:get_connection() return self.connection end
+function platform:get_conn() return self.connection.conn end
+function platform:get_cmdchan() return self.cmdchan end
+function platform:get_addr() return self.connection.addr end
+function platform:get_path() return self.path end
+function platform:get_player() return self.properties.player_name end
+function platform:get_content_size() return self.properties.content_size end
+function platform:get_color() return self.properties.color end
 
 -- Setters
-function platform:set_node(node)
-    self.node = node
-end
-
-function platform:set_color(color)
-    self.properties.color = color
-end
-
-function platform:set_player(player_name)
-    self.properties.player_name = player_name
-end
-
-function platform:set_content_size(content_size)
-    self.properties.content_size = content_size
-end
-
-function platform:set_refresh_time(refresh_time)
-    self.properties.refresh_time = refresh_time
-end
-
-function platform:set_external_handler_flag(flag)
-    self.properties.external_handler = flag
-end
+function platform:set_node(node) self.node = node end
+function platform:set_color(color) self.properties.color = color end
+function platform:set_player(player_name) self.properties.player_name = player_name end
+function platform:set_content_size(content_size) self.properties.content_size = content_size end
+function platform:set_refresh_time(refresh_time) self.properties.refresh_time = refresh_time end
+function platform:set_external_handler_flag(flag) self.properties.external_handler = flag end

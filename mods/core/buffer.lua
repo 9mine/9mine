@@ -16,7 +16,7 @@ function buffer:open()
     local fid = conn:newfid()
     if path == "/" then
         conn:clone(conn.rootfid, fid)
-      else
+    else
         conn:walk(conn.rootfid, fid, path)
     end
     conn:open(fid, 0)
@@ -25,9 +25,7 @@ function buffer:open()
     self.fid_open = true
 end
 
-function buffer:is_open()
-    return self.fid_open
-end
+function buffer:is_open() return self.fid_open end
 
 function buffer:close()
     self.conn:clunk(self.fid)
@@ -35,9 +33,7 @@ function buffer:close()
 end
 
 function buffer:read_next()
-    if not self:is_open() then
-        self:open()
-    end
+    if not self:is_open() then self:open() end
     local buf_size = 8000
     local read_data = self.conn:read(self.fid, self.offset, buf_size)
     local dir = tostring(read_data)
@@ -54,14 +50,10 @@ function buffer:parse_raw(raw_content, tbl)
     local cont = tbl or self.content
     while true do
         local st = self.conn:getstat(data.new(raw_content))
-        if st == nil then
-            return nil
-        end
+        if st == nil then return nil end
         table.insert(cont, st)
         raw_content = raw_content:sub(st.size + 3)
-        if (#raw_content == 0) then
-            break
-        end
+        if (#raw_content == 0) then break end
     end
 end
 
