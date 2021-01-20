@@ -24,7 +24,7 @@ ENV     BRANCH          master
 
 # Clone sources for minetestserver
 RUN     git clone https://github.com/minetest/minetest.git 
-WORKDIR minetest 
+WORKDIR /minetest 
 #RUN git checkout $COMMIT
 
 # Change version string of compiled binary 

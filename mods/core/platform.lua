@@ -172,7 +172,8 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5, 12)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity, nil, self:get_player())
+    directory_entry:filter(stat_entity, self:load_getattr(directory_entry, stat_entity),
+                           self:get_player())
     return directory_entry
 end
 
@@ -501,23 +502,26 @@ function platform:load_readdir()
     end
 end
 
-function platform:load_getattr(entry, entity)
-    if not self.mount_point then return end
+function platform:load_getattr(entry, stat_entity)
     local player_name = self:get_player()
-    local lua_getattr = entry.path:gsub("^" .. self.mount_point,
-                                        self.mount_point == "/" and "/.lua/" or self.mount_point
-                                            .. "/.lua/") .. "/getattr"
+    local lua_getattr = entry.path .. ".getattr.lua"
     local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_getattr)
     if result and include_string ~= "" then
-        local lua, error = loadstring(include_string)
-        if not lua then
+        local getattr_lua, error = loadstring(include_string)
+        if not getattr_lua then
             minetest.chat_send_player(player_name, ".lua is not valid: " .. error)
             return
         else
             minetest.chat_send_player(player_name, "Loaded: " .. lua_getattr)
         end
-        setfenv(lua, setmetatable({platform = self, entry = entry, entity = entity}, {__index = _G}))
-        return lua
+        setfenv(getattr_lua,
+                setmetatable({
+            texture = texture,
+            platform = self,
+            entry = entry,
+            stat_entity = stat_entity
+        }, {__index = _G}))
+        return getattr_lua
     elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_getattr)
         return

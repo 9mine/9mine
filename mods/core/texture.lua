@@ -34,7 +34,6 @@ function texture.download(url, secure, name, directory)
     if not texture.exists(name, directory) then
         local body = http.request(url)
         if not body then return end
-
         local f = assert(io.open(path .. name, "wb"))
         f:write(body)
         f:close()
@@ -42,13 +41,12 @@ function texture.download(url, secure, name, directory)
     minetest.dynamic_add_media(path .. name)
 end
 
-function texture.download_from_9p(conn, source_path, destination_name, destination_directory)
-    if not texture.exists(destination_name, destination_directory) then
+function texture.download_from_9p(conn, source_path, name, directory)
+    if not texture.exists(name, directory) then
         local result, texture_string = pcall(np_prot.file_read, conn, source_path)
         if not result then return false end
-        if destination_directory then lfs.mkdir(texture.path .. destination_directory) end
-        local path = destination_directory and texture.path .. destination_directory .. "/"
-                         .. destination_name or texture.path .. destination_name
+        if directory then lfs.mkdir(texture.path .. directory) end
+        local path = directory and texture.path .. directory .. "/" .. name or texture.path .. name
         local file = io.open(path, "w")
         file:write(texture_string)
         file:close()
