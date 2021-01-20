@@ -1,5 +1,5 @@
 minetest.register_chatcommand("graph", {
-    func = function(player_name, params)
+    func = function(player_name)
         local player_graph = graphs:get_player_graph(player_name)
         local graph = player_graph:get_node()
         minetest.chat_send_player(player_name, "Layout . . . \n")

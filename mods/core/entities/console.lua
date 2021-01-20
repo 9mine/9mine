@@ -19,7 +19,7 @@ local ConsoleEntity = {
     input = ""
 }
 
-function ConsoleEntity:on_punch(player, dtime, tool, dir)
+function ConsoleEntity:on_punch(player)
     local p = self.object:get_pos()
     local pos = minetest.serialize(p)
     local request = self.user == "glenda" and "%" or "\\;"
@@ -46,7 +46,7 @@ function ConsoleEntity:get_staticdata()
     return minetest.serialize(data)
 end
 
-function ConsoleEntity:on_activate(staticdata, dtime_s)
+function ConsoleEntity:on_activate(staticdata)
     if staticdata ~= "" and staticdata ~= nil then
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)

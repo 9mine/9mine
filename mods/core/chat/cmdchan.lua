@@ -15,9 +15,9 @@ minetest.register_on_chat_message(function(player_name, message)
         local mans_path = core_conf:get("mans_path")
         local result, manpage
         if not section then
-            for section = 1, 10 do
+            for s = 1, 10 do
                 result, manpage = pcall(np_prot.file_read, conn, mans_path ..
-                                            "/" .. section .. "/" .. message)
+                                            "/" .. s .. "/" .. message)
                 if result then break end
             end
             if not result then
@@ -46,7 +46,7 @@ minetest.register_on_chat_message(function(player_name, message)
         if message:match("| minetest$") then
             message = message:gsub("| minetest", "")
             local result = cmdchan:execute(message, path)
-            cmdchan:show_response(result, player_name)
+            cmdchan.show_response(result, player_name)
         elseif message:match(" | inventory$") then
             message = message:gsub("| inventory", "")
             local result = cmdchan:execute(message)
@@ -67,7 +67,6 @@ local man_event = function(player, formname, fields)
     if formname == "core:man" then
         if fields.quit then return end
         local player_name = player:get_player_name()
-        local player = minetest.get_player_by_name(player_name)
         local player_graph = graphs:get_player_graph(player_name)
         local platform = player_graph:get_platform(
                              common.get_platform_string(player))
@@ -75,7 +74,7 @@ local man_event = function(player, formname, fields)
             minetest.chat_send_player(player_name, "No platform found nearby")
             return true
         end
-        local k, v = next(fields)
+        local _, v = next(fields)
         v = v:gsub("action:", "")
         local c = v:match("%(%d+%)")
         local section = c:match("%d+")

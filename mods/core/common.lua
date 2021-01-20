@@ -27,7 +27,7 @@ function common.get_platform_string(player)
         return
     end
     local area = area_store:get_areas_for_pos(node_pos, false, true)
-    local index, value = next(area)
+    local _, value = next(area)
     if not value then
         minetest.chat_send_player(player:get_player_name(), "No platform for this position in AreaStore")
         return
@@ -35,12 +35,12 @@ function common.get_platform_string(player)
     return value.data
 end
 
-function common.get_platform_string_by_pos(pos)
+function common.get_platform_string_by_pos(player, pos)
     if not pos then
         return nil, "Error"
     end
     local area = area_store:get_areas_for_pos(pos, false, true)
-    local index, value = next(area)
+    local _, value = next(area)
     if not value then
         minetest.chat_send_player(player:get_player_name(), "No platform for this position in AreaStore")
         return
@@ -186,8 +186,8 @@ function common.add_ns_to_inventory(player, result)
     inventory:add_item("main", ns)
 end
 
--- Shows absolute path of the platform nearby 
--- in right lower corner 
+-- Shows absolute path of the platform nearby
+-- in right lower corner
 function common.update_path_hud(player, id, addr_id, bg_id)
     local platform_string, error = common.get_platform_string(player)
     if error then
@@ -199,7 +199,6 @@ function common.update_path_hud(player, id, addr_id, bg_id)
         return
     end
     local platform = player_graph:get_platform(platform_string)
-    local root_node = player_graph:get_root_node()
     if not platform_string or not platform then
         if id then
             player:hud_remove(bg_id)
@@ -374,7 +373,7 @@ end
 function common.filter_registry_by_type(object, type)
     local formspec_table_string = ""
     local objects = {}
-    for index, entry in pairs(object) do
+    for _, entry in pairs(object) do
         if entry.type == type then
             formspec_table_string =
                 formspec_table_string == "" and entry.service_addr or formspec_table_string .. "," .. entry.service_addr
@@ -387,7 +386,7 @@ end
 function common.filter_registry_by_keyword(object, keyword)
     local formspec_table_string = ""
     local objects = {}
-    for index, entry in pairs(object) do
+    for _, entry in pairs(object) do
         local flag = false
         for key, value in pairs(entry) do
             if key:match(keyword) or value:match(keyword) then
@@ -422,7 +421,7 @@ function common.icon_from_9p(service, player_name)
             return common.hex(service.service_addr) .. ".png"
         end
     end
-else 
+else
     return common.hex(service.service_addr) .. ".png"
 end
 end
@@ -433,12 +432,14 @@ function common.parse_man(manpage)
     :gsub("%]", "\\%]")
     :gsub(";", "\\;")
 local links = {}
-    for token in manpage:gmatch("[%a%-%d]+%(%d%)") do 
+    for token in manpage:gmatch("[%a%-%d]+%(%d%)") do
         links[token] = true
     end
-    
-    for k, v in pairs(links) do 
-        manpage = manpage:gsub(k:gsub("%(", "%%%("):gsub("%)", "%%%)"):gsub("%-", "%%%-"), "<action name=" .. k .. ">".. k .."</action>")
+    for k in pairs(links) do
+        manpage = manpage:gsub(k:gsub("%(", "%%%(")
+                                :gsub("%)", "%%%)")
+                                :gsub("%-", "%%%-"),
+                                "<action name=" .. k .. ">".. k .."</action>")
     end
     return manpage
 end
@@ -446,6 +447,22 @@ end
 function common.show_man(player_name, manpage)
 minetest.show_formspec(player_name, "core:man", table.concat(
     {"formspec_version[4]", "size[14,13,false]",
-     "hypertext[0.5, 0.5; 13.0, 11.0;;`<global background=#FFFFea color=black><big>", manpage ,"</big>`]",
+     "hypertext[0.5, 0.5; 13.0, 11.0;;`",
+     "<global background=#FFFFea color=black><big>", manpage ,"</big>`]",
      "button_exit[11, 11.8;2.5,0.7;close;close]"}, ""))
+end
+
+-- parses string in form of '<protocol>!<hostname>!<port_number>'
+common.parse_attach_string = function(attach_string)
+    if not attach_string then
+        return
+    end
+    local info = {}
+    for token in attach_string:gmatch("[^!]+") do
+        table.insert(info, token)
+    end
+    local prot = info[1]
+    local host = info[2]
+    local port = tonumber(info[3])
+    return attach_string, prot, host, port
 end

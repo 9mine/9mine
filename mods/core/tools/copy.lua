@@ -18,7 +18,7 @@ function CopyTool.on_drop(stat_entity, _, player_name, command)
     local entry_string = stat_entity:get_luaentity().entry_string
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(
-                         common.get_platform_string_by_pos(node_pos))
+                         common.get_platform_string_by_pos(minetest.get_player_by_name(player_name), node_pos))
     local directory_entry = player_graph:get_entry(entry_string)
     directory_entry = directory_entry:copy()
 

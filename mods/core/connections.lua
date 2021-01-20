@@ -1,11 +1,11 @@
 class 'connections'
 
 function connections:connections()
-    -- main connection between minetest server 
-    -- and paired inferno instance 
+    -- main connection between minetest server
+    -- and paired inferno instance
     self.root_connection = nil
 
-    -- main cmdchan 
+    -- main cmdchan
     self.root_cmdchan = nil
 
     -- holds player connections
@@ -16,7 +16,7 @@ function connections:make_new(player_name, addr)
     local connection = self.connections[player_name][addr]
     if not connection then
         connection = np_over_tcp(addr, player_name)
-        local result, response = pcall(np_over_tcp.attach, connection)
+        local result = pcall(np_over_tcp.attach, connection)
         if result then
             self:add_connection(player_name, connection)
             return connection

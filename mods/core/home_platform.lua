@@ -18,17 +18,21 @@ local home_platform_event = function(player, formname, fields)
         local home_platform = fields.inferno ~= nil and "inferno" or fields.nfront ~= nil and "nfront"
         minetest.show_formspec(player:get_player_name(), "core:some_form",
             table.concat({"formspec_version[4]", "size[20, 1.2,false]",
-                          "hypertext[0, 0.3; 20, 1;; <bigger><center>Executing requests. Please, wait...<center><bigger>]"},
+            "hypertext[0, 0.3; 20, 1;;",
+            "<bigger><center>Executing requests. Please, wait...<center><bigger>]"},
                 ""))
-        local user_addr = automount.root_cmdchan:execute("ndb/regquery -n " .. ((home_platform == "inferno" and "user") or
-                                                             (home_platform == "nfront" and "is")) .. " " .. player_name)
+        local user_addr = automount.root_cmdchan:execute("ndb/regquery -n " ..
+        ((home_platform == "inferno" and "user") or
+        (home_platform == "nfront" and "is")) .. " " .. player_name)
                               :gsub("\n", "")
         if not user_addr or user_addr == "" then
-            automount.root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/" .. ((home_platform == "inferno" and
-                                             "user") or (home_platform == "nfront" and "9front")))
+            automount.root_cmdchan:write("echo -n " .. player_name .. " >> /n/9mine/" ..
+            ((home_platform == "inferno" and "user") or
+            (home_platform == "nfront" and "9front")))
             minetest.show_formspec(player:get_player_name(), "core:some_form",
                 table.concat({"formspec_version[4]", "size[20, 1.2,false]",
-                              "hypertext[0, 0.3; 20, 1;; <bigger><center>Request sent for new user create. Please, wait...<center><bigger>]"},
+                              "hypertext[0, 0.3; 20, 1;;",
+                              "<bigger><center>Request sent for new user create. Please, wait...<center><bigger>]"},
                     ""))
             minetest.after(3, automount.poll_regquery, automount, player, 0, fields.last_login, home_platform)
         else

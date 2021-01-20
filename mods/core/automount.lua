@@ -51,10 +51,10 @@ end
 function automount:mount_manuals(cmdchan, count)
     if count and count > 5 then
         return
-    elseif not count then 
+    elseif not count then
         count = 1
     end
-   
+
     local root_cmdchan = cmdchan or self.root_cmdchan
     root_cmdchan:execute("mkdir -p " .. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")
@@ -94,10 +94,13 @@ function automount:poll_regquery(player, counter, last_login, home_platform)
                           :gsub("\n", "")
     if user_addr:match(".*!.*!.*") then
         minetest.chat_send_player(player_name, user_addr .. " mounted")
-        minetest.show_formspec(player_name, "core:some_form",
-            table.concat({"formspec_version[4]", "size[20, 1.2,false]",
-                          "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ", user_addr, " found.<center><bigger>]"},
-                ""))
+        minetest.show_formspec(
+            player_name,
+            "core:some_form",
+            table.concat({  "formspec_version[4]",
+                            "size[20, 1.2,false]",
+                            "hypertext[0, 0.3; 20, 1;; <bigger><center>User addr ",
+                            user_addr, " found.<center><bigger>]"}, ""))
         minetest.after(3, automount.spawn_root_platform, self, user_addr, player, last_login, true)
     else
         minetest.after(2, automount.poll_regquery, self, player, counter, last_login, home_platform)
@@ -136,7 +139,7 @@ function automount:spawn_root_platform(attach_string, player, _, random)
         end
         local result = player:get_pos()
         minetest.after(1.5, automount.mount_manuals, self, user_cmdchan, 0)
-        minetest.after(2, function(result)
+        minetest.after(2, function()
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
             root_platform.mount_point = "/"
@@ -145,7 +148,7 @@ function automount:spawn_root_platform(attach_string, player, _, random)
             local point = vector.round(player:get_pos())
             root_platform.root_point = point
             root_platform:spawn(point, player, math.random(0, 255))
-        end, result)
+        end)
     end
 
 end

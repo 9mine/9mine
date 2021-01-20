@@ -1,4 +1,4 @@
-platform_properties = function(player, fields)
+local platform_properties = function(player, fields)
     if not (fields.key_enter or fields.save) then return end
     local player_name = player:get_player_name()
     local player_graph = graphs:get_player_graph(player_name)

@@ -34,3 +34,12 @@ jobs:
           chat: ${{ secrets.TGBOT_CHAT }}
           token: ${{ secrets.TGBOT_TOKEN }}
           status: ${{ job.status }}
+  lint:
+    container:
+      image: dievri/luacheck
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - working-directory: mods/core
+        run: luacheck . -q

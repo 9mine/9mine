@@ -1,10 +1,10 @@
 class 'mvcp'
 
--- analyzes destination path to decide if needed to go 
+-- analyzes destination path to decide if needed to go
 -- one level up on fs structure
 function mvcp:get_destination_platform()
     local player_graph = graphs:get_player_graph(self.player_name)
-    -- check if source only one 
+    -- check if source only one
     local source_entry
     if #self.sources == 1 and not self.globbed and not self.recursive then
         source_entry = player_graph:get_entry(self.addr .. self.sources[1])
@@ -12,7 +12,7 @@ function mvcp:get_destination_platform()
     -- check if destination entry is spawned
     local result, stat = pcall(np_prot.stat_read, self.conn, self.destination)
 
-    -- decide if destination itself should be tracked for changes or 
+    -- decide if destination itself should be tracked for changes or
     -- parent directory of destination
     if result then
         if stat.qid.type ~= 128 or
@@ -39,8 +39,8 @@ end
 function mvcp:map_changes(changes)
     local player_graph = graphs:get_player_graph(self.player_name)
 
-    -- if rename was intended, delete all other changes 
-    -- that occured not by mv/cp command 
+    -- if rename was intended, delete all other changes
+    -- that occured not by mv/cp command
     if self.destination ~= self.destination_platform.path then
         local destination_name = self.destination:match("[^/]%w+$")
         for qid, change in pairs(changes) do
@@ -51,10 +51,10 @@ function mvcp:map_changes(changes)
         end
     end
 
-    for qid, change in pairs(changes) do
+    for _, change in pairs(changes) do
         local source_entry, destination_entry, pos
-        -- if destination path and destination platform path different 
-        -- means destination file name was named directly 
+        -- if destination path and destination platform path different
+        -- means destination file name was named directly
         if self.destination ~= self.destination_platform.path then
             minetest.chat_send_player(self.player_name,
                                       "Exact name found. Renaming . . .")
@@ -80,7 +80,7 @@ function mvcp:map_changes(changes)
 
             local entity = self.platform:get_entity_by_pos(directory_entry.pos)
 
-            -- if destination entry exists, use their position and remove entity 
+            -- if destination entry exists, use their position and remove entity
             -- else get new free slot from platform
             if destination_entry then
                 pos = destination_entry:get_pos()
@@ -104,7 +104,7 @@ function mvcp:map_changes(changes)
 
             -- update graph
             player_graph:add_entry(self.destination_platform, directory_entry)
-            -- animate 
+            -- animate
             common.flight(entity, directory_entry)
         end
 
@@ -120,7 +120,7 @@ local move = function(player_name, command, params)
         local mvcp = mvcp(platform, command, params, player_name):parse_params()
         local cmdchan = platform:get_cmdchan()
 
-        -- execute mv/cp command and send output (if any) to the minetest console 
+        -- execute mv/cp command and send output (if any) to the minetest console
         minetest.chat_send_player(player_name, cmdchan:execute(
                                       command .. " " .. params,
                                       platform:get_path()))
@@ -131,11 +131,11 @@ local move = function(player_name, command, params)
         -- get stats of files, that was changed after mv/cp command execution
         -- either new QID is present, or if existing file name was changed
         -- or vile version is different
-        local changes = mvcp:get_changes(mvcp.destination_platform)
+        local changes = mvcp.get_changes(mvcp.destination_platform)
 
         -- reduce sources which are on same platform
         mvcp:reduce()
-        for index, source in pairs(mvcp.reduced_sources) do
+        for _, source in pairs(mvcp.reduced_sources) do
             mvcp.platform = player_graph:get_platform(mvcp.addr .. source)
             mvcp:map_changes(changes)
         end
@@ -152,8 +152,8 @@ local move = function(player_name, command, params)
     end
 end
 minetest.register_on_chatcommand(move)
--- Takes as input chat message, and sets and returns absolute path 
--- for sources and destination 
+-- Takes as input chat message, and sets and returns absolute path
+-- for sources and destination
 function mvcp:parse_params()
     local destination = {}
     local sources = {}
@@ -192,9 +192,8 @@ function mvcp:parse_params()
     return self
 end
 
--- return changes which occures on provided platform after execution on cmdchan command 
-function mvcp:get_changes(platform)
-    local platform = platform
+-- return changes which occures on provided platform after execution on cmdchan command
+function mvcp.get_changes(platform)
     -- set external_handler flag on platform where changes will be read
     platform.properties.external_handler = true
     local changes = {}
@@ -212,7 +211,7 @@ end
 function mvcp:reduce()
     local reduced_sources = {}
     local temp = {}
-    for index, source in pairs(self.sources) do
+    for _, source in pairs(self.sources) do
         if source == "*" then
             table.insert(reduced_sources, self.path)
         else
@@ -227,7 +226,7 @@ function mvcp:reduce()
     return reduced_sources
 end
 
--- provided with path string, returns path on level up 
+-- provided with path string, returns path on level up
 -- on fs structure
 function mvcp.get_parent_path(path)
     if path == "/" then return "/" end

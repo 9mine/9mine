@@ -7,10 +7,10 @@ end
 
 function cmdchan:is_present()
     local conn = self.connection.conn
-    if not conn then return end  
+    if not conn then return end
     local result, f = pcall(np.newfid, conn)
-    if not result then return end 
-    local result = pcall(np.walk, conn, conn.rootfid, f, self.cmdchan_path)
+    if not result then return end
+    result = pcall(np.walk, conn, conn.rootfid, f, self.cmdchan_path)
     if result then
         conn:clunk(f)
     end
@@ -56,13 +56,13 @@ function cmdchan:execute(command, location)
     local tmp_file = "/n/cmdchan/cmdchan_output"
     command = command ..  " > " .. tmp_file .. " >[2=1]"
     -- print("command: " .. command)
-    local write_result, write_response = pcall(cmdchan.write, self, command, location)
+    pcall(cmdchan.write, self, command, location)
     -- local write_result, write_response = pcall(cmdchan.write, self, command, location)
-    local read_result, read_response = pcall(cmdchan.read, self, tmp_file)
+    local _, read_response = pcall(cmdchan.read, self, tmp_file)
     return read_response
 end
 
-function cmdchan:show_response(response, player_name)
+function cmdchan.show_response(response, player_name)
     minetest.show_formspec(player_name, "cmdchan:response", table.concat(
         {"formspec_version[3]", "size[13,13,false]",
          "textarea[0.5, 0.5; 12.0, 11.0;;;", minetest.formspec_escape(response), "]",
