@@ -82,7 +82,7 @@ end
 function automount:poll_regquery(player, counter, last_login, home_platform)
     local player_name = player:get_player_name()
     if counter > 10 then
-        local result, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/" ..
+        local _, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/" ..
                                              home_platform == "inferno" and "user" or
                                              (home_platform == "nfront" and "9front"))
         minetest.kick_player(player_name, "Error creating NS. Try again later. Log: \n" .. ns_create_output)
@@ -104,7 +104,7 @@ function automount:poll_regquery(player, counter, last_login, home_platform)
     end
 end
 
-function automount:spawn_root_platform(attach_string, player, last_login, random)
+function automount:spawn_root_platform(attach_string, player, _, random)
     local player_name = player:get_player_name()
     local connection = connections:get_connection(player_name, attach_string, true)
     if not connection then

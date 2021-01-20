@@ -2,11 +2,11 @@ class 'directory_entry'
 
 -- object which encapsulates readdir entry
 function directory_entry:directory_entry(stat)
-    -- stat record from readdir 
+    -- stat record from readdir
     self.stat = table.copy(stat)
     -- connection string, in form of prot!host!port
     self.addr = nil
-    -- full path, starting with /, including entry name 
+    -- full path, starting with /, including entry name
     self.path = nil
     -- position of corresponding entity in for of {x, y, z}
     self.pos = nil
@@ -101,7 +101,7 @@ function directory_entry:filter(stat_entity, lua, player_name)
             y = -9.81,
             z = 0
         })
-        minetest.after(math.random(1,3), function() 
+        minetest.after(math.random(1,3), function()
             local pos = self:get_pos()
             pos.y = pos.y + 1
             stat_entity:set_acceleration({
@@ -119,9 +119,8 @@ function directory_entry:filter(stat_entity, lua, player_name)
                     y = -9.81,
                     z = 0
                 })
-            else
             end
-            minetest.after(math.random(1,3), function() 
+            minetest.after(math.random(1,3), function()
                 local pos = self:get_pos()
                 pos.y = pos.y + 1
                 stat_entity:set_acceleration({

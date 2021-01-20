@@ -1,12 +1,10 @@
 class 'graphs'
 
 -- container for graphs of all players
-function graphs:graphs()
-    self.player_graphs = {}
-end
+function graphs:graphs() self.player_graphs = {} end
 
--- provided with graph and player name adds graph 
--- to container if not exists and returns player graph 
+-- provided with graph and player name adds graph
+-- to container if not exists and returns player graph
 function graphs:add_player_graph(graph, player_name)
     if not self.player_graphs[player_name] then
         self.player_graphs[player_name] = graph

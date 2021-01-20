@@ -10,18 +10,26 @@ function mvcp:get_destination_platform()
         source_entry = player_graph:get_entry(self.addr .. self.sources[1])
     end
     -- check if destination entry is spawned
-    local result, stat =
-        pcall(np_prot.stat_read, self.conn, self.destination)
+    local result, stat = pcall(np_prot.stat_read, self.conn, self.destination)
 
     -- decide if destination itself should be tracked for changes or 
     -- parent directory of destination
     if result then
-        if stat.qid.type ~= 128 or (source_entry and source_entry.stat.qid.type == 128) then
-            self.destination_platform = player_graph:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
-        elseif self.recursive and not player_graph:get_entry(self.addr .. self.destination) then
-            self.destination_platform = player_graph:get_platform(self.addr .. mvcp.get_parent_path(self.destination))
+        if stat.qid.type ~= 128 or
+            (source_entry and source_entry.stat.qid.type == 128) then
+            self.destination_platform = player_graph:get_platform(
+                                            self.addr ..
+                                                mvcp.get_parent_path(
+                                                    self.destination))
+        elseif self.recursive and
+            not player_graph:get_entry(self.addr .. self.destination) then
+            self.destination_platform = player_graph:get_platform(
+                                            self.addr ..
+                                                mvcp.get_parent_path(
+                                                    self.destination))
         else
-            self.destination_platform = player_graph:get_platform(self.addr .. self.destination)
+            self.destination_platform = player_graph:get_platform(
+                                            self.addr .. self.destination)
         end
     end
     return self.destination_platform
@@ -48,13 +56,17 @@ function mvcp:map_changes(changes)
         -- if destination path and destination platform path different 
         -- means destination file name was named directly 
         if self.destination ~= self.destination_platform.path then
-            minetest.chat_send_player(self.player_name, "Exact name found. Renaming . . .")
+            minetest.chat_send_player(self.player_name,
+                                      "Exact name found. Renaming . . .")
             source_entry = player_graph:get_entry(self.addr .. self.sources[1])
-            destination_entry = player_graph:get_entry(self.addr .. self.destination)
+            destination_entry = player_graph:get_entry(
+                                    self.addr .. self.destination)
         else
-            minetest.chat_send_player(self.player_name, "No exact name provided, map by original entries name")
+            minetest.chat_send_player(self.player_name,
+                                      "No exact name provided, map by original entries name")
             source_entry = self.platform:get_entry_by_name(change.name)
-            destination_entry = self.destination_platform:get_entry_by_name(change.name)
+            destination_entry = self.destination_platform:get_entry_by_name(
+                                    change.name)
         end
 
         if source_entry then
@@ -74,7 +86,8 @@ function mvcp:map_changes(changes)
                 pos = destination_entry:get_pos()
                 -- remove destination entity with corresponding recond in
                 -- platform directory_entries table
-                self.destination_platform:remove_entity(destination_entry:get_qid())
+                self.destination_platform:remove_entity(
+                    destination_entry:get_qid())
             else
                 pos = self.destination_platform:get_slot()
             end
@@ -101,17 +114,19 @@ end
 local move = function(player_name, command, params)
     if command == "mv" or command == "cp" then
         local player_graph = graphs:get_player_graph(player_name)
-        local platform = player_graph:get_platform(common.get_platform_string(minetest.get_player_by_name(player_name)))
+        local platform = player_graph:get_platform(
+                             common.get_platform_string(
+                                 minetest.get_player_by_name(player_name)))
         local mvcp = mvcp(platform, command, params, player_name):parse_params()
         local cmdchan = platform:get_cmdchan()
 
         -- execute mv/cp command and send output (if any) to the minetest console 
-        minetest.chat_send_player(player_name, cmdchan:execute(command .. " " .. params, platform:get_path()))
+        minetest.chat_send_player(player_name, cmdchan:execute(
+                                      command .. " " .. params,
+                                      platform:get_path()))
 
         -- if not destination platform was chosen, leave handling for platform refresh
-        if not mvcp:get_destination_platform() then
-            return true
-        end
+        if not mvcp:get_destination_platform() then return true end
 
         -- get stats of files, that was changed after mv/cp command execution
         -- either new QID is present, or if existing file name was changed
@@ -127,7 +142,8 @@ local move = function(player_name, command, params)
 
         -- set external_handler flag to false for all sources and destination platforms
         for _, source in pairs(mvcp.reduced_sources) do
-            player_graph:get_platform(platform:get_addr() .. source).external_handler = false
+            player_graph:get_platform(platform:get_addr() .. source).external_handler =
+                false
         end
 
         mvcp.destination_platform.properties.external_handler = false
@@ -153,9 +169,14 @@ function mvcp:parse_params()
             destination = w
             table.insert(sources, w)
         else
-            w = w:match("^%./") and w:gsub("^%./", self.path == "/" and self.path or self.path .. "/") or w
+            w = w:match("^%./") and
+                    w:gsub("^%./",
+                           self.path == "/" and self.path or self.path .. "/") or
+                    w
             if not w:match("^/") then
-                w = self.path:match("/$") and self.path .. w or self.path .. "/" .. w
+                w =
+                    self.path:match("/$") and self.path .. w or self.path .. "/" ..
+                        w
             end
             destination = w
             table.insert(sources, w)
@@ -165,9 +186,7 @@ function mvcp:parse_params()
     if destination:len() > 1 and destination:match('/$') then
         destination = destination:match('.*[^/]')
     end
-    if destination:match('^%.$') then
-        destination = self.path
-    end
+    if destination:match('^%.$') then destination = self.path end
     self.destination = destination
     self.sources = sources
     return self
@@ -182,9 +201,9 @@ function mvcp:get_changes(platform)
     local stats = platform.directory_entries
     local content_new = common.qid_as_key(platform:readdir())
     for qid, st in pairs(content_new) do
-        if (not stats[qid]) or (stats[qid].stat.qid.version ~= st.qid.version or stats[qid].stat.name ~= st.name) then
-            changes[qid] = st
-        end
+        if (not stats[qid]) or
+            (stats[qid].stat.qid.version ~= st.qid.version or
+                stats[qid].stat.name ~= st.name) then changes[qid] = st end
     end
     return changes
 end
@@ -211,13 +230,9 @@ end
 -- provided with path string, returns path on level up 
 -- on fs structure
 function mvcp.get_parent_path(path)
-    if path == "/" then
-        return "/"
-    end
+    if path == "/" then return "/" end
     local parent = path:match('.*/')
-    if parent == "/" then
-        return "/"
-    end
+    if parent == "/" then return "/" end
     return parent:match('.*[^/]')
 end
 

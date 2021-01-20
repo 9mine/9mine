@@ -1,35 +1,38 @@
 minetest.register_on_chat_message(function(player_name, message)
     local player = minetest.get_player_by_name(player_name)
     local player_graph = graphs:get_player_graph(player_name)
-    local platform = player_graph:get_platform(common.get_platform_string(player))
-    if not platform then
-        return false
-    end
+    local platform = player_graph:get_platform(
+                         common.get_platform_string(player))
+    if not platform then return false end
     local commands = core_conf:get("pcmd")
     local command = message:match("[^ ]+")
     if command:match("man") and message:match(" | man$") then
         message = message:gsub(" | man", "")
         local conn = platform:get_conn()
-        local section = message:match("man %d+ ") and message:match("man %d+ "):match("%d+")
+        local section = message:match("man %d+ ") and
+                            message:match("man %d+ "):match("%d+")
         message = message:gsub("man ", ""):gsub("%d+ ", "")
         local mans_path = core_conf:get("mans_path")
         local result, manpage
         if not section then
             for section = 1, 10 do
-                result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
-                if result then
-                    break
-                end
+                result, manpage = pcall(np_prot.file_read, conn, mans_path ..
+                                            "/" .. section .. "/" .. message)
+                if result then break end
             end
-            if not result then 
-            minetest.chat_send_player(player_name, "Error reading accross all sections: " .. manpage)
-            return true
+            if not result then
+                minetest.chat_send_player(player_name,
+                                          "Error reading accross all sections: " ..
+                                              manpage)
+                return true
             end
         else
-            result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
+            result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" ..
+                                        section .. "/" .. message)
         end
         if not result then
-            minetest.chat_send_player(player_name, "Error reading manual: " .. manpage)
+            minetest.chat_send_player(player_name,
+                                      "Error reading manual: " .. manpage)
             return true
         end
         common.show_man(player_name, manpage)
@@ -37,9 +40,7 @@ minetest.register_on_chat_message(function(player_name, message)
 
     end
     local cmdchan = platform:get_cmdchan()
-    if not cmdchan then
-        return
-    end
+    if not cmdchan then return end
     local path = platform:get_path()
     if commands:match(command) then
         if message:match("| minetest$") then
@@ -64,13 +65,12 @@ end)
 
 local man_event = function(player, formname, fields)
     if formname == "core:man" then
-        if fields.quit then
-            return
-        end
+        if fields.quit then return end
         local player_name = player:get_player_name()
         local player = minetest.get_player_by_name(player_name)
         local player_graph = graphs:get_player_graph(player_name)
-        local platform = player_graph:get_platform(common.get_platform_string(player))
+        local platform = player_graph:get_platform(
+                             common.get_platform_string(player))
         if not platform then
             minetest.chat_send_player(player_name, "No platform found nearby")
             return true
@@ -82,9 +82,11 @@ local man_event = function(player, formname, fields)
         local man = v:gsub("%(%d+%)", "")
         local conn = platform:get_conn()
         local mans_path = core_conf:get("mans_path")
-        local result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. man)
+        local result, manpage = pcall(np_prot.file_read, conn,
+                                      mans_path .. "/" .. section .. "/" .. man)
         if not result then
-            minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
+            minetest.chat_send_player(player_name,
+                                      "Error reading manpage: " .. manpage)
         else
             common.show_man(player_name, manpage)
         end

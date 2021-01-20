@@ -2,10 +2,10 @@ class 'np_prot'
 
 function np_prot.stat_read(conn, path)
     local f = conn:newfid()
-    if path == "/" then 
+    if path == "/" then
         conn:clone(conn.rootfid, f)
-      else 
-        conn:walk(conn.rootfid, f, path)      
+      else
+        conn:walk(conn.rootfid, f, path)
     end
     conn:open(f, 0)
     local st = conn:stat(f)
@@ -34,10 +34,10 @@ end
 
 function np_prot.file_create(conn, path, file_name)
     local f, g = conn:newfid(), conn:newfid()
-    if path == "/" then 
+    if path == "/" then
         conn:clone(conn.rootfid, f)
-      else 
-        conn:walk(conn.rootfid, f, path)      
+      else
+        conn:walk(conn.rootfid, f, path)
     end
     conn:clone(f, g)
     conn:create(g, file_name, 420, 1)

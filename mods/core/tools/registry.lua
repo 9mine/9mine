@@ -4,14 +4,18 @@ RegistryTool = {
     wield_image = "core_registry.png"
 }
 
-function RegistryTool.on_use(itemstack, player)
-    local connection = connections:get_connection(player:get_player_name(), os.getenv("GRIDFILES_ADDR") ~= "" and
-                           os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"), true)
+function RegistryTool.on_use(_, player)
+    local connection = connections:get_connection(player:get_player_name(),
+                                                  os.getenv("GRIDFILES_ADDR") ~=
+                                                      "" and
+                                                      os.getenv("GRIDFILES_ADDR") or
+                                                      core_conf:get(
+                                                          "GRIDFILES_ADDR"),
+                                                  true)
     if connection then
-        local lua = np_prot.file_read(connection.conn, '/9mine/welcomefs/registry.lua')
-        if lua then 
-            loadstring(lua)()
-        end
+        local lua = np_prot.file_read(connection.conn,
+                                      '/9mine/welcomefs/registry.lua')
+        if lua then loadstring(lua)() end
     end
 end
 

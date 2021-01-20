@@ -3,8 +3,7 @@ class "texture"
 texture.path = minetest.get_modpath("core") .. "/textures/"
 
 function texture.set_texture(entity, texture, visual)
-    local visual = visual or entity:get_properties().visual
-    local lua_entity = entity:get_luaentity()
+    visual = visual or entity:get_properties().visual
     if visual == "cube" then
         entity:set_properties(
             {
@@ -42,7 +41,7 @@ function texture.download(url, secure, name, directory)
     lfs.mkdir(path)
     local http = secure and require("ssl.https") or require("socket.http")
     if not texture.exists(name, directory) then
-        local body, code = http.request(url)
+        local body = http.request(url)
         if not body then
             return
         end

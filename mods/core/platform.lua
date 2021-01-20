@@ -12,11 +12,11 @@ function platform:platform(connection, path, cmdchan, parent_node)
     self.properties = {
         -- name of the player, who have access to the platform
         player_name = "",
-        -- flag indicating that platform update will be mabe by some other function 
+        -- flag indicating that platform update will be mabe by some other function
         -- than platform:update()
         external_handler = true,
-        -- period of time, on which readdir() occurs for current platform and if 
-        -- new entries are there, they will be spawn and if some of present entities 
+        -- period of time, on which readdir() occurs for current platform and if
+        -- new entries are there, they will be spawn and if some of present entities
         -- are no more in new readdir() they will removed
         refresh_time = refresh_time,
         -- count of the spawn platforms of directories
@@ -55,7 +55,7 @@ function platform:readdir()
 end
 
 -- computes acceptable size for platform to hold content of directory freely
-function platform:compute_size(content)
+function platform.compute_size(content)
     local sqrt = math.sqrt(#content)
     local dir_size = math.ceil(sqrt + math.sqrt(sqrt) + 3)
     return dir_size < 3 and 3 or dir_size
@@ -105,14 +105,12 @@ function platform:draw(root_point, size, color)
 end
 
 function platform:colorize(color)
-    local slots = {}
     local p1 = self.root_point
     local p2 = {
         x = p1.x + self.size,
         y = p1.y,
         z = p1.z + self.size
     }
-    local core_platform_node = minetest.get_content_id("core:platform")
     local vm = minetest.get_voxel_manip()
     local emin, emax = vm:read_from_map(p1, p2)
     local param2 = vm:get_param2_data()
@@ -123,11 +121,6 @@ function platform:colorize(color)
     for z = p1.z, p2.z do
         for y = p1.y, p2.y do
             for x = p1.x, p2.x do
-                local p = {
-                    x = x,
-                    y = y,
-                    z = z
-                }
                 local vi = a:index(x, y, z)
                 param2[vi] = color
             end
@@ -234,7 +227,7 @@ function platform:get_entity_by_name(name)
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
 end
 
-function platform:get_entity_by_pos(old_pos)
+function platform.get_entity_by_pos(old_pos)
     local pos = table.copy(old_pos)
     pos.y = pos.y + 1
     return minetest.get_objects_inside_radius(pos, 0.5)[1], old_pos
@@ -286,7 +279,7 @@ function platform:process_content(content, player_graph, content_size, root_buff
         player_graph:add_entry(self, directory_entry)
         table.remove(content, index)
     end
-    local content = root_buffer:process_next({})
+    content = root_buffer:process_next({})
     if next(content) then
         content_size = content_size + #content
         minetest.chat_send_player(self:get_player(),
@@ -331,14 +324,14 @@ function platform:next_pos()
     return vector.round(pos)
 end
 
--- read directory and spawn platform with directory content 
+-- read directory and spawn platform with directory content
 function platform:spawn(root_point, player, color, paths)
     local root_buffer = buffer(self:get_conn(), self.path)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
     if not result then
         return
     end
-    local size = self:compute_size(content)
+    local size = platform.compute_size(content)
     minetest.after(0.5, function()
         common.goto_platform(player, self:get_root_point())
         self:draw(root_point, size, color)
@@ -353,7 +346,7 @@ function platform:spawn(root_point, player, color, paths)
 end
 
 -- receives table with paths to spawn platform after platform
--- until there is path in paths 
+-- until there is path in paths
 function platform:spawn_path_step(paths, player)
     local player_graph = graphs:get_player_graph(self:get_player())
     local next = table.remove(paths)
@@ -361,7 +354,7 @@ function platform:spawn_path_step(paths, player)
         return
     end
     if not player_graph:get_platform(self.connection.addr .. next) then
-        local child_platform = self:spawn_child(next, player, paths)
+        self:spawn_child(next, player, paths)
     else
         local child_platform = player_graph:get_platform(self.connection.addr .. next)
         common.goto_platform(player, child_platform:get_root_point())
@@ -369,8 +362,8 @@ function platform:spawn_path_step(paths, player)
     end
 end
 
--- convert path to a list of paths to be spawn 
--- one after another 
+-- convert path to a list of paths to be spawn
+-- one after another
 function platform:spawn_path(path, player)
     local paths = common.path_to_table(path)
     return self:spawn_path_step(paths, player)
@@ -393,7 +386,7 @@ function platform:spawn_child(path, player, paths)
     return child_platform
 end
 
--- double the size of the platform. This make available free slots 
+-- double the size of the platform. This make available free slots
 function platform:enlarge()
     area_store:remove_area(self.properties.area_id)
     local color = self:get_color()
@@ -436,9 +429,6 @@ function platform:enlarge()
                         z = z
                     }
                     local vi = a:index(x, y, z)
-                    -- if data[vi] == minetest.CONTENT_IGNORE then 
-                    --     print("IGNORED WAS FOUND at " .. dump(p))
-                    -- end
                     data[vi] = core_platform_node
                     param2[vi] = color
 
@@ -483,7 +473,7 @@ function platform:update_with_buffer(update_buffer)
             minetest.after(1, platform.update_with_buffer, self, update_buffer)
         else
             local content_size = #content
-            local new_size = self:compute_size(content)
+            local new_size = platform.compute_size(content)
             local new_content = common.qid_as_key(content)
             local stats = self.directory_entries
             local player_graph = graphs:get_player_graph(self:get_player())
@@ -516,7 +506,7 @@ function platform:update_with_buffer(update_buffer)
                 end
                 self:set_content_size(content_size)
             end
-            local refresh_time = self:get_refresh_time()
+            refresh_time = self:get_refresh_time()
             minetest.after(refresh_time == 0 and 1 or refresh_time, platform.update, self)
         end
     else
@@ -525,7 +515,7 @@ function platform:update_with_buffer(update_buffer)
 end
 
 -- reads directory content and spawn new entities if needed
--- and deletes entities, that are not present in new directory content  
+-- and deletes entities, that are not present in new directory content
 function platform:update()
     local refresh_time = self:get_refresh_time()
     if refresh_time ~= 0 and (not self.properties.external_handler) and self:get_content_size() < 1500 then
@@ -536,7 +526,7 @@ function platform:update()
     end
 end
 
--- check if something is present in correspoing 
+-- check if something is present in correspoing
 -- .lua directory
 function platform:load_readdir()
     if not self.mount_point then

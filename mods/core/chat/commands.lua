@@ -2,13 +2,13 @@ minetest.register_chatcommand("cd", {
     func = function(player_name, path_from_chat)
         local player = minetest.get_player_by_name(player_name)
         local player_graph = graphs:get_player_graph(player_name)
-        local platform = player_graph:get_platform(common.get_platform_string(player))
-        if not platform then
-            return false, "No platform nearby"
-        end
+        local platform = player_graph:get_platform(
+                             common.get_platform_string(player))
+        if not platform then return false, "No platform nearby" end
         local path = platform:get_path()
         if not path_from_chat:match("^/") then
-            path = path == "/" and path .. path_from_chat or path .. "/" .. path_from_chat
+            path = path == "/" and path .. path_from_chat or path .. "/" ..
+                       path_from_chat
         else
             path = path_from_chat
         end
@@ -17,7 +17,6 @@ minetest.register_chatcommand("cd", {
     end
 })
 
-
 minetest.register_chatcommand("whereis", {
     func = function(player_name, params)
         local response = ""
@@ -25,15 +24,14 @@ minetest.register_chatcommand("whereis", {
         local player_graph = graphs:get_player_graph(player_name)
         local graph = player_graph:get_graph()
 
-        for n in graph:walknodes() do 
-            if n.entry then 
-                if n.entry.stat.name:match(params) then 
+        for n in graph:walknodes() do
+            if n.entry then
+                if n.entry.stat.name:match(params) then
                     table.insert(matched, n.entry)
                 end
             end
         end
-        
-        for k, v in pairs(matched) do 
+        for k, v in pairs(matched) do
             minetest.chat_send_player(player_name, v:get_entry_string())
         end
         spawn_matched(player_name, matched)
@@ -77,15 +75,17 @@ spawn_matched = function(name, matched)
         local entity = minetest.add_entity(spawn_pos, "core:stat")
         entity:set_properties({
             nametag = name,
-            textures = {entry.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
+            textures = {
+                entry.stat.qid.type == 128 and "core_dir.png" or "core_file.png"
+            }
         })
         entity:set_armor_groups({immortal = 0})
         entity:set_properties({physical = false})
         entity:set_velocity({x = 0, y = -9.81, z = 0})
         entity:get_luaentity().entry_string = entry.entry_string
 
-        local front_of_entity = vector.subtract(entry.pos,
-                                                {x = 0, y = 0, z = 2})
+        local front_of_entity =
+            vector.subtract(entry.pos, {x = 0, y = 0, z = 2})
 
         entity:get_luaentity().on_punch =
             function(self, puncher)

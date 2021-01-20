@@ -1,4 +1,4 @@
--- service node 
+-- service node
 minetest.register_craft({
     output = "core:service_node",
     recipe = {{"core:service_node", "core:file_node"}}
