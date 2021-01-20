@@ -42,4 +42,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - working-directory: mods/core
-        run: luacheck .
+        run: luacheck ./
