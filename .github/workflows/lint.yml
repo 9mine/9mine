@@ -1,0 +1,12 @@
+name: Lint Lua Code
+on: push
+jobs:
+  lint:
+    container:
+      image: dievri/luacheck
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - working-directory: mods/core
+        run: luacheck . -q
