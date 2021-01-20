@@ -56,8 +56,8 @@ function CopyTool.on_drop(stat_entity, _, player_name, command)
         platform:remove_entity(player_graph:get_entry(platform.addr .. new_path):get_qid())
     end
     -- read stat of copied entry
-    local _, stat = pcall(np_prot.stat_read, platform:get_conn(), new_path)
-    directory_entry:set_pos(slot):set_stat(stat)
+    directory_entry:set_pos(slot):set_stat(select(2, pcall(np_prot.stat_read, platform:get_conn(),
+                                                           new_path)))
 
     -- configure and set source entry to the destination platform
     platform:inject_entry(directory_entry)

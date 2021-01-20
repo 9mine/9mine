@@ -69,7 +69,7 @@ local man_event = function(player, formname, fields)
             minetest.chat_send_player(player_name, "No platform found nearby")
             return true
         end
-        local _, v = next(fields)
+        local v = select(2, next(fields))
         v = v:gsub("action:", "")
         local c = v:match("%(%d+%)")
         local section = c:match("%d+")

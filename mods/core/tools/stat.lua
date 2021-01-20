@@ -45,7 +45,7 @@ function StatTool.parse_mode_bits(mode)
 
     local mode_bits = {}
     for k, v in pairs(perms) do
-        local _ = (bit.band(result.bits, v) ~= 0) and table.insert(mode_bits, k)
+        select(1, (bit.band(result.bits, v) ~= 0) and table.insert(mode_bits, k))
     end
     res["mode_bits"] = mode_bits
 

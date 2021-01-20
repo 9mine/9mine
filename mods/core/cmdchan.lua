@@ -51,11 +51,8 @@ end
 function cmdchan:execute(command, location)
     local tmp_file = "/n/cmdchan/cmdchan_output"
     command = command .. " > " .. tmp_file .. " >[2=1]"
-    -- print("command: " .. command)
     pcall(cmdchan.write, self, command, location)
-    -- local write_result, write_response = pcall(cmdchan.write, self, command, location)
-    local _, read_response = pcall(cmdchan.read, self, tmp_file)
-    return read_response
+    return select(2, pcall(cmdchan.read, self, tmp_file))
 end
 
 function cmdchan.show_response(response, player_name)

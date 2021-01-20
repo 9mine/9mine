@@ -47,8 +47,8 @@ local function console(player, formname, fields)
         if not (fields.key_enter or fields.send) then return end
         local player_name = player:get_player_name()
         local pos = minetest.deserialize(fields.entity_pos)
-        local _, entity = next(minetest.get_objects_inside_radius(pos, 0.5))
-        local lua_entity = entity:get_luaentity()
+        local lua_entity =
+            select(2, next(minetest.get_objects_inside_radius(pos, 0.5))):get_luaentity()
         local request = lua_entity.user == "glenda" and "%" or "\\;"
         local response = connections:get_connection(player_name, lua_entity.addr):get_cmdchan()
             :execute(fields.input:gsub(lua_entity.user == "glenda" and "%% " or "; ", ""))

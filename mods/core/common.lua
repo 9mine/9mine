@@ -21,7 +21,7 @@ function common.get_platform_string(player)
     local node_pos = minetest.find_node_near(player:get_pos(), 6, {"core:platform"})
     if not node_pos then return end
     local area = area_store:get_areas_for_pos(node_pos, false, true)
-    local _, value = next(area)
+    local value = select(2, next(area))
     if not value then
         minetest.chat_send_player(player:get_player_name(),
                                   "No platform for this position in AreaStore")
@@ -33,7 +33,7 @@ end
 function common.get_platform_string_by_pos(player, pos)
     if not pos then return nil, "Error" end
     local area = area_store:get_areas_for_pos(pos, false, true)
-    local _, value = next(area)
+    local value = select(2, next(area))
     if not value then
         minetest.chat_send_player(player:get_player_name(),
                                   "No platform for this position in AreaStore")

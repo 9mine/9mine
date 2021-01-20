@@ -84,11 +84,10 @@ end
 function automount:poll_regquery(player, counter, last_login, home_platform)
     local player_name = player:get_player_name()
     if counter > 10 then
-        local _, ns_create_output = pcall(np_prot.file_read, self.root_cmdchan.connection.conn,
-                                          "/n/9mine/" .. home_platform == "inferno" and "user"
-                                              or (home_platform == "nfront" and "9front"))
-        minetest.kick_player(player_name,
-                             "Error creating NS. Try again later. Log: \n" .. ns_create_output)
+        minetest.kick_player(player_name, "Error creating NS. Try again later. Log: \n" .. select(2,
+                                                                                                  pcall(
+            np_prot.file_read, self.root_cmdchan.connection.conn, "/n/9mine/" .. home_platform
+                == "inferno" and "user" or (home_platform == "nfront" and "9front"))))
         return
     end
     counter = counter + 1

@@ -16,7 +16,7 @@ minetest.register_node("core:platform", {
         local player_name = puncher:get_player_name()
         local player_graph = graphs:get_player_graph(player_name)
         local area = area_store:get_areas_for_pos(pos, false, true)
-        local _, value = next(area)
+        local value = select(2, next(area))
         if not value then
             minetest.chat_send_player(player_name, "No platform for this position in AreaStore")
             return
