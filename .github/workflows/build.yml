@@ -41,6 +41,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - working-directory: mods/core
-        run: 'luacheck .'
+        run: luacheck --config mods/core/.luacheckrc mods/core/
   
