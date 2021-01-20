@@ -8,7 +8,7 @@ RUN     apt-get update && apt-get install -y libluajit-5.1-dev  \
         libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev \
         libopenal-dev libcurl4-gnutls-dev libfreetype6-dev      \
         zlib1g-dev libgmp-dev libjsoncpp-dev luarocks graphviz  \
-        graphviz-dev
+        graphviz-dev && rm -rf /var/lib/apt/lists/*
 
 # Build luadata libary 
 RUN     git clone https://github.com/lneto/luadata.git &&                       \
@@ -61,7 +61,9 @@ FROM    ubuntu:20.10
 ENV     DEBIAN_FRONTEND noninteractive
 
 # Dependencies for minetestserver and mods
-RUN     apt-get update && apt-get install -y sqlite3 libcurl4-gnutls-dev graphviz-dev libluajit-5.1-dev
+RUN     apt-get update && apt-get install -y sqlite3            \
+        libcurl4-gnutls-dev graphviz-dev libluajit-5.1-dev    &&\
+        rm -rf /var/lib/apt/lists/*
 
 # Create default mod (for default textures for minetest game)
 RUN     mkdir -p /root/.minetest/worlds/world mkdir   \
