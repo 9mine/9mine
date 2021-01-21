@@ -7,6 +7,7 @@ function platform:platform(connection, path, cmdchan, parent_node)
     self.cmdchan = cmdchan
     self.addr = connection.addr
     self.path = path
+    self.init_path = nil
     self.platform_string = connection.addr .. self.path
     self.directory_entries = {}
     self.properties = {
@@ -499,6 +500,32 @@ function platform:load_readdir()
     elseif not include_string == "" then
         minetest.chat_send_player(player_name, "No lua code at path: " .. lua_readdir)
         return
+    end
+end
+
+-- load file .init.lua if present
+function platform:load_init()
+    if not self.init_path then
+        local message
+        local player_name = self:get_player()
+        local lua_init = self.path .. ".init.lua"
+        local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_init)
+        if result and include_string ~= "" then
+            local lua_init_code, error = loadstring(include_string)
+            if lua_init_code then
+                setfenv(lua_init_code,
+                        setmetatable({texture = texture, platform = self}, {__index = _G}))
+                -- execute loaded chunk of .init.lua code
+                lua_init_code()
+                message = "Loaded: " .. lua_init
+                self.init_path = self.path
+            else
+                message = ".init.lua is not valid: " .. error
+            end
+        elseif not include_string == "" then
+            message = "No lua code at path: " .. lua_init
+        end
+        minetest.chat_send_player(player_name, message)
     end
 end
 
