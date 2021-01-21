@@ -66,12 +66,12 @@ function directory_entry:set_entry_string()
 end
 
 -- methods
-function directory_entry:filter(stat_entity, init_path, player_name)
+function directory_entry:filter(stat_entity, player_name)
     stat_entity:set_properties({
         nametag = self.stat.name,
         textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
     })
-    register.call_texture_handlers(self, stat_entity, init_path)
+    register.call_texture_handlers(self, stat_entity)
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.player_name = player_name
     lua_entity.entry_string = self:get_entry_string()

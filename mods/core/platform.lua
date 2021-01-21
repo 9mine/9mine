@@ -173,8 +173,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5, 12)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity, self.init_path,
-                           self:get_player())
+    directory_entry:filter(stat_entity, self:get_player())
     return directory_entry
 end
 
@@ -513,11 +512,12 @@ function platform:load_init()
         local lua_init = self.path == "/" and self.path .. ".init.lua" or self.path .. "/.init.lua"
         local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_init)
         if result and include_string ~= "" then
+            print(include_string)
             local lua_init_code, error = loadstring(include_string)
+            print("loaded init code")
             if lua_init_code then
-                self.init_path = self.path
                 setfenv(lua_init_code,
-                        setmetatable({platform = self}, {__index = _G}))
+                        setmetatable({platform = self, texture = texture, init_path = self.platform_string }, {__index = _G}))
                 -- execute loaded chunk of .init.lua code
                 lua_init_code()
                 message = "Loaded: " .. lua_init
