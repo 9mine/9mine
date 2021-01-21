@@ -173,7 +173,7 @@ function platform:spawn_stat(stat)
     self:configure_entry(directory_entry)
     slot.y = slot.y + 7 + math.random(5, 12)
     local stat_entity = minetest.add_entity(slot, "core:stat")
-    directory_entry:filter(stat_entity, self:load_getattr(directory_entry, stat_entity),
+    directory_entry:filter(stat_entity, self.init_path,
                            self:get_player())
     return directory_entry
 end
@@ -294,6 +294,7 @@ end
 
 -- read directory and spawn platform with directory content
 function platform:spawn(root_point, player, color, paths)
+    self:load_init()
     local root_buffer = buffer(self:get_conn(), self.path)
     local result, content = pcall(root_buffer.process_next, root_buffer, {})
     if not result then return end
@@ -342,6 +343,7 @@ function platform:spawn_child(path, player, paths)
     local pos = self:next_pos()
     if not pos then return end
     child_platform.origin_point = pos
+    child_platform.init_path = self.init_path
     child_platform.root_point = pos
     child_platform:spawn(pos, player, self:get_color(), paths)
     self:inc_spawn_count()
@@ -506,19 +508,19 @@ end
 -- load file .init.lua if present
 function platform:load_init()
     if not self.init_path then
-        local message
+        local message = "init.lua not loaded"
         local player_name = self:get_player()
-        local lua_init = self.path .. ".init.lua"
+        local lua_init = self.path == "/" and self.path .. ".init.lua" or self.path .. "/.init.lua"
         local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_init)
         if result and include_string ~= "" then
             local lua_init_code, error = loadstring(include_string)
             if lua_init_code then
+                self.init_path = self.path
                 setfenv(lua_init_code,
-                        setmetatable({texture = texture, platform = self}, {__index = _G}))
+                        setmetatable({platform = self}, {__index = _G}))
                 -- execute loaded chunk of .init.lua code
                 lua_init_code()
                 message = "Loaded: " .. lua_init
-                self.init_path = self.path
             else
                 message = ".init.lua is not valid: " .. error
             end

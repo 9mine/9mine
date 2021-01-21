@@ -17,8 +17,8 @@ end
 function register.add_texture_handler(handler_name, f) register.texture_handlers[handler_name] = f end
 function register.delete_texture_handler(handler_name) register.texture_handlers[handler_name] = nil end
 
-function register.call_texture_handlers(directory_entry, entity)
-    for _, handler in pairs(register.texture_handlers) do handler(directory_entry, entity) end
+function register.call_texture_handlers(directory_entry, entity, init_path)
+    for _, handler in pairs(register.texture_handlers) do handler(directory_entry, entity, init_path) end
 end
 
 -- craft handlers

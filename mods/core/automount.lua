@@ -143,7 +143,6 @@ function automount:spawn_root_platform(attach_string, player, _, random)
         minetest.after(2, function()
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
-            root_platform.mount_point = "/"
             root_platform.origin_point = result
             root_platform:set_node(player_graph:add_platform(root_platform, nil, player_host_node))
             local point = vector.round(player:get_pos())
