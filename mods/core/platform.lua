@@ -512,9 +512,7 @@ function platform:load_init()
         local lua_init = self.path == "/" and self.path .. ".init.lua" or self.path .. "/.init.lua"
         local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_init)
         if result and include_string ~= "" then
-            print(include_string)
             local lua_init_code, error = loadstring(include_string)
-            print("loaded init code")
             if lua_init_code then
                 setfenv(lua_init_code, setmetatable(
                     {platform = self, texture = texture, init_path = self.platform_string},
