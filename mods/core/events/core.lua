@@ -4,6 +4,14 @@ connect = function(player, fields)
     local attach_string = split_connection_string(fields.connection_string)
     local connection = connections:get_connection(player_name, attach_string, true)
     if not connection then return end
+    if not connection:is_alive() then
+        connection:reattach()
+        if not connection:is_alive() then
+            minetest.chat_send_player(player_name,
+                                      "Connection was dead, and reconnecting was unsuccessfull")
+            return
+        end
+    end
     local player_graph = graphs:get_player_graph(player_name)
     local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))

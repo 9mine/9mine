@@ -516,8 +516,9 @@ function platform:load_init()
             local lua_init_code, error = loadstring(include_string)
             print("loaded init code")
             if lua_init_code then
-                setfenv(lua_init_code,
-                        setmetatable({platform = self, texture = texture, init_path = self.platform_string }, {__index = _G}))
+                setfenv(lua_init_code, setmetatable(
+                    {platform = self, texture = texture, init_path = self.platform_string},
+                    {__index = _G}))
                 -- execute loaded chunk of .init.lua code
                 lua_init_code()
                 message = "Loaded: " .. lua_init
