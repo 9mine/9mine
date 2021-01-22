@@ -51,7 +51,6 @@ function automount:mount_manuals(cmdchan, count)
     elseif not count then
         count = 1
     end
-
     local root_cmdchan = cmdchan or self.root_cmdchan
     root_cmdchan:execute("mkdir -p " .. core_conf:get("mans_path"))
     local man_addr = root_cmdchan:execute("ndb/regquery -n description 'manuals'"):gsub("\n", "")

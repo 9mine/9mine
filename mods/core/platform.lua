@@ -477,32 +477,6 @@ function platform:update()
     end
 end
 
--- check if something is present in correspoing
--- .lua directory
-function platform:load_readdir()
-    if not self.mount_point then return end
-    local player_name = self:get_player()
-    local lua_readdir = self.path == "/" and self.path:gsub("^/", "/.lua/readdir")
-                            or self.path:gsub("^" .. self.mount_point, self.mount_point == "/"
-                                                  and "/.lua/" or self.mount_point .. "/.lua/")
-                            .. "/readdir"
-    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_readdir)
-    if result and include_string ~= "" then
-        local lua, error = loadstring(include_string)
-        if not lua then
-            minetest.chat_send_player(player_name, ".lua is not valid: " .. error)
-            return
-        else
-            minetest.chat_send_player(player_name, "Loaded: " .. lua_readdir)
-        end
-        setfenv(lua, setmetatable({platform = self}, {__index = _G}))
-        lua()
-    elseif not include_string == "" then
-        minetest.chat_send_player(player_name, "No lua code at path: " .. lua_readdir)
-        return
-    end
-end
-
 -- load file .init.lua if present
 function platform:load_init()
     if not self.init_path then
@@ -526,59 +500,6 @@ function platform:load_init()
             message = "No lua code at path: " .. lua_init
         end
         minetest.chat_send_player(player_name, message)
-    end
-end
-
-function platform:load_getattr(entry, stat_entity)
-    local player_name = self:get_player()
-    local lua_getattr = entry.path .. ".getattr.lua"
-    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_getattr)
-    if result and include_string ~= "" then
-        local getattr_lua, error = loadstring(include_string)
-        if not getattr_lua then
-            minetest.chat_send_player(player_name, ".lua is not valid: " .. error)
-            return
-        else
-            minetest.chat_send_player(player_name, "Loaded: " .. lua_getattr)
-        end
-        setfenv(getattr_lua,
-                setmetatable({
-            texture = texture,
-            platform = self,
-            entry = entry,
-            stat_entity = stat_entity
-        }, {__index = _G}))
-        return getattr_lua
-    elseif not include_string == "" then
-        minetest.chat_send_player(player_name, "No lua code at path: " .. lua_getattr)
-        return
-    end
-end
-
-function platform:load_read_file(entry, entity, player)
-    local player_name = self:get_player()
-    local lua_read_file = entry.path .. ".include.lua"
-    local result, include_string = pcall(np_prot.file_read, self.connection.conn, lua_read_file)
-    if result and include_string ~= "" then
-        local lua, error = loadstring(include_string)
-        if not lua then
-            minetest.chat_send_player(player_name, ".lua is not valid:" .. error)
-            return
-        else
-            minetest.chat_send_player(player_name, "Loaded: " .. lua_read_file)
-        end
-        setfenv(lua, setmetatable({
-            platform = self,
-            entry = entry,
-            entity = entity,
-            player = player,
-            register = register,
-            texture = texture
-        }, {__index = _G}))
-        lua()
-    elseif not include_string == "" then
-        minetest.chat_send_player(player_name, "No lua code at path: " .. lua_read_file)
-        return
     end
 end
 

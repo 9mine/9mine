@@ -23,12 +23,9 @@ function StatEntity:on_punch(puncher, _, tool, _)
         minetest.chat_send_player(player_name, "No directory entry found")
         return
     end
-    local platform = player_graph:get_platform(directory_entry:get_platform_string())
-    platform:load_read_file(directory_entry, self, puncher)
     if tool.damage_groups.stat == 1 then StatTool.show_stat(self, puncher, player_name) end
     if tool.damage_groups.enter == 1 then EnterTool.enter(self, puncher, player_name) end
     if tool.damage_groups.read == 1 then ReadTool.read(self, puncher, player_name, player_graph) end
-
     if tool.damage_groups.edit == 1 then EditTool.edit(self, puncher, player_name) end
     if tool.damage_groups.write == 1 then WriteTool.write(self, player_name) end
     if tool.damage_groups.copy == 1 then CopyTool.copy(self, puncher) end
