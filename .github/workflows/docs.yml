@@ -1,0 +1,10 @@
+name: Generate Docs
+on:
+  workflow_dispatch:
+jobs:
+  docs:
+    container:
+      image: dievri/ldoc
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+   
