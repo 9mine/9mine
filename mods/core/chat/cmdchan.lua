@@ -76,7 +76,7 @@ local man_event = function(player, formname, fields)
         local man = v:gsub("%(%d+%)", "")
         local conn = platform:get_conn()
         local result, manpage = pcall(np_prot.file_read, conn,
-        core_conf:get("mans_path") .. "/" .. section .. "/" .. man)
+                                      core_conf:get("mans_path") .. "/" .. section .. "/" .. man)
         if not result then
             minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
         else

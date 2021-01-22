@@ -7,8 +7,8 @@ function automount:automount()
 end
 
 function automount:connect_to_root()
-    local connection = connections:get_root_connection(self.inferno_addr)
-    if not connection then error("Failed connecting to the inferno os " .. self.inferno_addr) end
+    local connection, error_message = connections:get_root_connection(self.inferno_addr)
+    if not connection then error(error_message) end
 
     -- check for presence of cmdchan
     local root_cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
