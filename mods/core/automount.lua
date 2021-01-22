@@ -1,13 +1,9 @@
 class 'automount'
 
 function automount:automount()
-    self.user_registry_addr = os.getenv("USER_REGISTRY_ADDR") ~= ""
-                                  and os.getenv("USER_REGISTRY_ADDR")
-                                  or core_conf:get("USER_REGISTRY_ADDR")
-    self.registry_addr = os.getenv("REGISTRY_ADDR") ~= "" and os.getenv("REGISTRY_ADDR")
-                             or core_conf:get("REGISTRY_ADDR")
-    self.inferno_addr = os.getenv("INFERNO_ADDR") ~= "" and os.getenv("INFERNO_ADDR")
-                            or core_conf:get("INFERNO_ADDR")
+    self.user_registry_addr = common.get_env("USER_REGISTRY_ADDR")
+    self.registry_addr = common.get_env("REGISTRY_ADDR")
+    self.inferno_addr = common.get_env("INFERNO_ADDR")
 end
 
 function automount:connect_to_root()

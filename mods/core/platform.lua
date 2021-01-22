@@ -1,8 +1,7 @@
 class 'platform'
 -- platform object. Represents directory content. Holds reference to connection information
 function platform:platform(connection, path, cmdchan, parent_node)
-    local refresh_time = tonumber(os.getenv("REFRESH_TIME") ~= "" and os.getenv("REFRESH_TIME")
-                                      or core_conf:get("refresh_time"))
+    local refresh_time = tonumber(common.get_env("REFRESH_TIME"))
     self.connection = connection
     self.cmdchan = cmdchan
     self.addr = connection.addr

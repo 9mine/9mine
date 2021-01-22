@@ -5,9 +5,8 @@ RegistryTool = {
 }
 
 function RegistryTool.on_use(_, player)
-    local connection = connections:get_connection(player:get_player_name(), os.getenv(
-        "GRIDFILES_ADDR") ~= "" and os.getenv("GRIDFILES_ADDR") or core_conf:get("GRIDFILES_ADDR"),
-                                                  true)
+    local connection = connections:get_connection(player:get_player_name(),
+                                                  common.get_env("GRIDFILES_ADDR"), true)
     if connection then
         local lua = np_prot.file_read(connection.conn, '/9mine/welcomefs/registry.lua')
         if lua then loadstring(lua)() end
