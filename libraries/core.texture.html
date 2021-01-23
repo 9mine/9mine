@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>9mine Documentation</title>
+    <link rel="stylesheet" href="../ldoc_fixed.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>9mine</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Fields">Fields</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/core.connections.html">core.connections</a></li>
+  <li><strong>core.texture</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>core.texture</code></h1>
+<p>textures handler</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#set_texture">set_texture (entity, texture[, visual])</a></td>
+	<td class="summary">set texture on entity</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#exists">exists (name[, directory])</a></td>
+	<td class="summary">check if texture with given name exists</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#download">download (url, secure, name[, directory])</a></td>
+	<td class="summary">download texture from url save and load</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#download_from_9p">download_from_9p (conn, source_path, name[, directory])</a></td>
+	<td class="summary">download texture over 9p</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#path">path</a></td>
+	<td class="summary">path to mod textures directory</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "set_texture"></a>
+    <strong>set_texture (entity, texture[, visual])</strong>
+    </dt>
+    <dd>
+    set texture on entity
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">entity</span>
+            <span class="types"><span class="type">LuaEntity</span></span>
+         LuaEntity on which texture should be set
+        </li>
+        <li><span class="parameter">texture</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of the texture file to be set on entity
+        </li>
+        <li><span class="parameter">visual</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         set visual. If not provided, entity original visual will be used
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "exists"></a>
+    <strong>exists (name[, directory])</strong>
+    </dt>
+    <dd>
+    check if texture with given name exists
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         texture file name
+        </li>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of subdirectory inside textures directory. By default <a href="../libraries/core.texture.html#path">path</a>
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">bool</span></span>
+        true texture file exists</li>
+        <li>
+           <span class="types"><span class="type">bool</span></span>
+        false texture not exists</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "download"></a>
+    <strong>download (url, secure, name[, directory])</strong>
+    </dt>
+    <dd>
+    download texture from url save and load
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">url</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         url of the texture file
+        </li>
+        <li><span class="parameter">secure</span>
+            <span class="types"><span class="type">bool</span></span>
+         is url uses https
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of texture file to be saved
+        </li>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of subdirectory inside <a href="../libraries/core.texture.html#path">path</a>
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true (successfully downloaded and saved)
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+
+
+</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        error message</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "download_from_9p"></a>
+    <strong>download_from_9p (conn, source_path, name[, directory])</strong>
+    </dt>
+    <dd>
+    download texture over 9p
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">conn</span>
+            <span class="types"><span class="type">conn</span></span>
+         9p connection
+        </li>
+        <li><span class="parameter">source_path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to the texture
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of texture file to be saved
+        </li>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of subdirectory inside <a href="../libraries/core.texture.html#path">path</a>
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        true (successfully downloaded and saved)
+    </ol>
+     <h3>Or</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">nil</span></span>
+
+
+</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        error message</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "path"></a>
+    <strong>path</strong>
+    </dt>
+    <dd>
+    path to mod textures directory
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2021-01-23 23:21:18 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
