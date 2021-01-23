@@ -1,5 +1,4 @@
 --- Connections store
--- @module connections
 class 'connections'
 
 --- constructor
