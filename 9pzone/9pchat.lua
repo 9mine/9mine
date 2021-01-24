@@ -113,6 +113,7 @@ function ninepchat.parse(self, chat_msg)
         title = {text = user_name, color = "#000000"},
         on_construct = function(self)
           local mv_obj = npcf.movement.getControl(self)
+          mv_obj:look_to({ x = 13, y = 13, z = 13 })
           mv_obj:walk({ x = 1, y = 1, z = 1 }, 5, nil)
         end 
       }
