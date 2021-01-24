@@ -1,5 +1,10 @@
+--- basic 9p interactions
 class 'np_prot'
 
+--- read stat from path specified
+-- @tparam conn conn 9p connection
+-- @tparam string path path of file for stat to be read
+-- @treturn table stat
 function np_prot.stat_read(conn, path)
     local f = conn:newfid()
     if path == "/" then
@@ -13,6 +18,10 @@ function np_prot.stat_read(conn, path)
     return st
 end
 
+--- read file from path specified
+-- @tparam conn conn 9p connection
+-- @tparam string path path to the file to be read
+-- @treturn string file content
 function np_prot.file_read(conn, path)
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, path)
@@ -30,6 +39,11 @@ function np_prot.file_read(conn, path)
     return response
 end
 
+--- create file at path with given name
+-- @tparam conn conn 9p connection
+-- @tparam string path path to the directory in which file will be created
+-- @tparam string file_name name of the file to be created
+-- @treturn nil
 function np_prot.file_create(conn, path, file_name)
     local f, g = conn:newfid(), conn:newfid()
     if path == "/" then
@@ -43,6 +57,11 @@ function np_prot.file_create(conn, path, file_name)
     conn:clunk(g)
 end
 
+--- write to the file specified
+-- @tparam conn conn 9p connection
+-- @tparam string path path to the file to be edited
+-- @tparam string content new content of the file
+-- @treturn nil
 function np_prot.file_write(conn, path, content)
     local f = conn:newfid()
     conn:walk(conn.rootfid, f, path)
