@@ -1,3 +1,8 @@
+--- custom lua loader
+--- load file from core mod
+-- @function modload
+-- @tparam string modulename name of the file to be loaded
+-- @treturn string error message
 local function modload(modulename)
     local errmsg = ""
     local modulepath = string.gsub(modulename, "%.", "/")
