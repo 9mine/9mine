@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>9mine Documentation</title>
+    <link rel="stylesheet" href="../ldoc_fixed.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>9mine</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/core.cmdchan.html">core.cmdchan</a></li>
+  <li><a href="../libraries/core.connections.html">core.connections</a></li>
+  <li><a href="../libraries/core.modload.html">core.modload</a></li>
+  <li><strong>core.np_prot</strong></li>
+  <li><a href="../libraries/core.texture.html">core.texture</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>core.np_prot</code></h1>
+<p>basic 9p interactions</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#stat_read">stat_read (conn, path)</a></td>
+	<td class="summary">read stat from path specified</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#file_read">file_read (conn, path)</a></td>
+	<td class="summary">read file from path specified</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#file_create">file_create (conn, path, file_name)</a></td>
+	<td class="summary">create file at path with given name</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#file_write">file_write (conn, path, content)</a></td>
+	<td class="summary">write to the file specified</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "stat_read"></a>
+    <strong>stat_read (conn, path)</strong>
+    </dt>
+    <dd>
+    read stat from path specified
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">conn</span>
+            <span class="types"><span class="type">conn</span></span>
+         9p connection
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path of file for stat to be read
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        stat
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "file_read"></a>
+    <strong>file_read (conn, path)</strong>
+    </dt>
+    <dd>
+    read file from path specified
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">conn</span>
+            <span class="types"><span class="type">conn</span></span>
+         9p connection
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to the file to be read
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        file content
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "file_create"></a>
+    <strong>file_create (conn, path, file_name)</strong>
+    </dt>
+    <dd>
+    create file at path with given name
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">conn</span>
+            <span class="types"><span class="type">conn</span></span>
+         9p connection
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to the directory in which file will be created
+        </li>
+        <li><span class="parameter">file_name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of the file to be created
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "file_write"></a>
+    <strong>file_write (conn, path, content)</strong>
+    </dt>
+    <dd>
+    write to the file specified
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">conn</span>
+            <span class="types"><span class="type">conn</span></span>
+         9p connection
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to the file to be edited
+        </li>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         new content of the file
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2021-01-24 23:30:06 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

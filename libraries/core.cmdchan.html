@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>9mine Documentation</title>
+    <link rel="stylesheet" href="../ldoc_fixed.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>9mine</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><strong>core.cmdchan</strong></li>
+  <li><a href="../libraries/core.connections.html">core.connections</a></li>
+  <li><a href="../libraries/core.modload.html">core.modload</a></li>
+  <li><a href="../libraries/core.np_prot.html">core.np_prot</a></li>
+  <li><a href="../libraries/core.texture.html">core.texture</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>core.cmdchan</code></h1>
+<p>utilize cmdchan</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#cmdchan">cmdchan (connection, cmdchan_path)</a></td>
+	<td class="summary">constructor</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_present">is_present ()</a></td>
+	<td class="summary">check if cmdchan is present at provided to costructor path</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#write">write (command, location)</a></td>
+	<td class="summary">write to the cmdchan</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#read">read (path)</a></td>
+	<td class="summary">read response from cmdchan</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#execute">execute (command, location)</a></td>
+	<td class="summary">execute (write and read) to cmdchan</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#show_response">show_response (response, player_name)</a></td>
+	<td class="summary">show response from cmdchan in formspec</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "cmdchan"></a>
+    <strong>cmdchan (connection, cmdchan_path)</strong>
+    </dt>
+    <dd>
+    constructor
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">connection</span>
+            <span class="types"><span class="type">connection</span></span>
+         connection object
+        </li>
+        <li><span class="parameter">cmdchan_path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to the cmdchan
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_present"></a>
+    <strong>is_present ()</strong>
+    </dt>
+    <dd>
+    check if cmdchan is present at provided to costructor path
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        present cmdchan or not
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "write"></a>
+    <strong>write (command, location)</strong>
+    </dt>
+    <dd>
+    write to the cmdchan
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">command</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         command to be written to cmdchan
+        </li>
+        <li><span class="parameter">location</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path of platform from which command is executed
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "read"></a>
+    <strong>read (path)</strong>
+    </dt>
+    <dd>
+    read response from cmdchan
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path to file where response is located
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        response from cmdchan
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "execute"></a>
+    <strong>execute (command, location)</strong>
+    </dt>
+    <dd>
+    execute (write and read) to cmdchan
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">command</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         command to be written to cmdchan
+        </li>
+        <li><span class="parameter">location</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         path of platform from which command is executed
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        response from cmdchan
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "show_response"></a>
+    <strong>show_response (response, player_name)</strong>
+    </dt>
+    <dd>
+    show response from cmdchan in formspec
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">response</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         response from cmdchan
+        </li>
+        <li><span class="parameter">player_name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         name of the player
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2021-01-24 23:30:06 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
