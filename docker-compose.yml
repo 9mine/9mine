@@ -5,10 +5,7 @@ services:
     build:
       context: .
     volumes:
-      - ./9pzone:/root/.minetest/mods/9pzone
-      - ./mods/default:/root/.minetest/mods/default
-      - ./mods/npcf:/root/.minetest/mods/npcf
-      - ./mods/player_api:/root/.minetest/mods/player_api
+      - ./mods:/root/.minetest/mods/
     
     networks:
       - minetest

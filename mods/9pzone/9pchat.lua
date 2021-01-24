@@ -75,7 +75,7 @@ function life_timer(chat, user_name)
   pprint(chat.chat[user_name])
   minetest.log("----")
   minetest.log("Removed " .. user_name .. " by timer " .. tostring(last_time))
-  npcf:unload(chat.chat[user_name]["npcf_id"])
+  --npcf:unload(chat.chat[user_name]["npcf_id"])
   chat.chat[user_name] = nil
 end
 
@@ -100,6 +100,7 @@ function ninepchat.parse(self, chat_msg)
   if (self.chat[user_name] == nil) then
       minetest.log("Add new chat user " .. user_name) 
 
+      --[[
       local ref = {
         id = self.npcf_id,
         pos = {
@@ -118,17 +119,28 @@ function ninepchat.parse(self, chat_msg)
         end 
       }
 
-      self.chat[user_name] = {
-        last_time = os.time(),
-        npcf_id = ref["id"]
-      } 
-
 		  npcf:add_npc(ref)
 		  npcf:add_title(ref)
+      ]]--
 
+      self.chat[user_name] = {
+        last_time = os.time(),
+        --npcf_id = ref["id"]
+      } 
+
+mobs:spawn({
+	name = "mobs_npc:npc",
+	nodes = {"9pzone:chat"},
+	neighbors = {"default:grass_3"},
+	min_light = 10,
+	chance = 1000,
+	active_object_count = 1,
+	min_height = 0,
+	day_toggle = false,
+})
 
         
-      minetest.after(5, life_timer, self, user_name)
+      --minetest.after(5, life_timer, self, user_name)
 
       self.npcf_id = self.npcf_id + 1 
     else
@@ -152,6 +164,7 @@ minetest.register_node("9pzone:chat", {
   groups = {cracky = 3, oddly_breakable_by_hand = 3},
 })
 
+--[[
 npcf:register_npc("9pzone:chat_user" ,{
 	description = "chat user",
 	textures = {"npcf_builder_skin.png"},
@@ -171,3 +184,4 @@ npcf:register_npc("9pzone:chat_user" ,{
 	stepheight = 1.1,
 	inventory_image = "npcf_builder_skin.png"
 })
+]]--
