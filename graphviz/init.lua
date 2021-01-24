@@ -173,7 +173,7 @@ minetest.register_node("graphviz:route", {
 })
 
 udp = socket.udp()
-udp:setpeername("127.0.0.1", 5555)
+udp:setpeername("172.24.172.227", 7777)
 udp:settimeout(0.01)
 
 minetest.register_globalstep(function()
@@ -181,7 +181,6 @@ minetest.register_globalstep(function()
     data = udp:receive()
     if data then
       for s in data:gmatch("[^\r\n]+") do
-        parse_input(s)
         print(s)
       end
     end

@@ -5,28 +5,18 @@ services:
     build:
       context: .
     volumes:
-      - ./graphviz:/root/.minetest/mods/graphviz
+      - ./9pzone:/root/.minetest/mods/9pzone
+      - ./mods/default:/root/.minetest/mods/default
+      - ./mods/npcf:/root/.minetest/mods/npcf
+      - ./mods/player_api:/root/.minetest/mods/player_api
     
     networks:
       - minetest
-    image: minetest:bitcoin_transaction
+    image: minetest:9pzone
     ports:
       - "30000:30000/udp"
       - "30000:30000"
 
-
-  minetest-client:
-    build:
-      context: .
-      dockerfile: Dockerfile.minetest-client
-    
-    image: minetest-client:bitcoin_transaction
-    ports:
-      - "5900:5900"
-    devices:
-      - /dev/dri:/dev/dri #optional
-    networks: 
-      - minetest
 
 networks:
   minetest:
