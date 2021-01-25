@@ -171,8 +171,22 @@ function common.update_path_hud(player, id, addr_id, bg_id, tools)
             local inventory = player:get_inventory()
             for i, tool in pairs(tools) do
                 if inventory:contains_item("main", tool) then
-                    print(i, "stack removing", tool)
-                    inventory:remove_item("main", tool)
+                    inventory:set_stack("main", i, "")
+                end
+            end
+            inventory = player:get_inventory()
+            local inv_size = inventory:get_size("main")
+            -- move tools from inventory end to inventory start
+            for i = 1, inv_size, 1 do
+                if inventory:get_list("main")[i]:is_empty() then
+                    for j = inv_size, i + 1, -1 do
+                        if not inventory:get_list("main")[j]:is_empty() then
+                            local stack = inventory:get_stack("main", j)
+                            inventory:set_stack("main", j, "")
+                            inventory:set_stack("main", i, stack)
+                            break
+                        end
+                    end
                 end
             end
         end
@@ -187,7 +201,9 @@ function common.update_path_hud(player, id, addr_id, bg_id, tools)
         for i, tool in pairs(tools) do
             if not inventory:contains_item("main", tool) then
                 print(i, "stack setting", tool)
+                local stack = inventory:get_stack("main", i)
                 inventory:set_stack("main", i, tool)
+                inventory:add_item("main", stack)
             end
         end
         if id then
