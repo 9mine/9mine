@@ -108,7 +108,7 @@ function player_graph:delete_entry_node(entry_string)
     local node = self.graph:findnode(entry_string)
     if node and not node.object then
         node:delete()
-    else
+    elseif node then
         node.entry = nil
     end
 end

@@ -156,7 +156,7 @@ end
 
 -- Shows absolute path of the platform nearby
 -- in right lower corner
-function common.update_path_hud(player, id, addr_id, bg_id)
+function common.update_path_hud(player, id, addr_id, bg_id, tools)
     local platform_string, error = common.get_platform_string(player)
     if error then return end
     local player_graph = graphs:get_player_graph(player:get_player_name())
@@ -167,12 +167,29 @@ function common.update_path_hud(player, id, addr_id, bg_id)
     local platform = player_graph:get_platform(platform_string)
     if not platform_string or not platform then
         if id then
+            if tools then
+            local inventory = player:get_inventory()
+            for i, tool in pairs(tools) do
+                if inventory:contains_item("main", tool) then
+                    print(i, "stack removing", tool)
+                    inventory:remove_item("main", tool)
+                end
+            end
+        end
             player:hud_remove(bg_id)
             player:hud_remove(id)
             player:hud_remove(addr_id)
             id = nil
         end
     else
+        tools = platform:get_toolset()
+        local inventory = player:get_inventory()
+        for i, tool in pairs(tools) do
+            if not inventory:contains_item("main", tool) then
+                print(i, "stack setting", tool)
+                inventory:set_stack("main", i, tool)
+            end
+        end
         if id then
             player:hud_change(bg_id, "number", (#platform.addr) > (#platform.path)
                                   and (#platform.addr) or (#platform.path))
@@ -212,7 +229,7 @@ function common.update_path_hud(player, id, addr_id, bg_id)
             })
         end
     end
-    minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id)
+    minetest.after(1, common.update_path_hud, player, id, addr_id, bg_id, tools)
 end
 
 function common.read_registry_index(connection_string, player_name)

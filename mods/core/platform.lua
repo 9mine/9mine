@@ -1,7 +1,6 @@
 class 'platform'
 -- platform object. Represents directory content. Holds reference to connection information
 function platform:platform(connection, path, cmdchan, parent_node)
-    local refresh_time = tonumber(common.get_env("REFRESH_TIME"))
     self.connection = connection
     self.cmdchan = cmdchan
     self.addr = connection.addr
@@ -18,10 +17,12 @@ function platform:platform(connection, path, cmdchan, parent_node)
         -- period of time, on which readdir() occurs for current platform and if
         -- new entries are there, they will be spawn and if some of present entities
         -- are no more in new readdir() they will removed
-        refresh_time = refresh_time,
+        refresh_time = tonumber(common.get_env("REFRESH_TIME")),
         -- count of the spawn platforms of directories
         spawn_platforms = 0
     }
+    -- tools needed for current platform
+    self.toolset = {}
 
     -- parent node in graph. During spawn edge made between current platform and parent platform
     -- or host node, if platform inself is root platform
@@ -532,6 +533,7 @@ function platform:get_path() return self.path end
 function platform:get_player() return self.properties.player_name end
 function platform:get_content_size() return self.properties.content_size end
 function platform:get_color() return self.properties.color end
+function platform:get_toolset() return self.toolset end
 
 -- Setters
 function platform:set_node(node) self.node = node end
