@@ -1,5 +1,5 @@
 minetest.register_chatcommand("graph", {
-    func = function(player_name, params)
+    func = function(player_name)
         local player_graph = graphs:get_player_graph(player_name)
         local graph = player_graph:get_node()
         minetest.chat_send_player(player_name, "Layout . . . \n")
@@ -10,13 +10,13 @@ minetest.register_chatcommand("graph", {
         local full_name = pfx .. "/rendered_graphs/" .. name
 
         graph:render("dot", full_name)
-        
+
         minetest.chat_send_player(player_name, "Graph rendered to " .. full_name .. "\n")
-        --minetest.dynamic_add_media(full_name)
+        -- minetest.dynamic_add_media(full_name)
         -- if params == "show" then
         --    minetest.show_formspec(player_name, "core:graph", table.concat(
         --        {"formspec_version[3]", "size[30, 20,false]", "image_button[0.5,0.5;29,19;" .. name .. ";;]"}, ""))
-        --end
+        -- end
     end
 })
 

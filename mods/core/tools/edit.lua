@@ -2,12 +2,7 @@ EditTool = {
     desription = "Edit file",
     inventory_image = "core_edit.png",
     wield_image = "core_edit.png",
-    tool_capabilities = {
-        punch_attack_uses = 0,
-        damage_groups = {
-            edit = 1
-        }
-    }
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {edit = 1}}
 }
 
 function EditTool.edit(entity, player, player_name)
@@ -21,16 +16,17 @@ function EditTool.edit(entity, player, player_name)
     else
         if directory_entry.stat.name:match(".rc$") then
             minetest.show_formspec(player_name, "stat:edit_rc",
-                table.concat({"formspec_version[4]", "size[13,13,false]",
-                              "field[0,0;0,0;file_path;;" .. directory_entry.path .. "]",
-                              "textarea[0.5,0.5;12.0,10.6;content;;", minetest.formspec_escape(content), "]",
-                              "button_exit[7,11.6;2.5,0.9;edit;edit]", "button[10,11.6;2.5,0.9;execute;execute]"}, ""))
+                                   table.concat({"formspec_version[4]", "size[13,13,false]",
+                "field[0,0;0,0;file_path;;" .. directory_entry.path .. "]",
+                "textarea[0.5,0.5;12.0,10.6;content;;", minetest.formspec_escape(content), "]",
+                "button_exit[7,11.6;2.5,0.9;edit;edit]", "button[10,11.6;2.5,0.9;execute;execute]"},
+                                                ""))
         else
             minetest.show_formspec(player_name, "stat:edit",
-                table.concat({"formspec_version[3]", "size[13,13,false]",
-                              "field[0,0;0,0;file_path;;" .. directory_entry.path .. "]",
-                              "textarea[0.5,0.5;12.0,10.6;content;;", minetest.formspec_escape(content), "]",
-                              "button_exit[10,11.6;2.5,0.9;edit;edit]"}, ""))
+                                   table.concat({"formspec_version[3]", "size[13,13,false]",
+                "field[0,0;0,0;file_path;;" .. directory_entry.path .. "]",
+                "textarea[0.5,0.5;12.0,10.6;content;;", minetest.formspec_escape(content), "]",
+                "button_exit[10,11.6;2.5,0.9;edit;edit]"}, ""))
             return
         end
     end

@@ -1,7 +1,8 @@
 minetest.register_node("core:file_node", {
     drawtype = "glasslike",
     visual_scale = 1.0,
-    tiles = {"core_file.png", "core_file.png", "core_file.png", "core_file.png", "core_file.png", "core_file.png"},
+    tiles = {"core_file.png", "core_file.png", "core_file.png", "core_file.png", "core_file.png",
+        "core_file.png"},
     inventory_image = "core_file.png",
 
     use_texture_alpha = true,

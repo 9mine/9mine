@@ -2,9 +2,7 @@ minetest.register_on_chat_message(function(player_name, message)
     local player = minetest.get_player_by_name(player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(common.get_platform_string(player))
-    if not platform then
-        return false
-    end
+    if not platform then return false end
     local commands = core_conf:get("pcmd")
     local command = message:match("[^ ]+")
     if command:match("man") and message:match(" | man$") then
@@ -15,18 +13,19 @@ minetest.register_on_chat_message(function(player_name, message)
         local mans_path = core_conf:get("mans_path")
         local result, manpage
         if not section then
-            for section = 1, 10 do
-                result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
-                if result then
-                    break
-                end
+            for s = 1, 10 do
+                result, manpage = pcall(np_prot.file_read, conn,
+                                        mans_path .. "/" .. s .. "/" .. message)
+                if result then break end
             end
-            if not result then 
-            minetest.chat_send_player(player_name, "Error reading accross all sections: " .. manpage)
-            return true
+            if not result then
+                minetest.chat_send_player(player_name,
+                                          "Error reading accross all sections: " .. manpage)
+                return true
             end
         else
-            result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. message)
+            result, manpage = pcall(np_prot.file_read, conn,
+                                    mans_path .. "/" .. section .. "/" .. message)
         end
         if not result then
             minetest.chat_send_player(player_name, "Error reading manual: " .. manpage)
@@ -37,15 +36,13 @@ minetest.register_on_chat_message(function(player_name, message)
 
     end
     local cmdchan = platform:get_cmdchan()
-    if not cmdchan then
-        return
-    end
+    if not cmdchan then return end
     local path = platform:get_path()
     if commands:match(command) then
         if message:match("| minetest$") then
             message = message:gsub("| minetest", "")
             local result = cmdchan:execute(message, path)
-            cmdchan:show_response(result, player_name)
+            cmdchan.show_response(result, player_name)
         elseif message:match(" | inventory$") then
             message = message:gsub("| inventory", "")
             local result = cmdchan:execute(message)
@@ -64,25 +61,22 @@ end)
 
 local man_event = function(player, formname, fields)
     if formname == "core:man" then
-        if fields.quit then
-            return
-        end
+        if fields.quit then return end
         local player_name = player:get_player_name()
-        local player = minetest.get_player_by_name(player_name)
         local player_graph = graphs:get_player_graph(player_name)
         local platform = player_graph:get_platform(common.get_platform_string(player))
         if not platform then
             minetest.chat_send_player(player_name, "No platform found nearby")
             return true
         end
-        local k, v = next(fields)
+        local v = select(2, next(fields))
         v = v:gsub("action:", "")
         local c = v:match("%(%d+%)")
         local section = c:match("%d+")
         local man = v:gsub("%(%d+%)", "")
         local conn = platform:get_conn()
-        local mans_path = core_conf:get("mans_path")
-        local result, manpage = pcall(np_prot.file_read, conn, mans_path .. "/" .. section .. "/" .. man)
+        local result, manpage = pcall(np_prot.file_read, conn,
+                                      core_conf:get("mans_path") .. "/" .. section .. "/" .. man)
         if not result then
             minetest.chat_send_player(player_name, "Error reading manpage: " .. manpage)
         else

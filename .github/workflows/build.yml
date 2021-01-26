@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@v0.0.10
+        uses: satackey/action-docker-layer-caching@v0.0.11
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
@@ -34,3 +34,12 @@ jobs:
           chat: ${{ secrets.TGBOT_CHAT }}
           token: ${{ secrets.TGBOT_TOKEN }}
           status: ${{ job.status }}
+  lint:
+    container:
+      image: dievri/luacheck
+    name: Lint Lua Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: luacheck --config mods/core/.luacheckrc mods/core/
+  

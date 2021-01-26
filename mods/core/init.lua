@@ -1,11 +1,10 @@
 local path = minetest.get_modpath("core")
 dofile(path .. "/modload.lua")
-
 core_conf = Settings(path .. "/mod.conf")
 
 -- global values
 connections = {}
--- libraries 
+-- libraries
 require 'lfs'
 require 'graph'
 require "socket"
@@ -31,7 +30,7 @@ require 'tools.remove'
 require 'tools.stat'
 require 'tools.console'
 
--- mod files 
+-- mod files
 require 'automount'
 require 'recipes'
 require 'events.ffi'
@@ -58,7 +57,6 @@ require 'graphs.player_graph'
 require 'common'
 require 'np_prot'
 require 'texture'
-require 'mounts'
 require 'buffer'
 
 -- entities
@@ -66,7 +64,6 @@ require 'entities.stat'
 require 'entities.console'
 
 -- chat
-require 'chat.ffi'
 require 'chat.cmdchan'
 require 'chat.graph'
 require 'chat.commands'
@@ -75,12 +72,7 @@ connections = connections()
 automount = automount()
 graphs = graphs()
 np_prot = np_prot()
-mounts = mounts()
 
 current_hud = {}
-functions = {}
-filters = {}
-crafts = {}
-form_handlers = {}
 root_cmdchan = automount:connect_to_root()
 area_store = AreaStore()

@@ -7,4 +7,14 @@ jobs:
       image: dievri/ldoc
     name: Generate Documentation
     runs-on: ubuntu-latest
-   
+    steps: 
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - run: ldoc -c mods/core/config.ld -d mods/core/doc mods/core
+      - name: Upload docs to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./mods/core/doc

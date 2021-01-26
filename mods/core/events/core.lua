@@ -1,19 +1,24 @@
 connect = function(player, fields)
-    if not (fields.connect or fields.key_enter) then
-        return
-    end
+    if not (fields.connect or fields.key_enter) then return end
     local player_name = player:get_player_name()
-    local attach_string, attach_path = split_connection_string(fields.connection_string)
+    local attach_string = split_connection_string(fields.connection_string)
     local connection = connections:get_connection(player_name, attach_string, true)
-    if not connection then
-        return
+    if not connection then return end
+    if not connection:is_alive() then
+        connection:reattach()
+        if not connection:is_alive() then
+            minetest.chat_send_player(player_name,
+                                      "Connection was dead, and reconnecting was unsuccessfull")
+            return
+        end
     end
     local player_graph = graphs:get_player_graph(player_name)
     local host_node = player_graph:add_host(attach_string)
     local cmdchan_path = tostring(core_conf:get("cmdchan_path"))
     local root_cmdchan = cmdchan(connection, cmdchan_path)
     if not root_cmdchan:is_present() then
-        minetest.chat_send_player(player_name, "cmdchan at path " .. cmdchan_path .. " is not available")
+        minetest.chat_send_player(player_name,
+                                  "cmdchan at path " .. cmdchan_path .. " is not available")
     else
         minetest.chat_send_player(player_name, "cmdchan is available")
     end
@@ -35,9 +40,7 @@ end
 
 split_connection_string = function(connection_string)
     local strings = {}
-    for token in connection_string:gmatch("[^ ]+") do
-        table.insert(strings, token)
-    end
+    for token in connection_string:gmatch("[^ ]+") do table.insert(strings, token) end
     local attach_string = strings[1]
     -- set initial path if not present
     local attach_path = strings[2] ~= nil and strings[2]:match("^/.*$") or "/"
@@ -45,7 +48,5 @@ split_connection_string = function(connection_string)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname == "core:connect" then
-        connect(player, fields)
-    end
+    if formname == "core:connect" then connect(player, fields) end
 end)

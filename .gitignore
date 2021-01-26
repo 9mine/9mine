@@ -2,3 +2,4 @@
 mods/core/rendered_graphs/*.png
 mods/core/textures/*/*
 !mods/core/textures/home_platform/*
+mods/core/docs

@@ -1,4 +1,4 @@
-minetest.register_on_prejoinplayer(function(player_name, ip)
+minetest.register_on_prejoinplayer(function(player_name)
     if not graphs:get_player_graph(player_name) then
         graphs:add_player_graph(player_graph(player_name), player_name)
     end
