@@ -71,10 +71,10 @@ function directory_entry:filter(stat_entity, player_name)
         nametag = self.stat.name,
         textures = {self.stat.qid.type == 128 and "core_dir.png" or "core_file.png"}
     })
-    register.call_texture_handlers(self, stat_entity)
     local lua_entity = stat_entity:get_luaentity()
     lua_entity.player_name = player_name
     lua_entity.entry_string = self:get_entry_string()
+    register.call_texture_handlers(self, stat_entity)
     if minetest.get_node(self.pos).name == "core:platform" then
         stat_entity:set_acceleration({x = 0, y = -9.81, z = 0})
         minetest.after(math.random(1, 3), function()
