@@ -36,7 +36,8 @@ function ConsoleEntity:get_staticdata()
         path = self.path,
         addr = self.addr,
         input = self.input,
-        output = self.output
+        output = self.output,
+        external_on_punch = self.external_on_punch
     }
     return minetest.serialize(data)
 end
@@ -49,6 +50,9 @@ function ConsoleEntity:on_activate(staticdata)
         self.addr = data.addr
         self.input = data.input
         self.output = data.output
+        if data.external_on_punch ~= "" then
+            self.on_punch = data.external_on_punch
+        end
     end
 end
 
