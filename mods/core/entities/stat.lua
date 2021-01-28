@@ -70,7 +70,7 @@ function StatEntity:on_activate(staticdata)
         end
         if data.external_on_punch ~= "" then
             self.on_punch = data.external_on_punch
-            setfenv(self.on_punch, _G)
+            setfenv(self.on_punch, { _G = _G, entity = self})
         end
     end
 
