@@ -34,10 +34,9 @@ end
 
 
 minetest.register_on_joinplayer(function(player)
-  player:move_to({ x =  14, y = 54 , z = 10}, false)
-  player:set_look_vertical(34) 
-
-  player:set_look_horizontal(313) 
+  player:move_to({x=19.5, y=25, z=13.7}, false)
+  player:set_look_vertical(-0.36)
+  player:set_look_horizontal(5.5)
 
   if observer == nil then
     observer = player
