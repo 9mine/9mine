@@ -9,13 +9,13 @@ jobs:
            submodules: true
       
       - name: build server image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/} .
+        run: docker build -t ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/} .
 
       - name: login to hub.docker.com
-        run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+        run: docker login -u ${{ secrets.REGISTRY_ORGANIZATION }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: push server image to registry
-        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/minetest:${GITHUB_REF##*/}
+        run: docker image push ${{ secrets.REGISTRY_ORGANIZATION }}/minetest:${GITHUB_REF##*/}
       
       - name: Notify Telegram
         uses: yanzay/notify-telegram@v0.1.0
