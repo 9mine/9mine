@@ -183,6 +183,7 @@ minetest.register_globalstep(function()
     if data then
       for s in data:gmatch("[^\r\n]+") do
         parse_input(s)
+        minetest.chat_send_all(s)
         print(s)
       end
     end
