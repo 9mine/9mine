@@ -60,6 +60,8 @@ function parse_input(input_data)
     return
   end
   local args = {}
+
+  minetest.chat_send_all(input_data)
   
   for w in string.gmatch(input_data, "[^%s]+") do
     table.insert(args, w)
@@ -182,8 +184,7 @@ minetest.register_globalstep(function()
     data = udp:receive()
     if data then
       for s in data:gmatch("[^\r\n]+") do
-        parse_input(s)
-        minetest.chat_send_all(s)
+        minetest.after(0, parse_input, s)
       end
     end
 end)
