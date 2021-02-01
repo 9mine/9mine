@@ -100,7 +100,7 @@ minetest.register_chatcommand("input", {
   params = "<text>",
   description = "Send text to chat",
   func = function( _ , text)
-    parse_input(text) 
+    minetest.after(1, parse_input, s)
     return true, nil
   end,
 })
