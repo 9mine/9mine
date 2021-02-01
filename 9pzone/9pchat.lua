@@ -13,7 +13,7 @@ function ninepchat.new(ipaddr, port, pos, size)
   self.addr = ipaddr
   self.port = port
   self.chat = {}
-  self.lifetime = 15
+  self.lifetime = 45
   self.npcf_id = 1
 
   self.pos = pos
@@ -65,6 +65,16 @@ end
 function life_timer(chat, user_name) 
   local last_time = chat.chat[user_name]["last_time"]  
 
+  local npcf_id = chat.chat[user_name]["npcf_id"]
+  local npcf_ref = npcf.npcs[npcf_id]
+  
+  pprint(npcf_id)
+  pprint(npcf_ref)
+  mvobj = npcf.movement.getControl(npcf_ref)
+
+  mvobj:lay()
+  mvobj:look_to({ x = 13, y = 13, z = 13 })
+
   if (os.time() - last_time < chat.lifetime) then
     minetest.log(user_name .. " is still life ")
     minetest.after(5, life_timer, chat, user_name)
@@ -104,27 +114,28 @@ function ninepchat.parse(self, chat_msg)
         id = self.npcf_id,
         pos = {
           x = self.pos.x + math.random(self.size.x),
-          y = 1,
+          y = 0,
           z = self.pos.z + math.random(self.size.z),
         },
         yaw = 0,
 				properties = {textures = {"npcf_builder_skin.png"}},
         name = "9pzone:chat_user",
         title = {text = user_name, color = "#000000"},
-        on_construct = function(self)
-          local mv_obj = npcf.movement.getControl(self)
-          mv_obj:look_to({ x = 13, y = 13, z = 13 })
-          mv_obj:walk({ x = 1, y = 1, z = 1 }, 5, nil)
-        end 
+        --on_construct = function(self)
+        --  local mv_obj = npcf.movement.getControl(self)
+        --  mv_obj:look_to({ x = 13, y = 13, z = 13 })
+        --  mv_obj:walk({ x = 1, y = 1, z = 1 }, 5, nil)
+        --end 
       }
+
+		  npcf:add_npc(ref)
+		  npcf:add_title(ref)
 
       self.chat[user_name] = {
         last_time = os.time(),
         npcf_id = ref["id"]
       } 
 
-		  npcf:add_npc(ref)
-		  npcf:add_title(ref)
 
 
         
