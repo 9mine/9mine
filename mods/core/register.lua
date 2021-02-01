@@ -4,6 +4,7 @@ register.form_handlers = {}
 register.texture_handlers = {}
 register.craft_handlers = {}
 register.on_join_funcs = {}
+register.message_handlers = {}
 
 -- form handler
 function register.add_form_handler(formname, f) register.form_handlers[formname] = f end
@@ -38,4 +39,15 @@ function register.delete_onjoin_func(func_name) register.on_join_funcs[func_name
 
 function register.call_onjoin_funcs(player, last_login)
     for _, func in pairs(register.on_join_funcs) do func(player, last_login) end
+end
+
+-- chat message handlers
+function register.add_message_handler(func_name, f) register.message_handlers[func_name] = f end
+function register.delete_message_handler(func_name) register.message_handlers[func_name] = nil end
+
+function register.call_message_handlers(player_name, message)
+    for _, handler in pairs(register.message_handlers) do
+        local handled = handler(player_name, message)
+        if handled then return true end
+    end
 end
