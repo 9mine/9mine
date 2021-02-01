@@ -38,17 +38,19 @@ minetest.register_on_joinplayer(function(player)
   player:set_look_vertical(34) 
 
   player:set_look_horizontal(313) 
-  observer = player
-  player:hud_add({
-		hud_elem_type = "image",
-		position = {x = 0, y = 0},
-		offset = {x = 1200, y = 1000},
-		scale = {x = -30, y = -30},
-		alignment = {x = 1, y = 0},
-		text = "hud_bg.png"
-  })
-	show_stats()
 
+  if observer == nil then
+    observer = player
+    player:hud_add({
+      hud_elem_type = "image",
+      position = {x = 0, y = 0},
+      offset = {x = 1200, y = 1000},
+      scale = {x = -30, y = -30},
+      alignment = {x = 1, y = 0},
+      text = "hud_bg.png"
+    })
+    show_stats()
+  end
 
   --local player_inventory = player:get_inventory()  
   --player_inventory:add_item("main", "graphviz:node" .. " 1")
