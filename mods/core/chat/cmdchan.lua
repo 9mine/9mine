@@ -1,4 +1,6 @@
 minetest.register_on_chat_message(function(player_name, message)
+    local response = register.call_message_handlers(player_name, message)
+    if response then return true end
     local player = minetest.get_player_by_name(player_name)
     local player_graph = graphs:get_player_graph(player_name)
     local platform = player_graph:get_platform(common.get_platform_string(player))
