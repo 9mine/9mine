@@ -37,7 +37,7 @@ function ConsoleEntity:get_staticdata()
         addr = self.addr,
         input = self.input,
         output = self.output,
-        external_on_punch = self.external_on_punch
+        on_punch = self.on_punch
     }
     return minetest.serialize(data)
 end
@@ -50,9 +50,8 @@ function ConsoleEntity:on_activate(staticdata)
         self.addr = data.addr
         self.input = data.input
         self.output = data.output
-        if data.external_on_punch ~= "" then
-            self.on_punch = data.external_on_punch
-        end
+        setfenv(data.on_punch, setmetatable({}, {__index = _G}))
+        self.on_punch = data.on_punch
     end
 end
 
