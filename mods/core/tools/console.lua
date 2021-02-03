@@ -13,33 +13,44 @@ minetest.register_tool("core:console", {
 
 local function spawn_console(player, formname, fields)
     if formname == "core:spawn_console" then
+        local player_name = player:get_player_name()
         if not fields.addr then
-            minetest.chat_send_player(player:get_player_name(), "No addr field")
+            minetest.chat_send_player(player_name, "No addr field")
             return
         end
         local attach_string = split_connection_string(fields.addr)
         local tx = "core_console.png"
-        local connection = connections:get_connection(player:get_player_name(), attach_string, true)
+        local connection = connections:get_connection(player_name, attach_string, true)
         if not connection then return end
-        local user
-        if not connection.cmdchan then
-            local cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
-            connection:set_cmdchan(cmdchan)
-            user = cmdchan:execute("cat /dev/user")
-        end
-
-        local dir = player:get_look_dir()
-        local dis = vector.multiply(dir, 5)
-        local pp = player:get_pos()
-        local fp = vector.add(pp, dis)
+        local dis = vector.multiply(player:get_look_dir(), 5)
+        local fp = vector.add(player:get_pos(), dis)
         fp.y = fp.y + 2
         local entity = minetest.add_entity(fp, "core:console")
         entity:set_properties({nametag = attach_string, textures = {tx, tx, tx, tx, tx, tx}})
         entity:get_luaentity().addr = attach_string
-        entity:get_luaentity().user = user
+
+        local response, include_string = pcall(np_prot.file_read, connection.conn, "/.console.lua")
+        if response then
+            local lua_console_code, error = loadstring(include_string)
+            if lua_console_code then
+                minetest.chat_send_player(player_name, "Loaded /.console.lua")
+            else
+                print("error loading /.console.lua: " .. error)
+            end
+            setfenv(lua_console_code,
+                    setmetatable({connection = connection, entity = entity}, {__index = _G}))
+            lua_console_code()
+        else
+            local user
+            if not connection.cmdchan then
+                local cmdchan = cmdchan(connection, core_conf:get("cmdchan_path"))
+                connection:set_cmdchan(cmdchan)
+                user = cmdchan:execute("cat /dev/user")
+                entity:get_luaentity().user = user
+            end
+        end
     end
 end
-
 register.add_form_handler("core:spawn_console", spawn_console)
 
 local function console(player, formname, fields)
@@ -61,7 +72,7 @@ local function console(player, formname, fields)
             minetest.formspec_escape(fields.entity_pos), "]"}, ""))
     end
 end
-
+register.add_form_handler("core:console", console)
 minetest.register_on_joinplayer(function(player)
     local inventory = player:get_inventory()
     if not inventory:contains_item("main", "core:console") then
@@ -69,4 +80,3 @@ minetest.register_on_joinplayer(function(player)
     end
 end)
 
-register.add_form_handler("core:console", console)
