@@ -42,7 +42,7 @@ function automount:mount_registry()
         minetest.after(1, automount.mount_registry, self)
         return
     end
-    --minetest.after(1.5, automount.mount_manuals, self, nil, 0)
+    minetest.after(1.5, automount.mount_manuals, self, nil, 0)
 end
 
 function automount:mount_manuals(cmdchan, count)
@@ -134,7 +134,7 @@ function automount:spawn_root_platform(attach_string, player, _, random)
             })
         end
         local result = player:get_pos()
-        --minetest.after(1.5, automount.mount_manuals, self, user_cmdchan, 0)
+        minetest.after(1.5, automount.mount_manuals, self, user_cmdchan, 0)
         minetest.after(2, function()
             local root_platform = platform(connection, "/", user_cmdchan, player_host_node)
             root_platform:set_player(player_name)
