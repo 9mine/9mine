@@ -31,12 +31,17 @@ end
 
 function ConsoleEntity:get_staticdata()
     local attributes = self.object:get_nametag_attributes()
+    local properties = self.object:get_properties()
+
     local data = {
         attr = attributes,
+        visual = properties.visual,
+        textures = properties.textures,
         path = self.path,
         addr = self.addr,
         input = self.input,
-        output = self.output
+        output = self.output,
+        on_punch = self.on_punch
     }
     return minetest.serialize(data)
 end
@@ -45,10 +50,13 @@ function ConsoleEntity:on_activate(staticdata)
     if staticdata ~= "" and staticdata ~= nil then
         local data = minetest.deserialize(staticdata) or {}
         self.object:set_nametag_attributes(data.attr)
+        self.object:set_properties({visual = data.visual, textures = data.textures})
         self.path = data.path
         self.addr = data.addr
         self.input = data.input
         self.output = data.output
+        setfenv(data.on_punch, setmetatable({}, {__index = _G}))
+        self.on_punch = data.on_punch
     end
 end
 

@@ -44,7 +44,8 @@ function StatEntity:get_staticdata()
         visual = properties.visual,
         textures = properties.textures,
         entry_string = self.entry_string,
-        attr = attributes
+        attr = attributes,
+        on_punch = self.on_punch
     }
     return minetest.serialize(data)
 end
@@ -67,6 +68,8 @@ function StatEntity:on_activate(staticdata)
             pos.y = pos.y + 1
             self.object:set_pos(pos)
         end
+        setfenv(data.on_punch, setmetatable({}, {__index = _G}))
+        self.on_punch = data.on_punch
     end
 
 end

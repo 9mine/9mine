@@ -1,5 +1,4 @@
 --- custom lua loader
-
 --- load file from core mod
 -- @function modload
 -- @tparam string modulename name of the file to be loaded
