@@ -17,7 +17,7 @@ function platform:platform(connection, path, cmdchan, parent_node)
         -- period of time, on which readdir() occurs for current platform and if
         -- new entries are there, they will be spawn and if some of present entities
         -- are no more in new readdir() they will removed
-        refresh_time = tonumber(common.get_env("REFRESH_TIME")),
+        refresh_time = tonumber(common.get_env(core_conf, "REFRESH_TIME")),
         -- count of the spawn platforms of directories
         spawn_platforms = 0
     }

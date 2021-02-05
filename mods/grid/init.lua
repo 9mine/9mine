@@ -1,6 +1,6 @@
-local path = minetest.get_modpath("core")
+local path = minetest.get_modpath("grid")
 dofile(path .. "/modload.lua")
-core_conf = Settings(path .. "/mod.conf")
+grid_conf = Settings(path .. "/mod.conf")
 
 require 'automount'
 require 'home_platform'

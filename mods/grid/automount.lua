@@ -1,9 +1,9 @@
 class 'automount'
 
 function automount:automount()
-    self.user_registry_addr = common.get_env("USER_REGISTRY_ADDR")
-    self.registry_addr = common.get_env("REGISTRY_ADDR")
-    self.inferno_addr = common.get_env("INFERNO_ADDR")
+    self.user_registry_addr = common.get_env(grid_conf, "USER_REGISTRY_ADDR")
+    self.registry_addr = common.get_env(grid_conf, "REGISTRY_ADDR")
+    self.inferno_addr = common.get_env(grid_conf, "INFERNO_ADDR")
 end
 
 function automount:connect_to_root()

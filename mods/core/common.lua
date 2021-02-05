@@ -343,7 +343,7 @@ end
 
 function common.icon_from_9p(service, player_name)
     if not texture.exists(common.hex(service.service_addr) .. ".png", "registry") then
-        local connection = connections:get_connection(player_name, common.get_env("GRIDFILES_ADDR"),
+        local connection = connections:get_connection(player_name, common.get_env(core_conf, "GRIDFILES_ADDR"),
                                                       true)
         if connection then
             local result = texture.download_from_9p(connection.conn, '/9mine/registry/logo/'
@@ -388,4 +388,4 @@ common.parse_attach_string = function(attach_string)
     return attach_string, prot, host, port
 end
 
-function common.get_env(env) return os.getenv(env) ~= "" and os.getenv(env) or core_conf:get(env) end
+function common.get_env(conf, env) return os.getenv(env) ~= "" and os.getenv(env) or conf:get(env) end
