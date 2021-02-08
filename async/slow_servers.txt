@@ -1,0 +1,2 @@
+lua async/browser.lua 'tcp!contrib.9front.org!564' /lists/tuhs
+first server tcp!contrib.9front.org!564 readdir in: 4395.41ms
