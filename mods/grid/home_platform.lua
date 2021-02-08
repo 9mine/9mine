@@ -11,7 +11,9 @@ end
 
 local home_platform_event = function(player, formname, fields)
     if formname == "core:home_platform" then
-        if fields.quit then return end
+        if fields.quit then
+            show_home_platform_formspec(player, fields.last_login)
+            return end
         local player_name = player:get_player_name()
         automount.root_cmdchan:execute("mkdir /n/" .. player_name)
         local home_platform = fields.inferno ~= nil and "inferno" or fields.nfront ~= nil
