@@ -1,6 +1,4 @@
 local data = require 'data'
-local np = require '9p'
-local pprint = require 'pprint'
 local ORDONLY = 0
 local OWRITE = 1
 local ORDWR = 2
