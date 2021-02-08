@@ -4,3 +4,10 @@ first server tcp!contrib.9front.org!564 readdir in: 4395.41ms
 
 lua async/browser.lua 'tcp!contrib.9front.org!564' /fqa
 first server tcp!contrib.9front.org!564 readdir in: 4695.48ms
+
+
+first server tcp!postnix.pw!564 readdir in: 1259.92ms
+lua async/browser.lua 'tcp!postnix.pw!564' /n/sources/patch
+
+first server tcp!postnix.pw!564 readdir in: 182027.01ms
+lua async/browser.lua 'tcp!postnix.pw!564' /lsr/
