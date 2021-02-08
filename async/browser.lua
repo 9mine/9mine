@@ -29,7 +29,7 @@ first:attach()
 local start_first = socket.gettime()*1000
 local directory = readdir(first.conn, arg[2] or "/")
 for k, v in pairs(directory) do
-    print((arg[2] .. "/" or "/") .. v.name)
+    print(((arg[2] and arg[2] .. "/") or "/") .. v.name)
 end
 local end_first = socket.gettime()*1000
 elapsed_time_first = end_first - start_first
