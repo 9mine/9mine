@@ -25,10 +25,18 @@ local list_server = {"tcp!registry.demo.metacoma.io!30099",
 math.randomseed(os.time())
 local first = np_over_tcp(arg[1] or list_server[math.random(#list_server)])
 local second = np_over_tcp(arg[2] or list_server[math.random(#list_server)])
+print("first is:") pprint(first)
 first:attach()
+print("second is:") pprint(second)
 second:attach()
-pprint(first)
+local start_first = socket.gettime()*1000
 readdir(first.conn, "/")
-pprint(second)
-readdir(second.conn, "/")
+local end_first = socket.gettime()*1000
+elapsed_time_first = end_first - start_first
+print("first server " .. first.addr .. " readdir in: " .. string.format("%.2f", elapsed_time_first) .. "ms")
 
+local start_second = socket.gettime()*1000 
+readdir(second.conn, "/")
+local end_second = socket.gettime()*1000
+elapsed_time_second = end_second - start_second
+print("first server " .. second.addr .. " readdir in: " .. string.format("%.2f", elapsed_time_second) .. "ms")
