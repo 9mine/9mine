@@ -1,11 +1,11 @@
-local async_socket  = require "async_socket"
+local  cqueues = require"cqueues"
+local  socket = require"cqueues.socket"
 
---
-local cnt = 0
-function idle() cnt = cnt + 1 end
-local cnn = async_socket.tcp_client(idle)
-local ok = cnn:connect(nil, arg[1], arg[2])
+local sct = socket.connect("localhost", 9000)
+sct:settimeout(1)
+local str = "world\n"
+local byte_count, error_code = sct:send(str, 1, str:len())
+print(byte_count, error_code)
 
-print(ok and "Connection Successfully Made" or "Error connecting to " .. arg[1] .. ":" .. arg[2] )
-
-cnn:close()
+local response, error_code = sct:recv("*l")
+print(response, error_code)
