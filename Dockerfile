@@ -53,7 +53,7 @@ RUN     luarocks install luafilesystem  &&\
         luarocks install lua-cjson      &&\
         luarocks install luaunit        &&\
         luarocks install luasec         &&\
-        luarocks install --server=https://luarocks.org/dev luasocket-async
+        luarocks install cqueues
 
 # Production image
 FROM    ubuntu:20.10
