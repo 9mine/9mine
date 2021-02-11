@@ -14,7 +14,7 @@ md5 = require 'md5'
 require '9p_over_tcp'
 require 'cmdchan'
 require 'register'
-
+require 'uint64'
 filesize = require 'filesize'
 np = require '9p'
 
@@ -72,3 +72,5 @@ np_prot = np_prot()
 
 current_hud = {}
 area_store = AreaStore()
+
+require 'async'
