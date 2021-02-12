@@ -6,7 +6,7 @@ local data = require 'data'
 
 local metacoma = socket.connect {
     host = "gridfiles.dev.metacoma.io",
-    port = 32333,
+    port = 32444,
     nonblock = true
 
 }
@@ -28,7 +28,7 @@ while true do
         else
             print(serpent.block(sct:events()))
             if (sct:events() == "r" and sent_over) or sent_over then 
-                local response, error = sct:recv("*l")
+                local response, error = sct:recv("*L")
                 print("Read error: ", error)
                 print(response and "Response length: " .. string.len(response))
                 if response ~= nil then 
