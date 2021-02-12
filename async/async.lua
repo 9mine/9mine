@@ -29,10 +29,17 @@ while true do
             print(serpent.block(sct:events()))
             if (sct:events() == "r" and sent_over) or sent_over then 
                 local response, error = sct:recv("*l")
-                print(response, error)
-                print("Response length: " .. string.len(response))
+                print("Read error: ", error)
+                print(response and "Response length: " .. string.len(response))
                 if response ~= nil then 
-                sent_over = false
+                full_resp = full_resp .. response
+                print("Accumulated response length: " .. string.len(full_resp))
+                else
+                    if full_resp ~= "" then 
+                        print(full_resp)
+                        sent_over = false
+                        full_resp = ""
+                    end
                 end
             else
                 local to_send = string.rep("worlds", 10000) .. "\n"
@@ -40,11 +47,12 @@ while true do
                 local sent_bytes, error = sct:send(to_send, send_marker + 1, string.len(to_send))
                 send_marker = send_marker + sent_bytes
                 print(serpent.block(sent_bytes), serpent.block(error))
-
+                print("total sent: " .. send_marker)
                 if send_marker == string.len(to_send) then 
                     full_sent = true
                 end
                 if error == nil and full_sent then 
+                send_marker = 0
                 sent_over = true
                 end
             end
@@ -52,7 +60,7 @@ while true do
             
         end
     end
-    os.execute("sleep 2")
+    os.execute("sleep 1")
 end
 
 
