@@ -53,7 +53,8 @@ RUN     luarocks install luafilesystem  &&\
         luarocks install lua-cjson      &&\
         luarocks install luaunit        &&\
         luarocks install luasec         &&\
-        luarocks install cqueues
+        luarocks install cqueues        &&\
+        luarocks install serpent
 
 # Production image
 FROM    ubuntu:20.10
