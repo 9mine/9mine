@@ -4,43 +4,79 @@ local pprint = require 'libs.pprint'
 local serpent = require 'serpent'
 local data = require 'data'
 
-local sct2 = socket.connect {
-    host = "localhost",
-    port = 9000,
+local metacoma = socket.connect {
+    host = "gridfiles.dev.metacoma.io",
+    port = 32333,
     nonblock = true
 
 }
-sct2:settimeout(0)
-
-local prev_in_mode, prev_out_mode = sct2:setmode("b", "b")
-print(prev_in_mode, prev_out_mode)
-local prev_in_buf, prev_out_buf = sct2:setbufsiz(1024, 1024)
-print(prev_in_buf, prev_out_buf)
+metacoma:settimeout(0)
+local sent_over = false
+--local prev_in_mode, prev_out_mode = metacoma:setmode("b", "b")
+--print(prev_in_mode, prev_out_mode)
+--local prev_in_buf, prev_out_buf = metacoma:setbufsiz(1024, 1024)
+--print(prev_in_buf, prev_out_buf)
 local full_resp = ""
-while true do 
-    local ready = {assert(cqueues.poll(sct2, 0))}
-    if type(ready[1]) ~= "number" then
-    for i = 1, #ready do
-        if ready[i] == 0 then break end
-		print("events before: ", serpent.block(ready[i]:events()))
-        if ready[i]:events() == "w" or ready[i]:events() == "r" then
-            local to_send = string.rep("world", 10000) .. "\n"
-            print("Length of sent data: " .. string.len(to_send))
-            local sent = ready[i]:xwrite(to_send)
-        elseif ready[i]:events() ~= "w" then
-            local response, error = ready[i]:recv("*l")
-            print("Receive error code is: " .. tostring(error))
-            if response ~= nil then 
-                full_resp = full_resp .. response 
+while true do
+    local polled = {assert(cqueues.poll(metacoma, 0))}
+    for i = 1, #polled do 
+        local sct = polled[i]
+        if sct == 0 then 
+        else
+            print(serpent.block(sct:events()))
+            if (sct:events() == "r" and sent_over) or sent_over then 
+                local response, error = sct:recv("*l")
+                print(response, error)
+                print("Response length: " .. string.len(response))
+                if response ~= nil then 
+                sent_over = false
+                end
+            else
+                local to_send = string.rep("worlds", 10000) .. "\n"
+                print("Length of sent data: " .. string.len(to_send))
+                local sent_bytes, error = sct:send(to_send, 1, string.len(to_send))
+                print(serpent.block(sent_bytes), serpent.block(error))
+                if error == nil then 
+                sent_over = true
+                end
             end
-            print("Full length: " .. string.len(full_resp))
-            print("events after: ", serpent.block(ready[i]:events()))
+                
+            
+        end
+    end
+    os.execute("sleep 2")
+end
+
+
+
+--[[if type(ready[1]) ~= "number" then
+    for i = 1, #ready do
+        if ready[i] == 0 then
+            break
+        end
+        if ready[i]:events() == "w" or not sent_over then
+            print("events before: ", serpent.block(ready[i]:events()))
             if ready[i]:events() == "r" then
-               -- minetest.chat_send_all(full_resp)
-                full_resp = ""
+                local to_send = string.rep("world", 3) .. "\n"
+                print("Length of sent data: " .. string.len(to_send))
+                local sent = ready[i]:xwrite(to_send)
+                local sent_over = true
+
+            elseif ready[i]:events() == "w" then
+                local response, error = ready[i]:recv("*l")
+                print("Receive error code is: " .. tostring(error))
+                if response ~= nil then
+                    full_resp = full_resp .. response
+                end
+                print("Full length: " .. string.len(full_resp))
+                print("events after: ", serpent.block(ready[i]:events()))
+                if ready[i]:events() == "r" then
+                    -- minetest.chat_send_all(full_resp)
+                    full_resp = ""
+                    sent_over = false
+                end
             end
         end
     end
 end
-os.execute("sleep 1")
-end
+--]]
