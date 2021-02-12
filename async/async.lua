@@ -17,6 +17,9 @@ local sent_over = false
 --local prev_in_buf, prev_out_buf = metacoma:setbufsiz(1024, 1024)
 --print(prev_in_buf, prev_out_buf)
 local full_resp = ""
+local send_marker = 0
+local total_bytes
+local full_sent = false
 while true do
     local polled = {assert(cqueues.poll(metacoma, 0))}
     for i = 1, #polled do 
@@ -34,9 +37,14 @@ while true do
             else
                 local to_send = string.rep("worlds", 10000) .. "\n"
                 print("Length of sent data: " .. string.len(to_send))
-                local sent_bytes, error = sct:send(to_send, 1, string.len(to_send))
+                local sent_bytes, error = sct:send(to_send, send_marker + 1, string.len(to_send))
+                send_marker = send_marker + sent_bytes
                 print(serpent.block(sent_bytes), serpent.block(error))
-                if error == nil then 
+
+                if send_marker == string.len(to_send) then 
+                    full_sent = true
+                end
+                if error == nil and full_sent then 
                 sent_over = true
                 end
             end
