@@ -35,6 +35,13 @@ function ninepchat.new(ipaddr, port, pos, size)
   return self
 end
 
+function ninepchat.getPos(self)
+  return self.pos
+end
+function ninepchat.getSize(self)
+  return self.size
+end
+
 function ninepchat.terra(self) 
   minetest.log("ninepchat.terra") 
   --local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
