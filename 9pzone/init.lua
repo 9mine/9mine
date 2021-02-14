@@ -16,6 +16,7 @@ local chat = ninepchatNew("172.24.172.227", 7777,
   }
 )
 
+
 minetest.register_on_generated(function(minp, maxp, seed)
   local pos = chat:getPos()
   local size = chat:getSize() 
@@ -24,6 +25,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	  local debug = "minp="..(minetest.pos_to_string(minp))..", maxp="..(minetest.pos_to_string(maxp))..", seed="..seed
 	  print(debug)
 	  minetest.chat_send_all(debug)
+    chat:terra() 
   end
 end)
 
@@ -31,13 +33,22 @@ end)
 minetest.register_on_joinplayer(function(player)
     print("register_on_joinplayer")
     player:set_pos({ x = 2, y = 2, z = 2 })
-    --chat:terra()
+    local inv = player:get_inventory() 
+    --inv:add_item("main", "aliveai_trader:trader") 
+    inv:add_item("main", "aliveai:terminal") 
     return player
 end)
 
 minetest.register_chatcommand("bot", {
 	params = "",
 	description = "Test 1: Modify player's inventory view",
+	func = function(name, param)
+    minetest.add_entity({ x = 5, y = 2, z = 5 }, "aliveai_trader:trader" ) 
+    minetest.add_entity({ x = 5, y = 2, z = 5 }, "aliveai_trader:worker" ) 
+    --minetest.chat_send_all("minetest mod " .. minetest.get_current_modname()) 
+  end,
+
+  --[[
 	func = function(name, param)
       local size = chat:getSize() 
       local pos = chat:getPos() 
@@ -64,5 +75,7 @@ minetest.register_chatcommand("bot", {
 		  npcf:add_title(ref)
 		
 	end,
+  ]]--
 })
+
 

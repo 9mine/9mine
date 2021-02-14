@@ -30,7 +30,7 @@ function ninepchat.new(ipaddr, port, pos, size)
     end
   end)
 
-  minetest.after(5, ninepchat.terra, self)
+  --minetest.after(5, ninepchat.terra, self)
 
   return self
 end
@@ -170,6 +170,7 @@ minetest.register_node("9pzone:chat", {
   groups = {cracky = 3, oddly_breakable_by_hand = 3},
 })
 
+--[[
 npcf:register_npc("9pzone:chat_user" ,{
 	description = "chat user",
 	textures = {"npcf_builder_skin.png"},
@@ -189,3 +190,4 @@ npcf:register_npc("9pzone:chat_user" ,{
 	stepheight = 1.1,
 	inventory_image = "npcf_builder_skin.png"
 })
+]]--

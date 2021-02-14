@@ -7,7 +7,8 @@ services:
     volumes:
       - ./9pzone:/root/.minetest/mods/9pzone
       - ./mods/default:/root/.minetest/mods/default
-      - ./mods/npcf:/root/.minetest/mods/npcf
+      - ./mods/aliveai:/root/.minetest/mods/aliveai
+      #- ./mods/npcf:/root/.minetest/mods/npcf
       - ./mods/player_api:/root/.minetest/mods/player_api
     
     networks:
