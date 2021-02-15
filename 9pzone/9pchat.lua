@@ -13,8 +13,7 @@ function ninepchat.new(ipaddr, port, pos, size)
   self.addr = ipaddr
   self.port = port
   self.chat = {}
-  self.lifetime = 45
-  self.npcf_id = 1
+  self.lifetime = 1800
 
   self.pos = pos
   self.size = size
@@ -29,8 +28,6 @@ function ninepchat.new(ipaddr, port, pos, size)
       end
     end
   end)
-
-  --minetest.after(5, ninepchat.terra, self)
 
   return self
 end
@@ -58,32 +55,55 @@ function ninepchat.terra(self)
         minetest.add_node(
           { x = x, y = y, z = z }, { name = "9pzone:chat" }
         ) 
-        --self.[self.n] = { x = x, y = y, z = z }
-        --self.n = self.n + 1
       end
     end
   end
 
-  --vm:set_data(data)
-  --vm:write_to_map()
-   
+  for x = self.pos.x, self.pos.x + self.size.x - 1 do
+    minetest.add_node(
+      { x = x, y = self.pos.y + 1, z = self.pos.z }, { name = "9pzone:chat" }
+    ) 
+    minetest.add_node(
+      { x = x, y = self.pos.y + 2, z = self.pos.z }, { name = "9pzone:chat" }
+    ) 
+  end
+
+  for x = self.pos.x, self.pos.x + self.size.x - 1 do
+    minetest.add_node(
+      { x = x, y = self.pos.y + 1, z = self.pos.z + self.size.z - 1 }, { name = "9pzone:chat" }
+    ) 
+    minetest.add_node(
+      { x = x, y = self.pos.y + 2, z = self.pos.z + self.size.z - 1 }, { name = "9pzone:chat" }
+    ) 
+  end
+
+  for z = self.pos.z, self.pos.z + self.size.z - 1 do
+    minetest.add_node(
+      { x = self.pos.x, y = self.pos.y + 1, z = z }, { name = "9pzone:chat" }
+    ) 
+    minetest.add_node(
+      { x = self.pos.x, y = self.pos.y + 2, z = z }, { name = "9pzone:chat" }
+    ) 
+  end
+
+  for z = self.pos.z, self.pos.z + self.size.z - 1 do
+    minetest.add_node(
+      { x = self.pos.x + self.size.x - 1, y = self.pos.y + 1, z = z }, { name = "9pzone:chat" }
+    ) 
+    minetest.add_node(
+      { x = self.pos.x + self.size.x - 1, y = self.pos.y + 2, z = z }, { name = "9pzone:chat" }
+    ) 
+  end
+
 end
 
 function life_timer(chat, user_name) 
   local last_time = chat.chat[user_name]["last_time"]  
 
-  local npcf_id = chat.chat[user_name]["npcf_id"]
-  local npcf_ref = npcf.npcs[npcf_id]
-  
-  pprint(npcf_id)
-  pprint(npcf_ref)
-  mvobj = npcf.movement.getControl(npcf_ref)
-
-  mvobj:lay()
-  mvobj:look_to({ x = 13, y = 13, z = 13 })
+  local obj  = chat.chat[user_name]['obj'] 
 
   if (os.time() - last_time < chat.lifetime) then
-    minetest.log(user_name .. " is still life ")
+    minetest.log(user_name .. " are still life ")
     minetest.after(5, life_timer, chat, user_name)
     return
   end
@@ -92,7 +112,7 @@ function life_timer(chat, user_name)
   pprint(chat.chat[user_name])
   minetest.log("----")
   minetest.log("Removed " .. user_name .. " by timer " .. tostring(last_time))
-  npcf:unload(chat.chat[user_name]["npcf_id"])
+  obj:remove() 
   chat.chat[user_name] = nil
 end
 
@@ -115,40 +135,31 @@ function ninepchat.parse(self, chat_msg)
   end
 
   if (self.chat[user_name] == nil) then
+
       minetest.log("Add new chat user " .. user_name) 
 
-      local ref = {
-        id = self.npcf_id,
-        pos = {
-          x = self.pos.x + math.random(self.size.x),
-          y = 0,
-          z = self.pos.z + math.random(self.size.z),
-        },
-        yaw = 0,
-				properties = {textures = {"npcf_builder_skin.png"}},
-        name = "9pzone:chat_user",
-        title = {text = user_name, color = "#000000"},
-        --on_construct = function(self)
-        --  local mv_obj = npcf.movement.getControl(self)
-        --  mv_obj:look_to({ x = 13, y = 13, z = 13 })
-        --  mv_obj:walk({ x = 1, y = 1, z = 1 }, 5, nil)
-        --end 
+        
+      local user_pos = {
+        x = (self.pos.x + 2) + math.random(self.size.x - 4),
+        y = 2,
+        z = (self.pos.z + 2) + math.random(self.size.z - 4) 
       }
 
-		  npcf:add_npc(ref)
-		  npcf:add_title(ref)
+      --local mobs = { "folk10", "folk11", "folk12", "folk13", "folk14", "folk15", "folk15", "folk16", "folk17", "folk18", "folk19", "folk20", "folk21" }
+      local mob_id = mobs[math.random(#mobs)]
 
+  
+      local obj = minetest.add_entity(user_pos, "9pzone:" .. mob_id)
+      obj:set_properties({ nametag = user_name, color = "black" })
       self.chat[user_name] = {
-        last_time = os.time(),
-        npcf_id = ref["id"]
-      } 
+        last_time = os.time(), 
+        obj = obj 
+      }
 
-
-
-        
+      minetest.log(dump(obj:get_luaentity())) 
       minetest.after(5, life_timer, self, user_name)
+      
 
-      self.npcf_id = self.npcf_id + 1 
     else
       self.chat[user_name]["last_time"] = os.time()
       minetest.log("Update last_time for " .. user_name .. " " .. tostring(os.time()))
@@ -165,29 +176,32 @@ minetest.register_node("9pzone:chat", {
   drawtype = "glasslike_framed",
   tiles = { "ninepchat_terra.png" },
   inventory_image = minetest.inventorycube( "ninepchat_terra.png" ),
+  diggable = false,
+  climbable = false,
+  pointable = false,
+  is_ground_content = false,
   paramtype = "light",
   sunlight_propagates = true, 
-  groups = {cracky = 3, oddly_breakable_by_hand = 3},
+  groups = {cracky = 3, oddly_breakable_by_hand = 3, immortal = 1 },
 })
 
---[[
-npcf:register_npc("9pzone:chat_user" ,{
-	description = "chat user",
-	textures = {"npcf_builder_skin.png"},
-	metadata = {
-		schematic = nil,
-		inventory = {},
-		index = nil,
-		build_pos = nil,
-		building = false,
-	},
-	var = {
-		selected = "",
-		nodelist = {},
-		nodedata = {},
-		last_pos = {},
-	},
-	stepheight = 1.1,
-	inventory_image = "npcf_builder_skin.png"
-})
-]]--
+mobs = {} 
+
+for i=1,22 do
+  aliveai.create_bot({
+    description="Regular npc" .. i,
+    name="folk" .. i,
+		name_color="black",
+    texture="aliveai_folk" .. i .. ".png",
+    talking = 0,
+    building = 0,
+    dmg = 0,
+    crafting = 0,
+    fighting  = 0,
+    drowning = 0,
+    attacking = 0,
+    mine = 0,
+    minening = 0,
+  })
+  mobs[i] = "folk" .. i
+end
