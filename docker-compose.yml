@@ -9,7 +9,7 @@ services:
     
     networks:
       - minetest
-    image: minetest:bitcoin_transaction
+    image: 9mine/minetest:bitcoin_transaction
     ports:
       - "30000:30000/udp"
       - "30000:30000"
