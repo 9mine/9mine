@@ -55,7 +55,6 @@ COPY --from=compile     /minetest_game/mods/default/textures /root/.minetest/mod
 
 RUN rm -fr /usr/share/minetest/games/devtest/mods/
 COPY --from=compile  /usr/local/bin/websocat /usr/local/bin/websocat 
-ADD files/parser.awk /usr/local/bin/
 
 RUN touch /tmp/minetest_input && chmod a+rw /tmp/minetest_input
 RUN apk add coreutils netcat-openbsd
